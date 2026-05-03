@@ -1,10 +1,10 @@
 import uuid
 from pathlib import Path
 from datetime import datetime
-from core.utils.models import ScanItem, CleanRecord
+from core.models import ScanItem, CleanRecord
 
 from core.storage.database import get_conn, init_db
-from core.utils.file_transfer import transfer_fileV2
+from core.utils.file_transfer import transfer_file_safe
 from core.utils.recycling import generate_recycle_path
 
 EMPTY_DIR_STOP_PATHS = {
@@ -20,7 +20,7 @@ def move_to_recycle(item: ScanItem) -> CleanRecord:
     unique_id = uuid.uuid4().hex
     target = generate_recycle_path(str(original), unique_id=unique_id)
 
-    transfer_fileV2(original, target, mode="move")
+    transfer_file_safe(original, target, mode="move")
     deleted_at = datetime.now()
 
     return CleanRecord(

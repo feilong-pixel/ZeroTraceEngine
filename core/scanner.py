@@ -5,9 +5,17 @@ class ScannerOrchestrator:
         all_items = []
 
         for scanner in SCANNERS:
-            scanner.prepare()
-            items = scanner.scan()
-            scanner.finalize()
+            try:
+                scanner.prepare()
+                items = scanner.scan()
+            except Exception:
+                continue
+            finally:
+                try:
+                    scanner.finalize()
+                except Exception:
+                    pass
+
             all_items.extend(items)
 
         return all_items

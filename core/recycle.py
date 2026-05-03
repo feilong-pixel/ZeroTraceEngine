@@ -1,7 +1,7 @@
 from datetime import datetime
 from pathlib import Path
 from core.storage.database import get_conn
-from core.utils.file_transfer import transfer_fileV2
+from core.utils.file_transfer import transfer_file_safe
 
 
 def list_recycle_records():
@@ -108,7 +108,7 @@ def restore_record(record_id: str):
         }
 
     original.parent.mkdir(parents=True, exist_ok=True)
-    transfer_fileV2(recycled, original, mode="move")
+    transfer_file_safe(recycled, original, mode="move")
 
     restored_at = datetime.now().isoformat(timespec="seconds")
 

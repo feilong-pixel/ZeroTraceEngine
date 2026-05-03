@@ -1,9 +1,13 @@
+from pathlib import Path
 import sqlite3
 
-DB_PATH = "data/zerotrace.db"
+BASE_DIR = Path(__file__).resolve().parents[2]
+DATA_DIR = BASE_DIR / "data"
+DB_PATH = DATA_DIR / "zerotrace.db"
 
 # Returns a connection to the SQLite database
 def get_conn():
+    DATA_DIR.mkdir(parents=True, exist_ok=True)
     return sqlite3.connect(DB_PATH)
 
 # Initializes the database by creating the necessary tables if they do not exist
@@ -72,11 +76,18 @@ def _ensure_clean_log_columns(cur):
         if column not in existing_columns:
             cur.execute(statement)
 
+    if "created_at" in existing_columns:
+        cur.execute("""
+            UPDATE clean_log
+            SET deleted_at = created_at
+            WHERE deleted_at IS NULL
+              AND created_at IS NOT NULL
+        """)
+
     cur.execute("""
         UPDATE clean_log
-        SET deleted_at = created_at
+        SET deleted_at = CURRENT_TIMESTAMP
         WHERE deleted_at IS NULL
-          AND created_at IS NOT NULL
     """)
 
 

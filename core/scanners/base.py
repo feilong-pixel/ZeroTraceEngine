@@ -1,7 +1,7 @@
 from pathlib import Path
 from typing import List
 from datetime import datetime
-from core.utils.models import ScanItem
+from core.models import ScanItem
 
 # BaseScanner defines the interface and common properties for all scanners in the system. 
 # Each specific scanner (e.g., TempScanner) will inherit from this base class and implement 

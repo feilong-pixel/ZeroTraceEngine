@@ -101,24 +101,7 @@ def apply_windows_file_times(path: Path, file_times):
         handle.close()
 
 
-# Transfer the file while preserving timestamps. Windows doesn't preserve 
-# creation time by default, so we need to set it explicitly when moving across drives.
-def transfer_file(src: Path, dst: Path, mode: str):
-    file_times = read_windows_file_times(src)
-
-    if mode == "copy":
-        shutil.copy2(str(src), str(dst))
-    else:
-        same_drive = os.path.splitdrive(str(src))[0].lower() == os.path.splitdrive(str(dst))[0].lower()
-        shutil.move(str(src), str(dst))
-
-        # rename の場合は CreationTime が保持されるので SetFileTime は不要
-        if same_drive:
-            return
-
-    apply_windows_file_times(dst, file_times)
-
-def transfer_fileV2(src: Path, dst: Path, mode: str):
+def transfer_file_safe(src: Path, dst: Path, mode: str):
     src = Path(src)
     dst = Path(dst)
 

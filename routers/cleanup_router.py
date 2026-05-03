@@ -5,7 +5,7 @@ from fastapi import APIRouter
 from fastapi.responses import FileResponse
 
 from core.cleaner import discard_scan_result, execute_cleanup, move_empty_parent_dirs_to_recycle
-from core.utils.models import ScanItem
+from core.models import ScanItem
 
 from core.storage.database import list_scan_results
 

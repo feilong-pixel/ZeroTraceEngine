@@ -1,7 +1,7 @@
 from datetime import datetime
 from pathlib import Path
 from .base import BaseScanner
-from core.utils.models import ScanItem
+from core.models import ScanItem
 
 # scan Windows temp folders for files that can be safely deleted to free up disk space.
 class TempScanner(BaseScanner):
