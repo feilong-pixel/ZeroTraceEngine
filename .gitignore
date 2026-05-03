@@ -216,3 +216,27 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+# IDE/editor files
+.vscode/
+.idea/
+
+# OS files
+.DS_Store
+Thumbs.db
+Desktop.ini
+fileList.txt
+
+# ZeroTrace Engine runtime state
+data/
+logs/
+ZeroTraceRecycle/
+
+# Local project notes
+AGENTS.md
+SCHEMA.md
+開発線路.md
+
+# Local media/assets not for GitHub
+docs/screenshots/
+ZeroTrace.ico
+

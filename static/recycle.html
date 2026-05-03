@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="zh-CN" class="i18n-pending">
+<head>
+  <meta charset="UTF-8" />
+  <title>ZeroTrace Engine - Recycle Bin</title>
+  <link rel="stylesheet" href="/static/css/style.css" />
+</head>
+<body>
+  <main class="recycle-page">
+    <header class="page-header">
+      <div>
+        <p class="eyebrow">ZeroTrace Engine</p>
+        <h1>ZeroTrace 回收区</h1>
+        <p class="page-desc">所有清理项目都会先进入回收区，可恢复、可审计。</p>
+      </div>
+
+      <div class="header-actions">
+        <button id="backButton" class="ghost-button nav-button"><span class="button-icon">↩</span><span>返回首页</span></button>
+        <button id="openLogsButton" class="ghost-button" disabled><span class="button-icon">☰</span><span>查看日志</span></button>
+        <button id="refreshRecycleButton" class="primary-button"><span class="button-icon">↻</span><span>刷新列表</span></button>
+      </div>
+    </header>
+
+    <section class="summary-grid">
+      <article class="summary-card">
+        <span class="summary-label">回收项目</span>
+        <strong id="recycleItemCount">0</strong>
+      </article>
+      <article class="summary-card">
+        <span class="summary-label">占用空间</span>
+        <strong id="recycleTotalSize">0 B</strong>
+      </article>
+      <article class="summary-card">
+        <span class="summary-label">已选择</span>
+        <strong id="selectedRecycleCount">0</strong>
+      </article>
+      <article class="summary-card">
+        <span class="summary-label">状态</span>
+        <strong id="recycleStatus">待刷新</strong>
+      </article>
+    </section>
+
+    <section class="toolbar-panel">
+      <div class="toolbar-left">
+        <label>
+          分类
+          <select id="recycleCategoryFilter">
+            <option value="">全部</option>
+            <option value="temp">临时文件</option>
+            <option value="browser_cache">浏览器缓存</option>
+            <option value="log">日志文件</option>
+            <option value="thumbnail">缩略图缓存</option>
+          </select>
+        </label>
+      </div>
+
+      <div class="toolbar-right">
+        <button id="selectAllRecycleButton" class="ghost-button" disabled>全选</button>
+        <button id="invertRecycleSelectionButton" class="ghost-button" disabled>反选</button>
+        <button id="restoreSelectedButton" class="primary-button" disabled>恢复选中</button>
+      </div>
+    </section>
+
+    <section class="table-panel">
+      <div class="table-header">
+        <h2>回收区项目</h2>
+        <p>恢复时会尝试还原到原始路径。若原路径已存在，请手动确认。</p>
+      </div>
+
+      <div class="scan-table-wrap">
+        <table class="scan-table">
+          <colgroup>
+            <col class="col-check" />
+            <col class="col-original-path" />
+            <col class="col-recycle-path" />
+            <col class="col-size" />
+            <col class="col-category" />
+            <col class="col-source" />
+            <col class="col-time" />
+          </colgroup>
+          <thead>
+            <tr>
+              <th class="col-check"></th>
+              <th>原始路径</th>
+              <th>回收区路径</th>
+              <th>大小</th>
+              <th>分类</th>
+              <th>来源</th>
+              <th>清理时间</th>
+            </tr>
+          </thead>
+          <tbody id="recycleResultBody">
+            <tr class="empty-row">
+              <td colspan="7">暂无回收区项目</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+  </main>
+
+  <div id="dialogOverlay" class="dialog-overlay is-hidden" role="presentation">
+    <div class="dialog-box" role="dialog" aria-modal="true" aria-labelledby="dialogTitle">
+      <h2 id="dialogTitle">ZeroTraceEngine</h2>
+      <div id="dialogMessage" class="dialog-message"></div>
+      <div class="dialog-actions">
+        <button id="dialogCancelButton" type="button" class="ghost" data-i18n="dialog.buttons.cancel">Cancel</button>
+        <button id="dialogConfirmButton" type="button" class="primary-button" data-i18n="dialog.buttons.ok">OK</button>
+      </div>
+    </div>
+  </div>
+
+  <script type="module" src="/static/js/app.js"></script>
+</body>
+</html>

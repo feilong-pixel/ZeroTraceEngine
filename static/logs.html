@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="zh-CN" class="i18n-pending">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ZeroTrace Engine - 审计日志</title>
+  <link rel="stylesheet" href="/static/css/style.css" />
+</head>
+
+<body>
+  <main class="logs-page">
+    <header class="page-header">
+      <div>
+        <p class="eyebrow">ZeroTrace Engine</p>
+        <h1>审计日志</h1>
+        <p class="page-desc">查看清理执行、恢复、失败等关键操作记录。</p>
+      </div>
+
+      <div class="header-actions">
+        <button id="backButton" class="ghost-button nav-button" type="button"><span class="button-icon">↩</span><span>返回首页</span></button>
+        <button id="reloadAuditButton" class="ghost-button" type="button"><span class="button-icon">↻</span><span>刷新日志</span></button>
+        <button id="exportAuditButton" class="primary-button" type="button" disabled><span class="button-icon">↓</span><span>导出 CSV</span></button>
+      </div>
+    </header>
+
+    <section class="summary-grid">
+      <article class="summary-card">
+        <span class="summary-label">日志数量</span>
+        <strong id="auditLogCount">0</strong>
+      </article>
+      <article class="summary-card">
+        <span class="summary-label">清理次数</span>
+        <strong id="auditCleanCount">0</strong>
+      </article>
+      <article class="summary-card">
+        <span class="summary-label">恢复次数</span>
+        <strong id="auditRestoreCount">0</strong>
+      </article>
+      <article class="summary-card">
+        <span class="summary-label">失败次数</span>
+        <strong id="auditFailedCount">0</strong>
+      </article>
+      <article class="summary-card">
+        <span class="summary-label">状态</span>
+        <strong id="auditStatus">待读取</strong>
+      </article>
+    </section>
+
+    <section class="toolbar-panel logs-toolbar">
+      <div class="toolbar-left">
+        <label>
+          操作类型
+          <select id="auditActionFilter">
+            <option value="">全部</option>
+            <option value="scan">扫描</option>
+            <option value="plan">计划生成</option>
+            <option value="clean">清理</option>
+            <option value="restore">恢复</option>
+            <option value="delete">删除</option>
+          </select>
+        </label>
+
+        <label>
+          结果
+          <select id="auditResultFilter">
+            <option value="">全部</option>
+            <option value="success">成功</option>
+            <option value="failed">失败</option>
+            <option value="skipped">跳过</option>
+          </select>
+        </label>
+
+        <label>
+          来源
+          <select id="auditSourceFilter">
+            <option value="">全部</option>
+            <option value="scan">扫描页</option>
+            <option value="plan">清理计划</option>
+            <option value="recycle">回收区</option>
+            <option value="system">系统</option>
+          </select>
+        </label>
+
+        <label>
+          关键词
+          <input id="auditSearchInput" type="search" placeholder="搜索路径、详情..." />
+        </label>
+      </div>
+    </section>
+
+    <section class="content-grid audit-content-grid">
+      <article class="panel-card">
+        <p class="eyebrow">Audit</p>
+        <h2>记录范围</h2>
+        <p class="muted">审计日志用于追踪关键操作，包括清理执行、恢复和异常失败。</p>
+      </article>
+
+      <article class="panel-card">
+        <p class="eyebrow">Safety</p>
+        <h2>安全说明</h2>
+        <p class="muted">日志只记录本地操作历史，不会上传到云端。用于排查问题、恢复确认和操作追溯。</p>
+      </article>
+    </section>
+
+    <section class="table-panel">
+      <div class="table-header">
+        <h2>日志列表</h2>
+        <p id="auditTableHint">请刷新日志查看最新记录。</p>
+      </div>
+
+      <div class="scan-table-wrap">
+        <table class="scan-table">
+          <colgroup>
+            <col class="col-time" />
+            <col class="col-action" />
+            <col class="col-path" />
+            <col class="col-size" />
+            <col class="col-result" />
+            <col class="col-source" />
+            <col class="col-detail" />
+          </colgroup>
+          <thead>
+            <tr>
+              <th>时间</th>
+              <th>操作</th>
+              <th>对象</th>
+              <th>大小</th>
+              <th>结果</th>
+              <th>来源</th>
+              <th>详情</th>
+            </tr>
+          </thead>
+
+          <tbody id="auditTableBody">
+            <tr>
+              <td colspan="7" class="empty-cell">暂无审计日志</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+  </main>
+
+  <div id="dialogOverlay" class="dialog-overlay is-hidden" role="presentation">
+    <div class="dialog-box" role="dialog" aria-modal="true" aria-labelledby="dialogTitle">
+      <h2 id="dialogTitle">ZeroTraceEngine</h2>
+      <div id="dialogMessage" class="dialog-message"></div>
+      <div class="dialog-actions">
+        <button id="dialogCancelButton" type="button" class="ghost" data-i18n="dialog.buttons.cancel">Cancel</button>
+        <button id="dialogConfirmButton" type="button" class="primary-button" data-i18n="dialog.buttons.ok">OK</button>
+      </div>
+    </div>
+  </div>
+
+  <script type="module" src="/static/js/app.js"></script>
+</body>
+</html>

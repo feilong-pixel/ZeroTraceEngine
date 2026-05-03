@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="zh-CN" class="i18n-pending">
+
+<head>
+  <meta charset="UTF-8" />
+  <title>ZeroTrace Engine</title>
+  <link rel="stylesheet" href="/static/css/style.css" />
+</head>
+
+<body>
+  <main class="dashboard-page">
+    <section class="dashboard-hero">
+      <div class="dashboard-hero-main">
+        <div class="hero-title-row">
+          <p class="eyebrow">ZeroTrace Engine v0.1</p>
+          <span class="safety-pill"><span class="status-dot"></span>安全模式：启用</span>
+        </div>
+        <h1 data-i18n="main.intro">系统整理工具 · 可审计 · 可回滚</h1>
+        <p class="page-desc">本机清理与回收工作台。先扫描、再确认、后移动。</p>
+
+        <div class="hero-actions">
+          <button id="startScanButton" class="primary-button"><span class="button-icon">🔍</span><span>开始扫描</span></button>
+          <button id="openRecycleButton" class="ghost-button"><span class="button-icon">♻</span><span>回收区</span></button>
+        </div>
+      </div>
+
+      <aside class="dashboard-safety">
+        <h2>安全策略</h2>
+        <ul class="safety-list" aria-label="安全策略">
+          <li><span class="safety-icon">🛡</span><strong>安全模式</strong><span>启用</span></li>
+          <li><span class="safety-icon">♻</span><strong>删除策略</strong><span>先移动到 ZeroTraceRecycle</span></li>
+          <li><span class="safety-icon">🔍</span><strong>追踪能力</strong><span>扫描 / 清理 / 恢复可审计</span></li>
+          <li><span class="safety-icon">↩</span><strong>默认保护</strong><span>可回滚</span></li>
+        </ul>
+      </aside>
+    </section>
+
+    <section class="summary-grid" aria-label="当前状态">
+      <article class="summary-card summary-card-primary">
+        <span class="summary-label">扫描状态</span>
+        <strong><span class="summary-dot"></span><span id="scanStatus">待扫描</span></strong>
+      </article>
+      <article class="summary-card">
+        <span class="summary-label">回收区项目</span>
+        <strong><span class="summary-dot"></span><span id="recycleCount">-</span></strong>
+      </article>
+      <article class="summary-card">
+        <span class="summary-label">审计日志</span>
+        <strong><span class="summary-dot"></span><span id="logCount">-</span></strong>
+      </article>
+      <article class="summary-card">
+        <span class="summary-label">安全策略</span>
+        <strong><span class="summary-dot"></span>可回滚</strong>
+      </article>
+    </section>
+
+    <section class="workspace-layout">
+      <div class="workflow-panel">
+        <div class="section-heading">
+          <p class="eyebrow">Workflow</p>
+          <h2>整理流程</h2>
+        </div>
+
+        <div class="workflow-steps">
+          <article>
+            <span>01</span>
+            <div>
+              <h3>扫描</h3>
+              <p>识别候选</p>
+            </div>
+          </article>
+          <article>
+            <span>02</span>
+            <div>
+              <h3>计划</h3>
+              <p>确认处理项</p>
+            </div>
+          </article>
+          <article>
+            <span>03</span>
+            <div>
+              <h3>回收</h3>
+              <p>移动并审计</p>
+            </div>
+          </article>
+        </div>
+      </div>
+
+      <div class="dashboard-grid" aria-label="功能入口">
+        <article class="dashboard-card dashboard-card-primary">
+          <div>
+            <span class="card-kicker">Scan</span>
+            <h2>扫描候选项</h2>
+            <p>扫描系统临时文件、缓存、日志等候选项。</p>
+          </div>
+          <button id="openScanButton" class="primary-button">进入扫描页</button>
+        </article>
+
+        <article class="dashboard-card">
+          <div>
+            <span class="card-kicker">Plan</span>
+            <h2>清理计划</h2>
+            <p>确认清理目标，生成可回滚的整理计划。</p>
+          </div>
+          <button id="openCleanupButton" class="ghost-button">查看清理计划</button>
+        </article>
+
+        <article class="dashboard-card">
+          <div>
+            <span class="card-kicker">Recycle</span>
+            <h2>回收区</h2>
+            <p>查看回收项目，并支持恢复到原始路径。</p>
+          </div>
+          <button id="openRecycleCardButton" class="ghost-button">进入回收区</button>
+        </article>
+
+        <article class="dashboard-card">
+          <div>
+            <span class="card-kicker">Audit</span>
+            <h2>审计日志</h2>
+            <p>查看扫描、清理、恢复等操作记录。</p>
+          </div>
+          <button id="openLogsButton" class="ghost-button">查看日志</button>
+        </article>
+      </div>
+    </section>
+  </main>
+
+  <div id="dialogOverlay" class="dialog-overlay is-hidden" role="presentation">
+    <div class="dialog-box" role="dialog" aria-modal="true" aria-labelledby="dialogTitle">
+      <h2 id="dialogTitle">ZeroTraceEngine</h2>
+      <div id="dialogMessage" class="dialog-message"></div>
+      <div class="dialog-actions">
+        <button id="dialogCancelButton" type="button" class="ghost" data-i18n="dialog.buttons.cancel">Cancel</button>
+        <button id="dialogConfirmButton" type="button" class="primary-button" data-i18n="dialog.buttons.ok">OK</button>
+      </div>
+    </div>
+  </div>
+
+  <script type="module" src="/static/js/app.js"></script>
+</body>
+
+</html>
