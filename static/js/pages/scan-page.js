@@ -76,13 +76,19 @@ function updateControls(els, state) {
 
   if (els.backButton) els.backButton.disabled = state.isScanning;
   if (els.startScanButton) els.startScanButton.disabled = state.isScanning;
-  if (els.clearResultsButton) els.clearResultsButton.disabled = state.isScanning || !hasResults;
-  if (els.selectAllButton) els.selectAllButton.disabled = state.isScanning || !hasVisibleResults;
-  if (els.invertSelectionButton) els.invertSelectionButton.disabled = state.isScanning || !hasVisibleResults;
-  if (els.createPlanButton) els.createPlanButton.disabled = state.isScanning || !hasSelection;
-  if (els.categoryFilter) els.categoryFilter.disabled = state.isScanning || !hasResults;
+  if (els.clearResultsButton)
+    els.clearResultsButton.disabled = state.isScanning || !hasResults;
+  if (els.selectAllButton)
+    els.selectAllButton.disabled = state.isScanning || !hasVisibleResults;
+  if (els.invertSelectionButton)
+    els.invertSelectionButton.disabled = state.isScanning || !hasVisibleResults;
+  if (els.createPlanButton)
+    els.createPlanButton.disabled = state.isScanning || !hasSelection;
+  if (els.categoryFilter)
+    els.categoryFilter.disabled = state.isScanning || !hasResults;
   if (els.riskFilter) els.riskFilter.disabled = state.isScanning || !hasResults;
-  if (els.sourceFilter) els.sourceFilter.disabled = state.isScanning || !hasResults;
+  if (els.sourceFilter)
+    els.sourceFilter.disabled = state.isScanning || !hasResults;
 
   els.scanResultBody
     ?.querySelectorAll('input[type="checkbox"]')
@@ -98,13 +104,14 @@ function formatDuration(milliseconds) {
 }
 
 function setStatus(els, status, tone = "idle") {
-  const statusText = {
-    idle: "待扫描",
-    running: "扫描中",
-    success: "扫描完成 ✓",
-    error: "扫描失败 ✗",
-    emptySelection: "未选择项目",
-  }[tone] || status;
+  const statusText =
+    {
+      idle: "待扫描",
+      running: "扫描中",
+      success: "扫描完成 ✓",
+      error: "扫描失败 ✗",
+      emptySelection: "未选择项目",
+    }[tone] || status;
 
   setText(els.scanStatus, status || statusText);
 
@@ -166,11 +173,12 @@ function renderTable(els, state) {
       const risk = item.risk_level || "low";
       const path = escapeHtml(item.path);
       const source = escapeHtml(item.source || "-");
-      const riskLabel = {
-        low: "低",
-        medium: "中",
-        high: "高",
-      }[risk] || risk;
+      const riskLabel =
+        {
+          low: "低",
+          medium: "中",
+          high: "高",
+        }[risk] || risk;
 
       return `
       <tr>
@@ -199,7 +207,8 @@ function renderTable(els, state) {
 }
 
 function toCategoryLabel(item) {
-  if (item.category === "empty" && item.file_type === "folder") return "空文件夹";
+  if (item.category === "empty" && item.file_type === "folder")
+    return "空文件夹";
   if (item.category === "empty") return "空文件";
   if (item.category === "temp") return "临时文件";
   return item.category || "-";
@@ -223,7 +232,7 @@ async function startScan(els, state) {
     if (!res.ok) throw new Error(`Scan API failed: ${res.status}`);
 
     const payload = await res.json();
-    state.items = Array.isArray(payload) ? payload : (payload.items || []);
+    state.items = Array.isArray(payload) ? payload : payload.items || [];
     renderSourceOptions(els, state);
 
     setStatus(els, null, "success");
@@ -304,9 +313,9 @@ function invertSelection(els, state) {
 }
 
 async function createCleanupPlan(els, state) {
-  const selected = state.items.filter((item) => {
-    return state.selectedPaths.has(item.path);
-  });
+  const selected = state.items.filter((item) =>
+    state.selectedPaths.has(item.path),
+  );
 
   if (selected.length === 0) {
     setStatus(els, null, "emptySelection");
@@ -314,7 +323,14 @@ async function createCleanupPlan(els, state) {
     return;
   }
 
-  localStorage.setItem("zerotrace.cleanupPlan", JSON.stringify(selected));
+  const serialized = JSON.stringify(selected);
+  if (serialized.length > 4 * 1024 * 1024) {
+    // 4MB 警戒线
+    await showAlert("选择项目过多，请减少选择数量后再试。");
+    return;
+  }
+
+  localStorage.setItem("zerotrace.cleanupPlan", serialized);
   location.href = "/cleanup";
 }
 

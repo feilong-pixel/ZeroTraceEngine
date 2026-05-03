@@ -1,8 +1,18 @@
 from datetime import datetime
 from pathlib import Path
-from core.storage.database import get_conn
+from core.storage.database import get_conn, init_db
 from core.utils.file_transfer import transfer_file_safe
 
+SAFE_RESTORE_ROOTS = [Path("C:/"), Path.home()]
+
+def is_safe_restore_path(path: Path) -> bool:
+    try:
+        resolved = path.resolve()
+        return any(
+            resolved.is_relative_to(root) for root in SAFE_RESTORE_ROOTS
+        )
+    except (OSError, ValueError):
+        return False
 
 def list_recycle_records():
     return _list_clean_records(active_only=True)
@@ -13,6 +23,7 @@ def list_audit_records():
 
 
 def _list_clean_records(active_only: bool):
+    init_db()
     conn = get_conn()
     conn.row_factory = _dict_factory
     cur = conn.cursor()
@@ -31,7 +42,7 @@ def _list_clean_records(active_only: bool):
             scanner,
             risk_level,
             hash,
-            'move_to_recycle' AS action,
+            COALESCE(operation_type, 'move_to_recycle') AS action,
             deleted_at AS created_at,
             deleted_at,
             restored_at,
@@ -57,6 +68,7 @@ def restore_records(ids: list[str]):
 
 
 def restore_record(record_id: str):
+    init_db()
     conn = get_conn()
     conn.row_factory = _dict_factory
     cur = conn.cursor()
@@ -106,6 +118,10 @@ def restore_record(record_id: str):
             "id": record_id,
             "status": "original_path_exists",
         }
+
+    if not is_safe_restore_path(original):
+        conn.close()
+        return {"id": record_id, "status": "unsafe_path"}
 
     original.parent.mkdir(parents=True, exist_ok=True)
     transfer_file_safe(recycled, original, mode="move")

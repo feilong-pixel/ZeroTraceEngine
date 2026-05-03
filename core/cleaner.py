@@ -35,7 +35,6 @@ def move_to_recycle(item: ScanItem) -> CleanRecord:
         scanner=item.scanner,
         risk_level=item.risk_level,
         hash=item.hash,
-        operation_type="move_to_recycle",
         deleted_at=deleted_at,
     )
 
@@ -140,34 +139,26 @@ def is_under_empty_dir_cleanup_root(path: Path) -> bool:
 
 def insert_clean_record(cur, record: CleanRecord) -> None:
     deleted_at = record.deleted_at.isoformat()
-    values = {
-        "id": record.id,
-        "original_path": record.original_path,
-        "recycle_path": record.recycle_path,
-        "size": record.size,
-        "file_type": record.file_type,
-        "category": record.category,
-        "source": record.source,
-        "scanner": record.scanner,
-        "risk_level": record.risk_level,
-        "hash": record.hash,
-        "deleted_at": deleted_at,
-        "action": record.operation_type,
-        "created_at": deleted_at,
-    }
-
-    cur.execute("PRAGMA table_info(clean_log)")
-    columns = [row[1] for row in cur.fetchall()]
-    insert_columns = [column for column in columns if column in values]
-    placeholders = ", ".join("?" for _ in insert_columns)
-
-    cur.execute(
-        f"""
-        INSERT INTO clean_log ({", ".join(insert_columns)})
-        VALUES ({placeholders})
-        """,
-        tuple(values[column] for column in insert_columns),
-    )
+    cur.execute("""
+        INSERT INTO clean_log (
+            id, original_path, recycle_path, size, file_type,
+            category, source, scanner, risk_level, hash,
+            operation_type, deleted_at
+        ) VALUES (?,?,?,?,?,?,?,?,?,?,?,?)
+    """, (
+        record.id,
+        record.original_path,
+        record.recycle_path,
+        record.size,
+        record.file_type,
+        record.category,
+        record.source,
+        record.scanner,
+        record.risk_level,
+        record.hash,
+        record.operation_type,
+        deleted_at,
+    ))
 
 def discard_scan_result(path: str, cur=None) -> None:
     if cur is not None:

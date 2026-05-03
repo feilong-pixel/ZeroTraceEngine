@@ -3,6 +3,20 @@ from pathlib import Path
 from .base import BaseScanner
 from core.models import ScanItem
 
+def iter_with_depth(root: Path, max_depth: int = 5):
+    def _walk(path: Path, depth: int):
+        if depth > max_depth:
+            return
+        try:
+            for entry in path.iterdir():
+                yield entry
+                if entry.is_dir():
+                    yield from _walk(entry, depth + 1)
+        except (OSError, PermissionError):
+            return
+
+    yield from _walk(root, 0)
+
 # scan Windows temp folders for files that can be safely deleted to free up disk space.
 class TempScanner(BaseScanner):
     name = "Temp Files"
@@ -18,7 +32,7 @@ class TempScanner(BaseScanner):
             if not d.exists():
                 continue
 
-            for f in d.rglob("*"):
+            for f in iter_with_depth(d, max_depth=5):
                 try:
                     if f.is_file():
                         stat = f.stat()

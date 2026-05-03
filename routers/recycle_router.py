@@ -6,7 +6,10 @@ from fastapi.responses import FileResponse
 from core.recycle import list_audit_records, list_recycle_records, restore_records
 
 from .index_router import STATIC_DIR
+from pydantic import BaseModel
 
+class RestorePayload(BaseModel):
+    ids: list[str]
 
 router = APIRouter()
 RECYCLE_PAGE = STATIC_DIR / "recycle.html"
@@ -26,6 +29,6 @@ def api_audit_logs() -> list[dict[str, Any]]:
     return list_audit_records()
 
 @router.post("/recycle/restore")
-def api_restore(payload: dict[str, Any]) -> list[dict[str, Any]]:
-    ids = payload.get("ids", [])
+def api_restore(payload: RestorePayload) -> list[dict[str, Any]]:
+    ids = payload.ids
     return restore_records(ids)
