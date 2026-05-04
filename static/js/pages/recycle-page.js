@@ -148,7 +148,7 @@ function renderTable(els, state) {
           <input class="path-readonly-input" type="text" value="${recyclePath}" title="${recyclePath}" readonly />
         </td>
         <td>${formatBytes(record.size)}</td>
-        <td>${escapeHtml(record.category || "-")}</td>
+        <td>${escapeHtml(toCategoryLabel(record.category))}</td>
         <td>${escapeHtml(record.source || "-")}</td>
         <td>${formatDisplayTime(record.created_at)}</td>
       </tr>
@@ -238,6 +238,18 @@ async function restoreSelected(els, state) {
     state.isRestoring = false;
     updateControls(els, state);
   }
+}
+
+function toCategoryLabel(value) {
+  return (
+    {
+      temp: t("common.categories.temp"),
+      browser_cache: t("common.categories.browserCache"),
+      log: t("common.categories.log"),
+      thumbnail: t("common.categories.thumbnail"),
+      empty: t("common.categories.empty"),
+    }[value] ?? value ?? "-"
+  );
 }
 
 async function purgeSelected(els, state) {

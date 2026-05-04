@@ -214,6 +214,8 @@ function toCategoryLabel(item) {
     return t("scan.categories.emptyFolder");
   if (item.category === "empty") return t("common.categories.empty");
   if (item.category === "temp") return t("common.categories.temp");
+  if (item.category === "browser_cache") return t("common.categories.browserCache");
+  if (item.category === "log") return t("common.categories.logFile");
   return item.category || "-";
 }
 

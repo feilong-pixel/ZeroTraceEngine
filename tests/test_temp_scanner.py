@@ -34,6 +34,13 @@ def test_temp_scanner_skips_recent_files_and_lists_old_temp_candidates(repo_tmp_
     assert items[0].source == "Windows"
 
 
+def test_temp_scanner_metadata_is_initialized():
+    scanner = TempScanner()
+
+    assert scanner.name == "Temp Files"
+    assert scanner.category == "temp"
+
+
 def test_temp_scanner_includes_old_empty_dirs(repo_tmp_path, monkeypatch):
     temp_root = repo_tmp_path / "Temp"
     empty_dir = temp_root / "old-empty"

@@ -27,6 +27,15 @@ class TempScanner(BaseScanner):
     description = "Scan Windows temporary files"
     version = "1.0"
 
+    def __init__(self):
+        super().__init__(
+            name=self.name,
+            category=self.category,
+            risk_level=self.risk_level,
+            description=self.description,
+            version=self.version,
+        )
+
     def scan(self):
         results = []
         min_mtime = datetime.now() - timedelta(hours=settings.temp_file_min_age_hours)
