@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>ZeroTrace Engine - 清理计划</title>
+  <title>ZeroTrace Engine - Cleanup</title>
   <link rel="stylesheet" href="/static/css/style.css" />
 </head>
 
@@ -12,113 +12,113 @@
     <header class="page-header">
       <div>
         <p class="eyebrow">ZeroTrace Engine</p>
-        <h1>清理计划</h1>
-        <p class="page-desc">确认本次清理目标。执行后文件会先移动至 ZeroTraceRecycle。</p>
+        <h1 data-i18n="cleanup.title">Cleanup Plan</h1>
+        <p class="page-desc" data-i18n="cleanup.description">Confirm this cleanup target list. Files are moved to ZeroTraceRecycle first.</p>
       </div>
 
       <div class="header-actions">
-        <button id="backButton" class="ghost-button nav-button" type="button"><span class="button-icon">↩</span><span>返回首页</span></button>
-        <button id="backScanButton" class="ghost-button nav-button" type="button"><span class="button-icon">↩</span><span>返回扫描页</span></button>
-        <button id="reloadPlanButton" class="ghost-button" type="button"><span class="button-icon">↻</span><span>重置计划</span></button>
-        <button id="executePlanButton" class="primary-button" type="button" disabled><span class="button-icon">🛡</span><span>执行清理</span></button>
+        <button id="backButton" class="ghost-button nav-button" type="button"><span class="button-icon">↩</span><span data-i18n="common.buttons.backToMain">Back to Home</span></button>
+        <button id="backScanButton" class="ghost-button nav-button" type="button"><span class="button-icon">↩</span><span data-i18n="common.buttons.backToScan">Back to Scan</span></button>
+        <button id="reloadPlanButton" class="ghost-button" type="button"><span class="button-icon">↻</span><span data-i18n="common.buttons.resetPlan">Reset Plan</span></button>
+        <button id="executePlanButton" class="primary-button" type="button" disabled><span class="button-icon">🛡</span><span data-i18n="cleanup.execute">Execute Cleanup</span></button>
       </div>
     </header>
 
     <section class="summary-grid">
       <article class="summary-card">
-        <span class="summary-label">计划项目</span>
+        <span class="summary-label" data-i18n="cleanup.itemCount">Plan Items</span>
         <strong id="planItemCount">0</strong>
       </article>
       <article class="summary-card">
-        <span class="summary-label">预计释放</span>
+        <span class="summary-label" data-i18n="cleanup.estimatedFree">Estimated Free</span>
         <strong id="planTotalSize">0 B</strong>
       </article>
       <article class="summary-card">
-        <span class="summary-label">高风险</span>
+        <span class="summary-label" data-i18n="cleanup.highRisk">High Risk</span>
         <strong id="planHighRiskCount">0</strong>
       </article>
       <article class="summary-card">
-        <span class="summary-label">涉及目录</span>
+        <span class="summary-label" data-i18n="cleanup.dirCount">Directories</span>
         <strong id="planDirCount">0</strong>
       </article>
       <article class="summary-card">
-        <span class="summary-label">状态</span>
-        <strong id="planStatus">待确认</strong>
+        <span class="summary-label" data-i18n="common.labels.status">Status</span>
+        <strong id="planStatus" data-i18n="cleanup.status.confirming">Pending Confirmation</strong>
       </article>
     </section>
 
     <section class="toolbar-panel cleanup-toolbar">
       <div class="toolbar-left">
         <label>
-          分类
+          <span data-i18n="common.labels.category">Category</span>
           <select id="planCategoryFilter">
-            <option value="">全部</option>
-            <option value="temp">临时文件</option>
-            <option value="cache">缓存</option>
-            <option value="log">日志</option>
-            <option value="duplicate">重复文件</option>
-            <option value="empty">空文件</option>
+            <option value="" data-i18n="common.labels.all">All</option>
+            <option value="temp" data-i18n="common.categories.temp">Temporary Files</option>
+            <option value="cache" data-i18n="common.categories.cache">Cache</option>
+            <option value="log" data-i18n="common.categories.log">Log</option>
+            <option value="duplicate" data-i18n="common.categories.duplicate">Duplicate Files</option>
+            <option value="empty" data-i18n="common.categories.empty">Empty File</option>
           </select>
         </label>
 
         <label>
-          风险等级
+          <span data-i18n="common.labels.riskLevel">Risk Level</span>
           <select id="planRiskFilter">
-            <option value="">全部</option>
-            <option value="low">低风险</option>
-            <option value="medium">中风险</option>
-            <option value="high">高风险</option>
+            <option value="" data-i18n="common.labels.all">All</option>
+            <option value="low" data-i18n="common.risks.lowRisk">Low Risk</option>
+            <option value="medium" data-i18n="common.risks.mediumRisk">Medium Risk</option>
+            <option value="high" data-i18n="common.risks.highRisk">High Risk</option>
           </select>
         </label>
 
         <label>
-          操作
+          <span data-i18n="common.labels.action">Action</span>
           <select id="planActionFilter">
-            <option value="">全部</option>
-            <option value="recycle">移入回收区</option>
-            <option value="ignore">忽略</option>
+            <option value="" data-i18n="common.labels.all">All</option>
+            <option value="recycle" data-i18n="common.actions.moveToRecycle">Move to Recycle</option>
+            <option value="ignore" data-i18n="common.actions.ignore">Ignore</option>
           </select>
         </label>
       </div>
 
       <div class="toolbar-right">
-        <button id="selectAllPlanButton" class="ghost-button" type="button" disabled>全选</button>
-        <button id="invertPlanButton" class="ghost-button" type="button" disabled>反选</button>
-        <button id="selectHighRiskButton" class="ghost-button" type="button" disabled>仅高风险</button>
+        <button id="selectAllPlanButton" class="ghost-button" type="button" disabled data-i18n="common.buttons.selectAll">Select All</button>
+        <button id="invertPlanButton" class="ghost-button" type="button" disabled data-i18n="common.buttons.invert">Invert</button>
+        <button id="selectHighRiskButton" class="ghost-button" type="button" disabled data-i18n="cleanup.selectHighRisk">High Risk Only</button>
       </div>
     </section>
 
     <section class="content-grid plan-content-grid">
       <article class="panel-card">
         <p class="eyebrow">Strategy</p>
-        <h2>执行策略</h2>
+        <h2 data-i18n="cleanup.strategyTitle">Execution Strategy</h2>
 
         <div class="check-list">
-          <label><input id="keepRecentFiles" type="checkbox" checked /> 保留最近修改文件</label>
-          <label><input id="skipSystemDirs" type="checkbox" checked /> 跳过系统目录</label>
-          <label><input id="skipTinyFiles" type="checkbox" checked /> 跳过小于 1 KB 的文件</label>
-          <label><input id="preferDuplicates" type="checkbox" checked /> 优先处理重复文件</label>
+          <label><input id="keepRecentFiles" type="checkbox" checked /> <span data-i18n="cleanup.keepRecentFiles">Keep recently modified files</span></label>
+          <label><input id="skipSystemDirs" type="checkbox" checked /> <span data-i18n="cleanup.skipSystemDirs">Skip system directories</span></label>
+          <label><input id="skipTinyFiles" type="checkbox" checked /> <span data-i18n="cleanup.skipTinyFiles">Skip files smaller than 1 KB</span></label>
+          <label><input id="preferDuplicates" type="checkbox" checked /> <span data-i18n="cleanup.preferDuplicates">Prefer duplicate files</span></label>
         </div>
       </article>
 
       <article class="panel-card">
         <p class="eyebrow">Confirm</p>
-        <h2>执行确认</h2>
-        <p class="muted">本次操作不会永久删除文件。所有选中项目会先移动至 ZeroTraceRecycle，并记录到审计日志。</p>
+        <h2 data-i18n="cleanup.confirmTitle">Execution Confirmation</h2>
+        <p class="muted" data-i18n="cleanup.confirmDescription">This operation does not permanently delete files. Selected items are moved to ZeroTraceRecycle and written to the audit log.</p>
 
         <label class="confirm-check">
           <input id="confirmExecuteCheck" type="checkbox" />
-          我已确认本次清理计划
+          <span data-i18n="cleanup.confirmChecked">I have confirmed this cleanup plan</span>
         </label>
 
-        <p id="planHint" class="hint-text">请确认计划内容后，再执行清理。</p>
+        <p id="planHint" class="hint-text" data-i18n="cleanup.hints.confirm">Confirm the plan before executing cleanup.</p>
       </article>
     </section>
 
     <section class="table-panel">
       <div class="table-header">
-        <h2>计划项目</h2>
-        <p id="planTableHint">请确认路径、大小、来源与风险后执行。</p>
+        <h2 data-i18n="cleanup.tableTitle">Plan Items</h2>
+        <p id="planTableHint" data-i18n="cleanup.tableHint">Confirm path, size, source, and risk before execution.</p>
       </div>
 
       <div class="scan-table-wrap">
@@ -134,19 +134,19 @@
           </colgroup>
           <thead>
             <tr>
-              <th class="col-check">选择</th>
-              <th>路径</th>
-              <th>大小</th>
-              <th>分类</th>
-              <th>来源</th>
-              <th>风险</th>
-              <th>操作</th>
+              <th class="col-check" data-i18n="cleanup.tableSelect">Select</th>
+              <th data-i18n="common.labels.path">Path</th>
+              <th data-i18n="common.labels.size">Size</th>
+              <th data-i18n="common.labels.category">Category</th>
+              <th data-i18n="common.labels.source">Source</th>
+              <th data-i18n="common.labels.risk">Risk</th>
+              <th data-i18n="common.labels.action">Action</th>
             </tr>
           </thead>
 
           <tbody id="planTableBody">
             <tr>
-              <td colspan="7" class="empty-cell">暂无清理计划</td>
+              <td colspan="7" class="empty-cell" data-i18n="cleanup.noPlan">No cleanup plan</td>
             </tr>
           </tbody>
         </table>

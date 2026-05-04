@@ -49,6 +49,8 @@ coverage.xml
 *.py.cover
 .hypothesis/
 .pytest_cache/
+pytest-cache-files-*/
+.test-tmp/
 cover/
 
 # Translations
@@ -236,6 +238,7 @@ AGENTS.md
 SCHEMA.md
 開発線路.md
 README.md
+README_zh.md
 
 # Local media/assets not for GitHub
 docs/screenshots/

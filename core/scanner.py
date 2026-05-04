@@ -1,21 +1,8 @@
-from core.scanners import SCANNERS
+"""Compatibility exports for legacy imports.
 
-class ScannerOrchestrator:
-    def run_scan(self):
-        all_items = []
+New code should import scanner orchestration from core.services.scanner_service.
+"""
 
-        for scanner in SCANNERS:
-            try:
-                scanner.prepare()
-                items = scanner.scan()
-            except Exception:
-                continue
-            finally:
-                try:
-                    scanner.finalize()
-                except Exception:
-                    pass
+from core.services.scanner_service import ScanResult, ScannerOrchestrator
 
-            all_items.extend(items)
-
-        return all_items
+__all__ = ["ScanResult", "ScannerOrchestrator"]

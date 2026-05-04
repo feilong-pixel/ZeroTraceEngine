@@ -1,8 +1,9 @@
 import { $ } from "../core/dom.js";
 import { ensureDialog, showConfirm } from "../core/dialog.js";
-import { markI18nReady, translateStaticText } from "../locales/i18n.js";
+import { getLocale, markI18nReady, t, translateStaticText } from "../locales/i18n.js";
 
-const PLAN_STORAGE_KEY = "zerotrace.cleanupPlan";
+const CLEANUP_SELECTION_STORAGE_KEY = "zerotrace.cleanupSelection";
+const LEGACY_PLAN_STORAGE_KEY = "zerotrace.cleanupPlan";
 const CLEAN_API = "/cleanup/executePlan";
 const SCAN_RESULTS_API = "/cleanup/reloadPlanFromScanResults";
 
@@ -86,20 +87,17 @@ function bindEvents(els, state) {
 }
 
 function loadPlan(els, state) {
-  const items = readStoredPlan();
-
-  resetPlanState(els, state, items);
-  render(els, state);
+  reloadPlanFromScanResults(els, state, { useStoredSelection: true });
 }
 
-async function reloadPlanFromScanResults(els, state) {
+async function reloadPlanFromScanResults(els, state, options = {}) {
   if (state.isExecuting) return;
 
   if (els.reloadPlanButton) {
     els.reloadPlanButton.disabled = true;
   }
-  setStatus(els, "读取中");
-  setHint(els, "正在重新读取扫描结果...");
+  setStatus(els, t("cleanup.status.loading"));
+  setHint(els, t("cleanup.hints.loading"));
 
   try {
     const response = await fetch(SCAN_RESULTS_API, {
@@ -113,35 +111,42 @@ async function reloadPlanFromScanResults(els, state) {
 
     const payload = await response.json();
     const items = normalizePlanItems(payload.items || []);
-    writeStoredPlan(items);
-    resetPlanState(els, state, items);
+    const selectedPaths = options.useStoredSelection
+      ? consumeStoredSelection()
+      : null;
+    resetPlanState(els, state, items, { selectedPaths });
     render(els, state);
   } catch (error) {
     console.error("[cleanup] reload plan failed:", error);
-    setStatus(els, "读取失败");
-    setHint(els, "重新读取扫描结果失败。请返回扫描页确认扫描结果后重试。");
+    setStatus(els, t("cleanup.status.loadFailed"));
+    setHint(els, t("cleanup.hints.loadFailed"));
     updateControls(els, state);
   }
 }
 
-function resetPlanState(els, state, items) {
+function resetPlanState(els, state, items, options = {}) {
   resetFilters(els, state);
   resetStrategyOptions(els);
 
   state.items = items;
-  state.selectedIds = new Set(items.map((item) => item.id));
+  state.selectedIds = getDefaultSelectedIds(items, options.selectedPaths);
   state.isExecuting = false;
 
   if (els.confirmExecuteCheck) {
     els.confirmExecuteCheck.checked = false;
   }
 
-  setStatus(els, items.length > 0 ? "待确认" : "无计划");
+  setStatus(els, items.length > 0 ? t("cleanup.status.confirming") : t("cleanup.status.noPlan"));
+  const selectedCount = state.selectedIds.size;
   setHint(
     els,
-    items.length > 0
-      ? "请确认计划内容后，再执行清理。"
-      : "暂无清理计划。请先从扫描页生成。",
+    items.length === 0
+      ? t("cleanup.hints.noPlan")
+      : options.selectedPaths && selectedCount === 0
+        ? t("cleanup.hints.selectedMissing")
+        : options.selectedPaths
+          ? t("cleanup.hints.selectedKept", selectedCount)
+          : t("cleanup.hints.confirm"),
   );
 }
 
@@ -170,25 +175,25 @@ function resetStrategyOptions(els) {
 
 async function executePlan(els, state) {
   if (!els.confirmExecuteCheck?.checked) {
-    setHint(els, "请先勾选确认项。");
+    setHint(els, t("cleanup.hints.confirmFirst"));
     return;
   }
 
   const selectedItems = getSelectedItems(state);
 
   if (selectedItems.length === 0) {
-    setHint(els, "没有选中的计划项目。");
+    setHint(els, t("cleanup.hints.noSelection"));
     return;
   }
 
   const ok = await showConfirm(
-    `确认执行清理？\n\n选中项目：${selectedItems.length}\n操作方式：移入 ZeroTraceRecycle\n\n此操作可在回收区恢复。`,
+    t("cleanup.confirmExecute", selectedItems.length),
   );
 
   if (!ok) return;
 
-  setStatus(els, "执行中");
-  setHint(els, "正在执行清理，请稍候...");
+  setStatus(els, t("cleanup.status.executing"));
+  setHint(els, t("cleanup.hints.executing"));
   state.isExecuting = true;
   updateControls(els, state);
 
@@ -221,27 +226,26 @@ async function executePlan(els, state) {
         return item && !removedPaths.has(item.path);
       }),
     );
-    writeStoredPlan(state.items);
 
     if (els.confirmExecuteCheck) {
       els.confirmExecuteCheck.checked = false;
     }
 
     if ((result.failed_count ?? 0) > 0) {
-      setStatus(els, "部分完成");
+      setStatus(els, t("cleanup.status.partial"));
       setHint(
         els,
-        `已移动 ${result.cleaned_count ?? 0} 项，${result.failed_count} 项未移动。不存在的临时文件已从计划中移除，被占用的文件请关闭相关程序后重试。`,
+        t("cleanup.hints.partial", result.cleaned_count ?? 0, result.failed_count),
       );
     } else {
-      setStatus(els, "执行完成");
-      setHint(els, "清理完成。项目已移动至回收区。");
+      setStatus(els, t("cleanup.status.done"));
+      setHint(els, t("cleanup.hints.done"));
     }
     render(els, state);
   } catch (error) {
     console.error("[cleanup] execute failed:", error);
-    setStatus(els, "执行失败");
-    setHint(els, "执行失败。请确认文件仍存在，或查看日志后重试。");
+    setStatus(els, t("cleanup.status.failed"));
+    setHint(els, t("cleanup.hints.failed"));
     render(els, state);
   } finally {
     state.isExecuting = false;
@@ -294,12 +298,12 @@ function renderTable(els, state) {
   if (visibleItems.length === 0) {
     els.tableBody.innerHTML = `
       <tr>
-        <td colspan="7" class="empty-cell">暂无符合条件的计划项目</td>
+        <td colspan="7" class="empty-cell">${t("cleanup.noFilteredPlan")}</td>
       </tr>
     `;
     setText(
       els.planTableHint,
-      "请调整筛选条件，或返回扫描页重新生成清理计划。",
+      t("cleanup.hints.emptyFiltered"),
     );
     return;
   }
@@ -307,7 +311,7 @@ function renderTable(els, state) {
   els.tableBody.innerHTML = visibleItems.map((item) => renderRow(item, state)).join("");
   setText(
     els.planTableHint,
-    `当前显示 ${visibleItems.length} 项，请确认路径、大小、来源与风险后执行。`,
+    t("cleanup.hints.visibleCount", visibleItems.length),
   );
 }
 
@@ -382,17 +386,35 @@ function getSelectedItems(state) {
   return state.items.filter((item) => state.selectedIds.has(item.id));
 }
 
-function readStoredPlan() {
+function consumeStoredSelection() {
   try {
-    return normalizePlanItems(JSON.parse(localStorage.getItem(PLAN_STORAGE_KEY) || "[]"));
+    const raw = JSON.parse(
+      localStorage.getItem(CLEANUP_SELECTION_STORAGE_KEY) || "[]",
+    );
+    return new Set(
+      Array.isArray(raw)
+        ? raw.map((path) => String(path)).filter(Boolean)
+        : [],
+    );
   } catch (error) {
-    console.warn("[cleanup] invalid stored plan:", error);
-    return [];
+    console.warn("[cleanup] invalid stored selection:", error);
+    return new Set();
+  } finally {
+    localStorage.removeItem(CLEANUP_SELECTION_STORAGE_KEY);
+    localStorage.removeItem(LEGACY_PLAN_STORAGE_KEY);
   }
 }
 
-function writeStoredPlan(items) {
-  localStorage.setItem(PLAN_STORAGE_KEY, JSON.stringify(items));
+function getDefaultSelectedIds(items, selectedPaths) {
+  if (!selectedPaths) {
+    return new Set(items.map((item) => item.id));
+  }
+
+  return new Set(
+    items
+      .filter((item) => selectedPaths.has(item.path))
+      .map((item) => item.id),
+  );
 }
 
 function normalizePlanItems(rawItems) {
@@ -506,23 +528,25 @@ function getDirName(path) {
 
 function normalizeCategory(value) {
   const v = String(value ?? "").toLowerCase();
+  const keywords = getLocale().cleanup?.parseKeywords?.categories ?? {};
 
   if (["temp", "cache", "browser_cache", "log", "duplicate", "empty"].includes(v)) {
     return v === "browser_cache" ? "cache" : v;
   }
-  if (v.includes("duplicate") || v.includes("重复")) return "duplicate";
-  if (v.includes("cache") || v.includes("缓存")) return "cache";
-  if (v.includes("log") || v.includes("日志")) return "log";
-  if (v.includes("empty") || v.includes("空")) return "empty";
+  if (v.includes("duplicate") || includesLocaleKeyword(v, keywords.duplicate)) return "duplicate";
+  if (v.includes("cache") || includesLocaleKeyword(v, keywords.cache)) return "cache";
+  if (v.includes("log") || includesLocaleKeyword(v, keywords.log)) return "log";
+  if (v.includes("empty") || includesLocaleKeyword(v, keywords.empty)) return "empty";
   return "temp";
 }
 
 function normalizeRisk(value) {
   const v = String(value ?? "").toLowerCase();
+  const keywords = getLocale().cleanup?.parseKeywords?.risks ?? {};
 
   if (["low", "medium", "high"].includes(v)) return v;
-  if (v.includes("高")) return "high";
-  if (v.includes("中")) return "medium";
+  if (includesLocaleKeyword(v, keywords.high)) return "high";
+  if (includesLocaleKeyword(v, keywords.medium)) return "medium";
   return "low";
 }
 
@@ -541,44 +565,49 @@ function normalizeScanner(value) {
 
 function normalizeAction(value) {
   const v = String(value ?? "").toLowerCase();
+  const keywords = getLocale().cleanup?.parseKeywords?.actions ?? {};
 
   if (["recycle", "ignore"].includes(v)) return v;
-  if (v.includes("ignore") || v.includes("忽略")) return "ignore";
+  if (v.includes("ignore") || includesLocaleKeyword(v, keywords.ignore)) return "ignore";
   return "recycle";
+}
+
+function includesLocaleKeyword(value, keywords = []) {
+  return keywords.some((keyword) => value.includes(String(keyword).toLowerCase()));
 }
 
 function toCategoryLabel(value) {
   return (
     {
-      temp: "临时文件",
-      cache: "缓存",
-      log: "日志",
-      duplicate: "重复文件",
-      empty: "空文件",
-    }[value] ?? "其他"
+      temp: t("common.categories.temp"),
+      cache: t("common.categories.cache"),
+      log: t("common.categories.log"),
+      duplicate: t("common.categories.duplicate"),
+      empty: t("common.categories.empty"),
+    }[value] ?? t("common.categories.other")
   );
 }
 
 function toRiskLabel(value) {
   return (
     {
-      low: "低",
-      medium: "中",
-      high: "高",
-    }[value] ?? "低"
+      low: t("common.risks.low"),
+      medium: t("common.risks.medium"),
+      high: t("common.risks.high"),
+    }[value] ?? t("common.risks.low")
   );
 }
 
 function toSourceLabel(value) {
-  return value || "扫描结果";
+  return value || t("cleanup.defaultSource");
 }
 
 function toActionLabel(value) {
   return (
     {
-      recycle: "移入回收区",
-      ignore: "忽略",
-    }[value] ?? "移入回收区"
+      recycle: t("common.actions.moveToRecycle"),
+      ignore: t("common.actions.ignore"),
+    }[value] ?? t("common.actions.moveToRecycle")
   );
 }
 

@@ -3,7 +3,11 @@ from typing import Any
 from fastapi import APIRouter
 from fastapi.responses import FileResponse
 
-from core.recycle import list_audit_records, list_recycle_records, restore_records
+from core.services.recycle_service import (
+    list_audit_records,
+    list_recycle_records,
+    restore_records,
+)
 
 from .index_router import STATIC_DIR
 from pydantic import BaseModel

@@ -2,39 +2,52 @@ from pathlib import Path
 from typing import List
 from datetime import datetime
 from core.models import ScanItem
+from dataclasses import dataclass, field
 
 # BaseScanner defines the interface and common properties for all scanners in the system. 
 # Each specific scanner (e.g., TempScanner) will inherit from this base class and implement 
 # the scan method to perform its specific scanning logic.
+@dataclass
 class BaseScanner:
-    # 扫描器元信息
+    # Scanner metadata.
     name: str = "BaseScanner"
     category: str = "general"     # temp / log / cache / duplicate / update / residue
     risk_level: str = "low"       # default risk
     description: str = "Base scanner"
     version: str = "1.0"
 
-    # 扫描器配置（未来可扩展）
-    enabled: bool = True          # 可禁用扫描器
-    config: dict = {}             # 扫描器自定义配置
+    # Scanner configuration.
+    enabled: bool = True
 
-    def scan(self) -> List[ScanItem]:
-        """执行扫描，返回 ScanItem 列表"""
+    # Avoid sharing one mutable config dict across scanner instances.
+    config: dict = field(default_factory=dict)
+
+    def scan(self) -> list[ScanItem]:
+        """Run the scan and return discovered ScanItem records."""
         raise NotImplementedError
 
-    def prepare(self):
-        """扫描前准备（可选）"""
+    def prepare(self) -> None:
+        """Optional preparation before scanning."""
         pass
 
-    def finalize(self):
-        """扫描后清理（可选）"""
+    def finalize(self) -> None:
+        """Optional cleanup after scanning."""
         pass
 
-    def get_stats(self, items: List[ScanItem]):
-        """返回扫描统计信息"""
+    def run(self) -> list[ScanItem]:
+        """Run the scanner lifecycle in a fixed prepare/scan/finalize order."""
+        self.prepare()
+        try:
+            self._results = self.scan()
+            return self._results
+        finally:
+            self.finalize()
+
+    def get_stats(self) -> dict:
+        """Return basic scanner statistics."""
         return {
             "scanner": self.name,
-            "count": len(items),
+            "count": len(self._results) if hasattr(self, '_results') else 0,
             "category": self.category,
             "risk_level": self.risk_level,
             "timestamp": datetime.now().isoformat()

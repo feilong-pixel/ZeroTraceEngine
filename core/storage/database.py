@@ -1,10 +1,8 @@
 import sqlite3
-from pathlib import Path
+from core.config import settings
 
-BASE_DIR = Path(__file__).resolve().parents[2]
-DATA_DIR = BASE_DIR / "data"
-DB_PATH = DATA_DIR / "zerotrace.db"
-
+DATA_DIR = settings.db_path.parent
+DB_PATH = settings.db_path
 
 def get_conn():
     DATA_DIR.mkdir(parents=True, exist_ok=True)
@@ -52,53 +50,5 @@ def init_db():
     )
     """)
 
-    conn.commit()
-    conn.close()
-
-
-def save_scan_results(items):
-    conn = get_conn()
-    cur = conn.cursor()
-
-    for item in items:
-        cur.execute(
-            """
-            INSERT INTO scan_results (path, size, file_type, category, source, scanner, risk_level, mtime)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?)
-        """,
-            (
-                item.path,
-                item.size,
-                item.file_type,
-                item.category,
-                item.source,
-                item.scanner,
-                item.risk_level,
-                item.mtime.isoformat() if item.mtime else None,
-            ),
-        )
-
-    conn.commit()
-    conn.close()
-
-
-def list_scan_results():
-    conn = get_conn()
-    conn.row_factory = sqlite3.Row
-    cur = conn.cursor()
-    cur.execute("""
-        SELECT path, size, file_type, category, source, scanner, risk_level, mtime
-        FROM scan_results
-        ORDER BY id ASC
-    """)
-    rows = [dict(row) for row in cur.fetchall()]
-    conn.close()
-    return rows
-
-
-def clear_scan_results():
-    conn = get_conn()
-    cur = conn.cursor()
-    cur.execute("DELETE FROM scan_results")
     conn.commit()
     conn.close()

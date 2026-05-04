@@ -10,61 +10,61 @@
     <header class="page-header">
       <div>
         <p class="eyebrow">ZeroTrace Engine</p>
-        <h1>ZeroTrace 回收区</h1>
-        <p class="page-desc">所有清理项目都会先进入回收区，可恢复、可审计。</p>
+        <h1 data-i18n="recycle.title">ZeroTrace Recycle Bin</h1>
+        <p class="page-desc" data-i18n="recycle.description">All cleaned items enter the recycle bin first. They can be restored and audited.</p>
       </div>
 
       <div class="header-actions">
-        <button id="backButton" class="ghost-button nav-button"><span class="button-icon">↩</span><span>返回首页</span></button>
-        <button id="openLogsButton" class="ghost-button" disabled><span class="button-icon">☰</span><span>查看日志</span></button>
-        <button id="refreshRecycleButton" class="primary-button"><span class="button-icon">↻</span><span>刷新列表</span></button>
+        <button id="backButton" class="ghost-button nav-button"><span class="button-icon">↩</span><span data-i18n="common.buttons.backToMain">Back to Home</span></button>
+        <button id="openLogsButton" class="ghost-button" disabled><span class="button-icon">☰</span><span data-i18n="common.buttons.viewLogs">View Logs</span></button>
+        <button id="refreshRecycleButton" class="primary-button"><span class="button-icon">↻</span><span data-i18n="common.buttons.refreshList">Refresh List</span></button>
       </div>
     </header>
 
     <section class="summary-grid">
       <article class="summary-card">
-        <span class="summary-label">回收项目</span>
+        <span class="summary-label" data-i18n="recycle.itemCount">Recycle Items</span>
         <strong id="recycleItemCount">0</strong>
       </article>
       <article class="summary-card">
-        <span class="summary-label">占用空间</span>
+        <span class="summary-label" data-i18n="recycle.totalSize">Used Space</span>
         <strong id="recycleTotalSize">0 B</strong>
       </article>
       <article class="summary-card">
-        <span class="summary-label">已选择</span>
+        <span class="summary-label" data-i18n="common.labels.selected">Selected</span>
         <strong id="selectedRecycleCount">0</strong>
       </article>
       <article class="summary-card">
-        <span class="summary-label">状态</span>
-        <strong id="recycleStatus">待刷新</strong>
+        <span class="summary-label" data-i18n="common.labels.status">Status</span>
+        <strong id="recycleStatus" data-i18n="recycle.status.ready">Ready</strong>
       </article>
     </section>
 
     <section class="toolbar-panel">
       <div class="toolbar-left">
         <label>
-          分类
+          <span data-i18n="common.labels.category">Category</span>
           <select id="recycleCategoryFilter">
-            <option value="">全部</option>
-            <option value="temp">临时文件</option>
-            <option value="browser_cache">浏览器缓存</option>
-            <option value="log">日志文件</option>
-            <option value="thumbnail">缩略图缓存</option>
+            <option value="" data-i18n="common.labels.all">All</option>
+            <option value="temp" data-i18n="common.categories.temp">Temporary Files</option>
+            <option value="browser_cache" data-i18n="common.categories.browserCache">Browser Cache</option>
+            <option value="log" data-i18n="common.categories.logFile">Log Files</option>
+            <option value="thumbnail" data-i18n="common.categories.thumbnail">Thumbnail Cache</option>
           </select>
         </label>
       </div>
 
       <div class="toolbar-right">
-        <button id="selectAllRecycleButton" class="ghost-button" disabled>全选</button>
-        <button id="invertRecycleSelectionButton" class="ghost-button" disabled>反选</button>
-        <button id="restoreSelectedButton" class="primary-button" disabled>恢复选中</button>
+        <button id="selectAllRecycleButton" class="ghost-button" disabled data-i18n="common.buttons.selectAll">Select All</button>
+        <button id="invertRecycleSelectionButton" class="ghost-button" disabled data-i18n="common.buttons.invert">Invert</button>
+        <button id="restoreSelectedButton" class="primary-button" disabled data-i18n="common.buttons.restoreSelected">Restore Selected</button>
       </div>
     </section>
 
     <section class="table-panel">
       <div class="table-header">
-        <h2>回收区项目</h2>
-        <p>恢复时会尝试还原到原始路径。若原路径已存在，请手动确认。</p>
+        <h2 data-i18n="recycle.tableTitle">Recycle Items</h2>
+        <p data-i18n="recycle.tableHint">Restore attempts to return items to their original paths. If the path exists, confirm manually.</p>
       </div>
 
       <div class="scan-table-wrap">
@@ -81,17 +81,17 @@
           <thead>
             <tr>
               <th class="col-check"></th>
-              <th>原始路径</th>
-              <th>回收区路径</th>
-              <th>大小</th>
-              <th>分类</th>
-              <th>来源</th>
-              <th>清理时间</th>
+              <th data-i18n="recycle.originalPath">Original Path</th>
+              <th data-i18n="recycle.recyclePath">Recycle Path</th>
+              <th data-i18n="common.labels.size">Size</th>
+              <th data-i18n="common.labels.category">Category</th>
+              <th data-i18n="common.labels.source">Source</th>
+              <th data-i18n="recycle.cleanedAt">Cleaned At</th>
             </tr>
           </thead>
           <tbody id="recycleResultBody">
             <tr class="empty-row">
-              <td colspan="7">暂无回收区项目</td>
+              <td colspan="7" data-i18n="recycle.noRecords">No recycle items</td>
             </tr>
           </tbody>
         </table>

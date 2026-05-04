@@ -1,7 +1,7 @@
 import { $ } from "../core/dom.js";
 import { ensureDialog, showAlert } from "../core/dialog.js";
 import { formatDisplayTime } from "../core/format.js";
-import { markI18nReady, translateStaticText } from "../locales/i18n.js";
+import { markI18nReady, t, translateStaticText } from "../locales/i18n.js";
 
 const AUDIT_API = "/recycle/loadAuditLogs";
 
@@ -67,25 +67,25 @@ function bindEvents(els, state) {
 
 async function loadAuditLogs(els, state) {
   state.isLoading = true;
-  setStatus(els, "读取中");
-  setHint(els, "正在读取审计日志...");
+  setStatus(els, t("logs.status.loading"));
+  setHint(els, t("logs.hints.loading"));
   updateControls(els, state);
 
   try {
     const data = await fetchJson(AUDIT_API);
     state.logs = normalizeRecycleRecords(data);
 
-    setStatus(els, state.logs.length > 0 ? "已读取" : "无日志");
+    setStatus(els, state.logs.length > 0 ? t("logs.status.read") : t("logs.status.noLogs"));
     setHint(
       els,
-      state.logs.length > 0 ? "已加载最新审计日志。" : "暂无审计日志。",
+      state.logs.length > 0 ? t("logs.hints.loaded") : t("logs.hints.noLogs"),
     );
     render(els, state);
   } catch (error) {
     console.error("[audit] load failed:", error);
     state.logs = [];
-    setStatus(els, "读取失败");
-    setHint(els, "无法读取审计日志。请稍后重试。");
+    setStatus(els, t("logs.status.failed"));
+    setHint(els, t("logs.hints.failed"));
     render(els, state);
   } finally {
     state.isLoading = false;
@@ -97,7 +97,7 @@ async function exportAuditCsv(els, state) {
   const logs = getVisibleLogs(state);
 
   if (logs.length === 0) {
-    await showAlert("当前没有可导出的日志。");
+    await showAlert(t("logs.alerts.nothingToExport"));
     return;
   }
 
@@ -109,7 +109,7 @@ async function exportAuditCsv(els, state) {
   link.download = `zerotrace-audit-${new Date().toISOString().slice(0, 10)}.csv`;
   link.click();
   URL.revokeObjectURL(url);
-  setHint(els, `已导出 ${logs.length} 条日志。`);
+  setHint(els, t("logs.hints.exported", logs.length));
 }
 
 function render(els, state) {
@@ -137,11 +137,11 @@ function renderTable(els, state) {
 
   if (visibleLogs.length === 0) {
     const emptyMessage = state.logs.length === 0
-      ? "暂无审计日志"
-      : "暂无符合条件的审计日志";
+      ? t("logs.noLogs")
+      : t("logs.noFilteredLogs");
     const hintMessage = state.logs.length === 0
-      ? "暂无审计日志。"
-      : "没有符合当前筛选条件的日志。";
+      ? t("logs.hints.noLogs")
+      : t("logs.hints.noFilteredLogs");
 
     els.tableBody.innerHTML = `
       <tr>
@@ -153,7 +153,7 @@ function renderTable(els, state) {
   }
 
   els.tableBody.innerHTML = visibleLogs.map(renderRow).join("");
-  setHint(els, `当前显示 ${visibleLogs.length} 条日志。`);
+  setHint(els, t("logs.hints.visibleCount", visibleLogs.length));
 }
 
 function updateControls(els, state) {
@@ -182,7 +182,7 @@ function renderRow(log) {
       </td>
       <td>${formatBytes(log.size)}</td>
       <td>${renderResult(log.result)}</td>
-      <td>${escapeHtml(log.source || "系统")}</td>
+      <td>${escapeHtml(log.source || t("common.states.system"))}</td>
       <td class="path-input-cell">
         <input class="path-readonly-input" type="text" value="${detail}" title="${detail}" readonly />
       </td>
@@ -234,7 +234,7 @@ function normalizeRecycleRecords(records) {
       size: Number(record.size ?? 0),
       result: "success",
       source: normalizeSource(record.source),
-      detail: `移入回收区：${record.recycle_path ?? ""}`,
+      detail: t("logs.details.movedToRecycle", record.recycle_path ?? ""),
     };
 
     if (!record.restored_at) return [cleanLog];
@@ -249,7 +249,7 @@ function normalizeRecycleRecords(records) {
         size: Number(record.size ?? 0),
         result: "success",
         source: "recycle",
-        detail: `从回收区恢复：${record.recycle_path ?? ""}`,
+        detail: t("logs.details.restoredFromRecycle", record.recycle_path ?? ""),
       },
     ];
   });
@@ -263,22 +263,22 @@ function normalizeSource(value) {
 function toActionLabel(value) {
   return (
     {
-      scan: "扫描",
-      plan: "计划生成",
-      clean: "清理",
-      restore: "恢复",
-      delete: "删除",
-    }[value] ?? "操作"
+      scan: t("common.actions.scan"),
+      plan: t("common.actions.plan"),
+      clean: t("common.actions.clean"),
+      restore: t("common.actions.restore"),
+      delete: t("common.actions.delete"),
+    }[value] ?? t("common.labels.action")
   );
 }
 
 function toResultLabel(value) {
   return (
     {
-      success: "成功",
-      failed: "失败",
-      skipped: "跳过",
-    }[value] ?? "成功"
+      success: t("common.results.success"),
+      failed: t("common.results.failed"),
+      skipped: t("common.results.skipped"),
+    }[value] ?? t("common.results.success")
   );
 }
 
@@ -326,7 +326,7 @@ function formatBytes(bytes) {
 }
 
 function toCsv(logs) {
-  const headers = ["时间", "操作", "对象", "大小", "结果", "来源", "详情"];
+  const headers = t("logs.csvHeaders");
   const rows = logs.map((log) => [
     log.timestamp,
     toActionLabel(log.action),

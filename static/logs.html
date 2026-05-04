@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>ZeroTrace Engine - 审计日志</title>
+  <title>ZeroTrace Engine - Audit Logs</title>
   <link rel="stylesheet" href="/static/css/style.css" />
 </head>
 
@@ -12,78 +12,78 @@
     <header class="page-header">
       <div>
         <p class="eyebrow">ZeroTrace Engine</p>
-        <h1>审计日志</h1>
-        <p class="page-desc">查看清理执行、恢复、失败等关键操作记录。</p>
+        <h1 data-i18n="logs.title">Audit Logs</h1>
+        <p class="page-desc" data-i18n="logs.description">Review cleanup, restore, failure, and other key operation records.</p>
       </div>
 
       <div class="header-actions">
-        <button id="backButton" class="ghost-button nav-button" type="button"><span class="button-icon">↩</span><span>返回首页</span></button>
-        <button id="reloadAuditButton" class="ghost-button" type="button"><span class="button-icon">↻</span><span>刷新日志</span></button>
-        <button id="exportAuditButton" class="primary-button" type="button" disabled><span class="button-icon">↓</span><span>导出 CSV</span></button>
+        <button id="backButton" class="ghost-button nav-button" type="button"><span class="button-icon">↩</span><span data-i18n="common.buttons.backToMain">Back to Home</span></button>
+        <button id="reloadAuditButton" class="ghost-button" type="button"><span class="button-icon">↻</span><span data-i18n="common.buttons.reloadLogs">Reload Logs</span></button>
+        <button id="exportAuditButton" class="primary-button" type="button" disabled><span class="button-icon">↓</span><span data-i18n="common.buttons.exportCsv">Export CSV</span></button>
       </div>
     </header>
 
     <section class="summary-grid">
       <article class="summary-card">
-        <span class="summary-label">日志数量</span>
+        <span class="summary-label" data-i18n="logs.logCount">Log Count</span>
         <strong id="auditLogCount">0</strong>
       </article>
       <article class="summary-card">
-        <span class="summary-label">清理次数</span>
+        <span class="summary-label" data-i18n="logs.cleanCount">Clean Count</span>
         <strong id="auditCleanCount">0</strong>
       </article>
       <article class="summary-card">
-        <span class="summary-label">恢复次数</span>
+        <span class="summary-label" data-i18n="logs.restoreCount">Restore Count</span>
         <strong id="auditRestoreCount">0</strong>
       </article>
       <article class="summary-card">
-        <span class="summary-label">失败次数</span>
+        <span class="summary-label" data-i18n="logs.failedCount">Failure Count</span>
         <strong id="auditFailedCount">0</strong>
       </article>
       <article class="summary-card">
-        <span class="summary-label">状态</span>
-        <strong id="auditStatus">待读取</strong>
+        <span class="summary-label" data-i18n="common.labels.status">Status</span>
+        <strong id="auditStatus" data-i18n="common.states.readyToRead">Ready to Load</strong>
       </article>
     </section>
 
     <section class="toolbar-panel logs-toolbar">
       <div class="toolbar-left">
         <label>
-          操作类型
+          <span data-i18n="logs.actionType">Action Type</span>
           <select id="auditActionFilter">
-            <option value="">全部</option>
-            <option value="scan">扫描</option>
-            <option value="plan">计划生成</option>
-            <option value="clean">清理</option>
-            <option value="restore">恢复</option>
-            <option value="delete">删除</option>
+            <option value="" data-i18n="common.labels.all">All</option>
+            <option value="scan" data-i18n="common.actions.scan">Scan</option>
+            <option value="plan" data-i18n="common.actions.plan">Plan Created</option>
+            <option value="clean" data-i18n="common.actions.clean">Clean</option>
+            <option value="restore" data-i18n="common.actions.restore">Restore</option>
+            <option value="delete" data-i18n="common.actions.delete">Delete</option>
           </select>
         </label>
 
         <label>
-          结果
+          <span data-i18n="common.labels.result">Result</span>
           <select id="auditResultFilter">
-            <option value="">全部</option>
-            <option value="success">成功</option>
-            <option value="failed">失败</option>
-            <option value="skipped">跳过</option>
+            <option value="" data-i18n="common.labels.all">All</option>
+            <option value="success" data-i18n="common.results.success">Success</option>
+            <option value="failed" data-i18n="common.results.failed">Failed</option>
+            <option value="skipped" data-i18n="common.results.skipped">Skipped</option>
           </select>
         </label>
 
         <label>
-          来源
+          <span data-i18n="common.labels.source">Source</span>
           <select id="auditSourceFilter">
-            <option value="">全部</option>
-            <option value="scan">扫描页</option>
-            <option value="plan">清理计划</option>
-            <option value="recycle">回收区</option>
-            <option value="system">系统</option>
+            <option value="" data-i18n="common.labels.all">All</option>
+            <option value="scan" data-i18n="logs.sourceScan">Scan Page</option>
+            <option value="plan" data-i18n="logs.sourcePlan">Cleanup Plan</option>
+            <option value="recycle" data-i18n="logs.sourceRecycle">Recycle Bin</option>
+            <option value="system" data-i18n="common.states.system">System</option>
           </select>
         </label>
 
         <label>
-          关键词
-          <input id="auditSearchInput" type="search" placeholder="搜索路径、详情..." />
+          <span data-i18n="logs.keyword">Keyword</span>
+          <input id="auditSearchInput" type="search" data-i18n-placeholder="logs.searchPlaceholder" />
         </label>
       </div>
     </section>
@@ -91,21 +91,21 @@
     <section class="content-grid audit-content-grid">
       <article class="panel-card">
         <p class="eyebrow">Audit</p>
-        <h2>记录范围</h2>
-        <p class="muted">审计日志用于追踪关键操作，包括清理执行、恢复和异常失败。</p>
+        <h2 data-i18n="logs.scopeTitle">Record Scope</h2>
+        <p class="muted" data-i18n="logs.scopeDescription">Audit logs track key operations, including cleanup execution, restore, and failures.</p>
       </article>
 
       <article class="panel-card">
         <p class="eyebrow">Safety</p>
-        <h2>安全说明</h2>
-        <p class="muted">日志只记录本地操作历史，不会上传到云端。用于排查问题、恢复确认和操作追溯。</p>
+        <h2 data-i18n="logs.safetyTitle">Safety Note</h2>
+        <p class="muted" data-i18n="logs.safetyDescription">Logs record only local operation history and are never uploaded. Use them for troubleshooting, restore confirmation, and traceability.</p>
       </article>
     </section>
 
     <section class="table-panel">
       <div class="table-header">
-        <h2>日志列表</h2>
-        <p id="auditTableHint">请刷新日志查看最新记录。</p>
+        <h2 data-i18n="logs.tableTitle">Log List</h2>
+        <p id="auditTableHint" data-i18n="logs.tableHint">Refresh logs to view the latest records.</p>
       </div>
 
       <div class="scan-table-wrap">
@@ -121,19 +121,19 @@
           </colgroup>
           <thead>
             <tr>
-              <th>时间</th>
-              <th>操作</th>
-              <th>对象</th>
-              <th>大小</th>
-              <th>结果</th>
-              <th>来源</th>
-              <th>详情</th>
+              <th data-i18n="common.labels.time">Time</th>
+              <th data-i18n="common.labels.action">Action</th>
+              <th data-i18n="logs.target">Target</th>
+              <th data-i18n="common.labels.size">Size</th>
+              <th data-i18n="common.labels.result">Result</th>
+              <th data-i18n="common.labels.source">Source</th>
+              <th data-i18n="common.labels.detail">Detail</th>
             </tr>
           </thead>
 
           <tbody id="auditTableBody">
             <tr>
-              <td colspan="7" class="empty-cell">暂无审计日志</td>
+              <td colspan="7" class="empty-cell" data-i18n="logs.noLogs">No audit logs</td>
             </tr>
           </tbody>
         </table>

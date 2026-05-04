@@ -3,11 +3,7 @@ from typing import Any
 from fastapi import APIRouter
 from fastapi.responses import FileResponse
 
-from core.scanner import ScannerOrchestrator
-from core.storage.database import (
-    clear_scan_results,
-    save_scan_results,
-)
+from core.services.scan_service import clear_saved_scan_results, execute_scan
 
 from .index_router import STATIC_DIR
 
@@ -23,22 +19,9 @@ async def scan_page() -> FileResponse:
 
 @router.post("/scan/start")
 def scan_execute() -> dict[str, Any]:
-    orchestrator = ScannerOrchestrator()
-    results = orchestrator.run_scan()
-
-    clear_scan_results()
-    save_scan_results(results)
-
-    return {
-        "count": len(results),
-        "items": [item.dict() for item in results],
-    }
+    return execute_scan()
 
 
 @router.post("/scan/clearResults")
 def api_clear_scan_results() -> dict[str, Any]:
-    clear_scan_results()
-    return {
-        "ok": True,
-        "cleared": "scan_results",
-    }
+    return clear_saved_scan_results()

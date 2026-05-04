@@ -1,7 +1,10 @@
 import { $, on, setText } from "../core/dom.js";
 import { ensureDialog, showAlert, showConfirm } from "../core/dialog.js";
 import { formatDisplayTime } from "../core/format.js";
-import { markI18nReady, translateStaticText } from "../locales/i18n.js";
+import { markI18nReady, t, translateStaticText } from "../locales/i18n.js";
+
+const CLEANUP_SELECTION_STORAGE_KEY = "zerotrace.cleanupSelection";
+const LEGACY_PLAN_STORAGE_KEY = "zerotrace.cleanupPlan";
 
 function createScanState() {
   return {
@@ -100,17 +103,17 @@ function updateControls(els, state) {
 function formatDuration(milliseconds) {
   if (milliseconds == null) return "-";
   if (milliseconds < 1000) return `${Math.round(milliseconds)} ms`;
-  return `${(milliseconds / 1000).toFixed(2)} 秒`;
+  return t("common.units.seconds", (milliseconds / 1000).toFixed(2));
 }
 
 function setStatus(els, status, tone = "idle") {
   const statusText =
     {
-      idle: "待扫描",
-      running: "扫描中",
-      success: "扫描完成 ✓",
-      error: "扫描失败 ✗",
-      emptySelection: "未选择项目",
+      idle: t("scan.status.idle"),
+      running: t("scan.status.running"),
+      success: t("scan.status.success"),
+      error: t("scan.status.error"),
+      emptySelection: t("scan.status.emptySelection"),
     }[tone] || status;
 
   setText(els.scanStatus, status || statusText);
@@ -129,7 +132,7 @@ function renderSourceOptions(els, state) {
   ).sort((a, b) => a.localeCompare(b));
 
   els.sourceFilter.innerHTML = [
-    '<option value="">全部</option>',
+    `<option value="">${t("common.labels.all")}</option>`,
     ...sources.map((source) => {
       const isSelected = source === selected ? "selected" : "";
       return `<option value="${escapeHtml(source)}" ${isSelected}>${escapeHtml(source)}</option>`;
@@ -159,7 +162,7 @@ function renderTable(els, state) {
   if (items.length === 0) {
     els.scanResultBody.innerHTML = `
       <tr class="empty-row">
-        <td colspan="7">暂无扫描结果</td>
+        <td colspan="7">${t("scan.noResults")}</td>
       </tr>
     `;
     renderSummary(els, state);
@@ -175,9 +178,9 @@ function renderTable(els, state) {
       const source = escapeHtml(item.source || "-");
       const riskLabel =
         {
-          low: "低",
-          medium: "中",
-          high: "高",
+          low: t("common.risks.low"),
+          medium: t("common.risks.medium"),
+          high: t("common.risks.high"),
         }[risk] || risk;
 
       return `
@@ -208,9 +211,9 @@ function renderTable(els, state) {
 
 function toCategoryLabel(item) {
   if (item.category === "empty" && item.file_type === "folder")
-    return "空文件夹";
-  if (item.category === "empty") return "空文件";
-  if (item.category === "temp") return "临时文件";
+    return t("scan.categories.emptyFolder");
+  if (item.category === "empty") return t("common.categories.empty");
+  if (item.category === "temp") return t("common.categories.temp");
   return item.category || "-";
 }
 
@@ -219,7 +222,7 @@ async function startScan(els, state) {
   state.isScanning = true;
   state.selectedPaths.clear();
   setStatus(els, null, "running");
-  setText(els.scanDuration, "计时中");
+  setText(els.scanDuration, t("scan.timing"));
   updateControls(els, state);
 
   try {
@@ -252,11 +255,11 @@ async function clearResults(els, state) {
   if (state.isScanning) return;
 
   const ok = await showConfirm(
-    "确认清空当前扫描结果？\n\n此操作会清空页面结果，并清空 scan_results 表。",
+    t("scan.confirmClear.message"),
     {
-      title: "确认清空",
-      confirmText: "清空",
-      cancelText: "取消",
+      title: t("scan.confirmClear.title"),
+      confirmText: t("scan.confirmClear.confirmText"),
+      cancelText: t("common.buttons.cancel"),
     },
   );
   if (!ok) return;
@@ -286,9 +289,9 @@ async function clearResults(els, state) {
     renderTable(els, state);
   } catch (error) {
     console.error(error);
-    setStatus(els, "清空失败", "error");
+    setStatus(els, t("scan.status.clearFailed"), "error");
     updateControls(els, state);
-    await showAlert("清空扫描结果失败。请稍后重试。");
+    await showAlert(t("scan.alerts.clearFailed"));
   }
 }
 
@@ -313,24 +316,17 @@ function invertSelection(els, state) {
 }
 
 async function createCleanupPlan(els, state) {
-  const selected = state.items.filter((item) =>
-    state.selectedPaths.has(item.path),
-  );
-
-  if (selected.length === 0) {
+  if (state.selectedPaths.size === 0) {
     setStatus(els, null, "emptySelection");
-    await showAlert("请先选择要加入清理计划的项目。");
+    await showAlert(t("scan.alerts.emptySelection"));
     return;
   }
 
-  const serialized = JSON.stringify(selected);
-  if (serialized.length > 4 * 1024 * 1024) {
-    // 4MB 警戒线
-    await showAlert("选择项目过多，请减少选择数量后再试。");
-    return;
-  }
-
-  localStorage.setItem("zerotrace.cleanupPlan", serialized);
+  localStorage.removeItem(LEGACY_PLAN_STORAGE_KEY);
+  localStorage.setItem(
+    CLEANUP_SELECTION_STORAGE_KEY,
+    JSON.stringify([...state.selectedPaths]),
+  );
   location.href = "/cleanup";
 }
 

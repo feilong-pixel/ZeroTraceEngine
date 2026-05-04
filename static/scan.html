@@ -10,36 +10,36 @@
     <header class="page-header">
       <div>
         <p class="eyebrow">ZeroTrace Engine</p>
-        <h1>系统扫描</h1>
-        <p class="page-desc">扫描本地可整理项目。所有结果仅展示，不会自动清理。</p>
+        <h1 data-i18n="scan.title">System Scan</h1>
+        <p class="page-desc" data-i18n="scan.description">Scan local cleanup candidates. Results are displayed only and never cleaned automatically.</p>
       </div>
 
       <div class="header-actions">
-        <button id="backButton" class="ghost-button nav-button"><span class="button-icon">↩</span><span>返回首页</span></button>
-        <button id="clearResultsButton" class="ghost-button danger-outline" disabled><span class="button-icon">×</span><span>清空结果</span></button>
-        <button id="startScanButton" class="primary-button"><span class="button-icon">🔍</span><span>开始扫描</span></button>
+        <button id="backButton" class="ghost-button nav-button"><span class="button-icon">↩</span><span data-i18n="common.buttons.backToMain">Back to Home</span></button>
+        <button id="clearResultsButton" class="ghost-button danger-outline" disabled><span class="button-icon">×</span><span data-i18n="scan.clearResults">Clear Results</span></button>
+        <button id="startScanButton" class="primary-button"><span class="button-icon">🔍</span><span data-i18n="common.buttons.startScan">Start Scan</span></button>
       </div>
     </header>
 
     <section class="summary-grid">
       <article class="summary-card">
-        <span class="summary-label">扫描项目</span>
+        <span class="summary-label" data-i18n="scan.itemCount">Scan Items</span>
         <strong id="scanItemCount">0</strong>
       </article>
       <article class="summary-card">
-        <span class="summary-label">可整理空间</span>
+        <span class="summary-label" data-i18n="scan.reclaimableSpace">Reclaimable Space</span>
         <strong id="scanTotalSize">0 B</strong>
       </article>
       <article class="summary-card">
-        <span class="summary-label">已选择</span>
+        <span class="summary-label" data-i18n="common.labels.selected">Selected</span>
         <strong id="selectedCount">0</strong>
       </article>
       <article class="summary-card">
-        <span class="summary-label">状态</span>
-        <strong id="scanStatus">待扫描</strong>
+        <span class="summary-label" data-i18n="common.labels.status">Status</span>
+        <strong id="scanStatus" data-i18n="scan.status.idle">Not Scanned</strong>
       </article>
       <article class="summary-card">
-        <span class="summary-label">扫描耗时</span>
+        <span class="summary-label" data-i18n="scan.duration">Scan Duration</span>
         <strong id="scanDuration">-</strong>
       </article>
     </section>
@@ -47,46 +47,46 @@
     <section class="toolbar-panel">
       <div class="toolbar-left">
         <label>
-          分类
+          <span data-i18n="common.labels.category">Category</span>
           <select id="categoryFilter">
-            <option value="">全部</option>
-            <option value="temp">临时文件</option>
-            <option value="empty">空文件/文件夹</option>
-            <option value="browser_cache">浏览器缓存</option>
-            <option value="log">日志文件</option>
-            <option value="thumbnail">缩略图缓存</option>
+            <option value="" data-i18n="common.labels.all">All</option>
+            <option value="temp" data-i18n="common.categories.temp">Temporary Files</option>
+            <option value="empty" data-i18n="common.categories.emptyPath">Empty Files/Folders</option>
+            <option value="browser_cache" data-i18n="common.categories.browserCache">Browser Cache</option>
+            <option value="log" data-i18n="common.categories.logFile">Log Files</option>
+            <option value="thumbnail" data-i18n="common.categories.thumbnail">Thumbnail Cache</option>
           </select>
         </label>
 
         <label>
-          风险等级
+          <span data-i18n="common.labels.riskLevel">Risk Level</span>
           <select id="riskFilter">
-            <option value="">全部</option>
-            <option value="low">低</option>
-            <option value="medium">中</option>
-            <option value="high">高</option>
+            <option value="" data-i18n="common.labels.all">All</option>
+            <option value="low" data-i18n="common.risks.low">Low</option>
+            <option value="medium" data-i18n="common.risks.medium">Medium</option>
+            <option value="high" data-i18n="common.risks.high">High</option>
           </select>
         </label>
 
         <label>
-          来源
+          <span data-i18n="common.labels.source">Source</span>
           <select id="sourceFilter">
-            <option value="">全部</option>
+            <option value="" data-i18n="common.labels.all">All</option>
           </select>
         </label>
       </div>
 
       <div class="toolbar-right">
-        <button id="selectAllButton" class="ghost-button" disabled>全选</button>
-        <button id="invertSelectionButton" class="ghost-button" disabled>反选</button>
-        <button id="createPlanButton" class="primary-button" disabled>生成清理计划</button>
+        <button id="selectAllButton" class="ghost-button" disabled data-i18n="common.buttons.selectAll">Select All</button>
+        <button id="invertSelectionButton" class="ghost-button" disabled data-i18n="common.buttons.invert">Invert</button>
+        <button id="createPlanButton" class="primary-button" disabled data-i18n="scan.createPlan">Create Cleanup Plan</button>
       </div>
     </section>
 
     <section class="table-panel">
       <div class="table-header">
-        <h2>扫描结果</h2>
-        <p>请确认路径、大小与来源后，再生成清理计划。</p>
+        <h2 data-i18n="scan.resultTitle">Scan Results</h2>
+        <p data-i18n="scan.resultHint">Confirm path, size, and source before creating a cleanup plan.</p>
       </div>
 
       <div class="scan-table-wrap">
@@ -103,17 +103,17 @@
           <thead>
             <tr>
               <th class="col-check"></th>
-              <th>路径</th>
-              <th>大小</th>
-              <th>分类</th>
-              <th>来源</th>
-              <th>修改时间</th>
-              <th>风险</th>
+              <th data-i18n="common.labels.path">Path</th>
+              <th data-i18n="common.labels.size">Size</th>
+              <th data-i18n="common.labels.category">Category</th>
+              <th data-i18n="common.labels.source">Source</th>
+              <th data-i18n="scan.modifiedAt">Modified</th>
+              <th data-i18n="common.labels.risk">Risk</th>
             </tr>
           </thead>
           <tbody id="scanResultBody">
             <tr class="empty-row">
-              <td colspan="7">暂无扫描结果</td>
+              <td colspan="7" data-i18n="scan.noResults">No scan results</td>
             </tr>
           </tbody>
         </table>

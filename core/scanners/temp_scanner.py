@@ -2,6 +2,7 @@ from datetime import datetime
 from pathlib import Path
 from .base import BaseScanner
 from core.models import ScanItem
+from core.config import settings
 
 def iter_with_depth(root: Path, max_depth: int = 5):
     def _walk(path: Path, depth: int):
@@ -32,7 +33,7 @@ class TempScanner(BaseScanner):
             if not d.exists():
                 continue
 
-            for f in iter_with_depth(d, max_depth=5):
+            for f in iter_with_depth(d, max_depth=settings.scan_max_depth):
                 try:
                     if f.is_file():
                         stat = f.stat()
@@ -68,10 +69,7 @@ class TempScanner(BaseScanner):
         return results
 
     def get_temp_dirs(self):
-        return [
-            Path("C:/Windows/Temp"),
-            Path(Path.home() / "AppData/Local/Temp")
-        ]
+        return settings.temp_dirs
 
 
 Scanner = TempScanner

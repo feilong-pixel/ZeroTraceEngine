@@ -1,9 +1,11 @@
+import en from "./en.js";
 import zh from "./zh.js";
 
 const DEFAULT_LANG = "zh";
 const SUPPORTED_LANGS = ["zh", "en", "ja"];
 
 const I18N = {
+  en,
   zh,
 };
 const FALLBACK_LANG = "zh";
@@ -69,6 +71,20 @@ export function translateStaticText(root = document) {
     const value = t(node.dataset.i18nPlaceholder);
     if (value !== node.dataset.i18nPlaceholder) {
       node.placeholder = value;
+    }
+  });
+
+  root.querySelectorAll("[data-i18n-title]").forEach((node) => {
+    const value = t(node.dataset.i18nTitle);
+    if (value !== node.dataset.i18nTitle) {
+      node.title = value;
+    }
+  });
+
+  root.querySelectorAll("[data-i18n-aria-label]").forEach((node) => {
+    const value = t(node.dataset.i18nAriaLabel);
+    if (value !== node.dataset.i18nAriaLabel) {
+      node.setAttribute("aria-label", value);
     }
   });
 }

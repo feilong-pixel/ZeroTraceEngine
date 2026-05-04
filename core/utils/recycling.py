@@ -1,28 +1,27 @@
 from pathlib import Path
 import uuid
 from datetime import datetime
-
-RECYCLE_ROOT = Path("ZeroTraceRecycle")
+from core.config import settings
 
 def generate_recycle_path(original_path: str, unique_id: str | None = None) -> Path:
     """
-    生成 ZeroTrace Engine 的回收站路径：
+    Generate a ZeroTrace Engine recycle path:
     ZeroTraceRecycle/YYYYMMDD/uuid/originalname.ext
     """
-    # 1. 根目录
-    RECYCLE_ROOT.mkdir(parents=True, exist_ok=True)
+    # Root directory.
+    settings.recycle_root.mkdir(parents=True, exist_ok=True)
 
-    # 2. 日期目录
-    date_dir = RECYCLE_ROOT / datetime.now().strftime("%Y%m%d")
+    # Date directory.
+    date_dir = settings.recycle_root / datetime.now().strftime("%Y%m%d")
     date_dir.mkdir(parents=True, exist_ok=True)
 
-    # 3. UUID 目录
+    # UUID directory.
     recycle_id = unique_id or uuid.uuid4().hex
     uuid_dir = date_dir / recycle_id
     uuid_dir.mkdir(parents=True, exist_ok=True)
 
-    # 4. 原文件名
+    # Original filename.
     original_name = Path(original_path).name
 
-    # 5. 最终路径
+    # Final recycle path.
     return uuid_dir / original_name

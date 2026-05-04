@@ -1,7 +1,7 @@
 import { $, on, setText } from "../core/dom.js";
 import { ensureDialog, showConfirm } from "../core/dialog.js";
 import { formatDisplayTime } from "../core/format.js";
-import { markI18nReady, translateStaticText } from "../locales/i18n.js";
+import { markI18nReady, t, translateStaticText } from "../locales/i18n.js";
 
 function createRecycleState() {
   return {
@@ -116,7 +116,7 @@ function renderTable(els, state) {
   if (records.length === 0) {
     els.recycleResultBody.innerHTML = `
       <tr class="empty-row">
-        <td colspan="7">暂无回收区项目</td>
+        <td colspan="7">${t("recycle.noRecords")}</td>
       </tr>
     `;
     renderSummary(els, state);
@@ -157,7 +157,7 @@ function renderTable(els, state) {
 
 async function loadRecycleRecords(els, state) {
   state.isLoading = true;
-  setText(els.recycleStatus, "读取中");
+  setText(els.recycleStatus, t("recycle.status.loading"));
   updateControls(els, state);
 
   try {
@@ -167,11 +167,11 @@ async function loadRecycleRecords(els, state) {
     state.records = await res.json();
     state.selectedIds.clear();
 
-    setText(els.recycleStatus, "读取完成");
+    setText(els.recycleStatus, t("recycle.status.loaded"));
     renderTable(els, state);
   } catch (error) {
     console.error(error);
-    setText(els.recycleStatus, "读取失败");
+    setText(els.recycleStatus, t("recycle.status.loadFailed"));
   } finally {
     state.isLoading = false;
     updateControls(els, state);
@@ -202,14 +202,14 @@ async function restoreSelected(els, state) {
   const ids = Array.from(state.selectedIds);
 
   if (ids.length === 0) {
-    setText(els.recycleStatus, "未选择项目");
+    setText(els.recycleStatus, t("recycle.status.emptySelection"));
     return;
   }
 
-  const ok = await showConfirm(`确认恢复 ${ids.length} 个项目？`);
+  const ok = await showConfirm(t("recycle.confirmRestore", ids.length));
   if (!ok) return;
 
-  setText(els.recycleStatus, "恢复中");
+  setText(els.recycleStatus, t("recycle.status.restoring"));
   state.isRestoring = true;
   updateControls(els, state);
 
@@ -225,10 +225,10 @@ async function restoreSelected(els, state) {
     if (!res.ok) throw new Error(`Restore API failed: ${res.status}`);
 
     await loadRecycleRecords(els, state);
-    setText(els.recycleStatus, "恢复完成");
+    setText(els.recycleStatus, t("recycle.status.restored"));
   } catch (error) {
     console.error(error);
-    setText(els.recycleStatus, "恢复失败");
+    setText(els.recycleStatus, t("recycle.status.restoreFailed"));
   } finally {
     state.isRestoring = false;
     updateControls(els, state);
