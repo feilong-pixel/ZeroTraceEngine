@@ -65,23 +65,6 @@ class TempScanner(BaseScanner):
                             risk_level=self.risk_level
                         ))
 
-                    elif is_empty_dir(f):
-                        stat = f.stat()
-                        mtime = datetime.fromtimestamp(stat.st_mtime)
-                        if mtime > min_mtime:
-                            continue
-
-                        results.append(ScanItem(
-                            path=str(f),
-                            size=0,
-                            mtime=mtime,
-                            file_type="folder",
-                            category="empty",
-                            source="Windows",
-                            scanner=self.name,
-                            risk_level=self.risk_level
-                        ))
-
                 except (OSError, PermissionError):
                     continue
 
@@ -90,12 +73,15 @@ class TempScanner(BaseScanner):
     def get_temp_dirs(self):
         return get_windows_temp_dirs()
 
+    def get_scan_roots(self) -> list[Path]:
+        return self.get_temp_dirs()
+
 
 Scanner = TempScanner
 
 
 def classify_temp_file_category(size: int) -> str:
-    return "empty" if size == 0 else "temp"
+    return "temp"
 
 
 def get_windows_temp_dirs() -> list[Path]:

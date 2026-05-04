@@ -41,7 +41,7 @@ def test_temp_scanner_metadata_is_initialized():
     assert scanner.category == "temp"
 
 
-def test_temp_scanner_includes_old_empty_dirs(repo_tmp_path, monkeypatch):
+def test_temp_scanner_does_not_list_empty_dirs(repo_tmp_path, monkeypatch):
     temp_root = repo_tmp_path / "Temp"
     empty_dir = temp_root / "old-empty"
     empty_dir.mkdir(parents=True)
@@ -54,10 +54,7 @@ def test_temp_scanner_includes_old_empty_dirs(repo_tmp_path, monkeypatch):
 
     items = TempScanner().scan()
 
-    assert len(items) == 1
-    assert items[0].path == str(empty_dir)
-    assert items[0].file_type == "folder"
-    assert items[0].category == "empty"
+    assert items == []
 
 
 def test_get_windows_temp_dirs_merges_config_and_environment(repo_tmp_path, monkeypatch):

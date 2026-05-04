@@ -530,12 +530,14 @@ function normalizeCategory(value) {
   const v = String(value ?? "").toLowerCase();
   const keywords = getLocale().cleanup?.parseKeywords?.categories ?? {};
 
-  if (["temp", "cache", "browser_cache", "log", "duplicate", "empty"].includes(v)) {
+  if (["temp", "cache", "browser_cache", "log", "update", "thumbnail", "duplicate", "empty"].includes(v)) {
     return v === "browser_cache" ? "cache" : v;
   }
   if (v.includes("duplicate") || includesLocaleKeyword(v, keywords.duplicate)) return "duplicate";
   if (v.includes("cache") || includesLocaleKeyword(v, keywords.cache)) return "cache";
   if (v.includes("log") || includesLocaleKeyword(v, keywords.log)) return "log";
+  if (v.includes("update") || includesLocaleKeyword(v, keywords.update)) return "update";
+  if (v.includes("thumbnail") || includesLocaleKeyword(v, keywords.thumbnail)) return "thumbnail";
   if (v.includes("empty") || includesLocaleKeyword(v, keywords.empty)) return "empty";
   return "temp";
 }
@@ -582,6 +584,8 @@ function toCategoryLabel(value) {
       temp: t("common.categories.temp"),
       cache: t("common.categories.cache"),
       log: t("common.categories.log"),
+      update: t("common.categories.windowsUpdate"),
+      thumbnail: t("common.categories.thumbnail"),
       duplicate: t("common.categories.duplicate"),
       empty: t("common.categories.empty"),
     }[value] ?? t("common.categories.other")

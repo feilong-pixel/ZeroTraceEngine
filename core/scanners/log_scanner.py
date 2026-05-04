@@ -58,6 +58,9 @@ class LogScanner(BaseScanner):
 
         return results
 
+    def get_scan_roots(self) -> list[Path]:
+        return get_log_dirs()
+
 
 Scanner = LogScanner
 

@@ -54,6 +54,7 @@
             <option value="empty" data-i18n="common.categories.emptyPath">Empty Files/Folders</option>
             <option value="browser_cache" data-i18n="common.categories.browserCache">Browser Cache</option>
             <option value="log" data-i18n="common.categories.logFile">Log Files</option>
+            <option value="update" data-i18n="common.categories.windowsUpdate">Windows Update</option>
             <option value="thumbnail" data-i18n="common.categories.thumbnail">Thumbnail Cache</option>
           </select>
         </label>
@@ -80,6 +81,16 @@
         <button id="selectAllButton" class="ghost-button" disabled data-i18n="common.buttons.selectAll">Select All</button>
         <button id="invertSelectionButton" class="ghost-button" disabled data-i18n="common.buttons.invert">Invert</button>
         <button id="createPlanButton" class="primary-button" disabled data-i18n="scan.createPlan">Create Cleanup Plan</button>
+      </div>
+    </section>
+
+    <section class="scanner-report-panel">
+      <div class="table-header">
+        <h2 data-i18n="scan.diagnosticsTitle">Scanner Diagnostics</h2>
+        <p data-i18n="scan.diagnosticsHint">Confirm which scanners ran and which roots were checked.</p>
+      </div>
+      <div id="scannerReportList" class="scanner-report-list">
+        <p class="muted" data-i18n="scan.diagnosticsEmpty">Run a scan to view scanner diagnostics.</p>
       </div>
     </section>
 

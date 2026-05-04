@@ -18,6 +18,7 @@ def execute_scan() -> dict[str, Any]:
         "count": len(result.items),
         "items": [item.model_dump(mode="json") for item in result.items],
         "errors": result.errors,
+        "scanner_reports": result.scanner_reports,
     }
 
 

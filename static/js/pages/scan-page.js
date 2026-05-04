@@ -31,6 +31,7 @@ function getScanElements() {
     selectedCount: $("#selectedCount"),
     scanStatus: $("#scanStatus"),
     scanDuration: $("#scanDuration"),
+    scannerReportList: $("#scannerReportList"),
   };
 }
 
@@ -216,7 +217,45 @@ function toCategoryLabel(item) {
   if (item.category === "temp") return t("common.categories.temp");
   if (item.category === "browser_cache") return t("common.categories.browserCache");
   if (item.category === "log") return t("common.categories.logFile");
+  if (item.category === "update") return t("common.categories.windowsUpdate");
+  if (item.category === "thumbnail") return t("common.categories.thumbnail");
   return item.category || "-";
+}
+
+function renderScannerReports(els, reports = []) {
+  if (!els.scannerReportList) return;
+
+  if (!Array.isArray(reports) || reports.length === 0) {
+    els.scannerReportList.innerHTML = `
+      <p class="muted">${t("scan.diagnosticsEmpty")}</p>
+    `;
+    return;
+  }
+
+  els.scannerReportList.innerHTML = reports
+    .map((report) => {
+      const status = report.status === "error"
+        ? t("scan.diagnosticsStatus.error")
+        : t("scan.diagnosticsStatus.ok");
+      const roots = Array.isArray(report.roots) && report.roots.length > 0
+        ? report.roots.join("; ")
+        : t("scan.diagnosticsNoRoots");
+      const error = report.error
+        ? `<p class="scanner-report-error">${escapeHtml(report.error)}</p>`
+        : "";
+
+      return `
+        <article class="scanner-report-item scanner-report-${escapeHtml(report.status || "ok")}">
+          <div>
+            <strong>${escapeHtml(report.scanner || "-")}</strong>
+            <span>${escapeHtml(status)} · ${t("scan.diagnosticsCount", Number(report.count || 0))}</span>
+          </div>
+          <input class="path-readonly-input" type="text" value="${escapeHtml(roots)}" title="${escapeHtml(roots)}" readonly />
+          ${error}
+        </article>
+      `;
+    })
+    .join("");
 }
 
 async function startScan(els, state) {
@@ -238,6 +277,7 @@ async function startScan(els, state) {
 
     const payload = await res.json();
     state.items = Array.isArray(payload) ? payload : payload.items || [];
+    renderScannerReports(els, payload.scanner_reports || []);
     renderSourceOptions(els, state);
 
     setStatus(els, null, "success");
@@ -285,6 +325,7 @@ async function clearResults(els, state) {
 
     state.items = [];
     state.selectedPaths.clear();
+    renderScannerReports(els, []);
     renderSourceOptions(els, state);
     setStatus(els, null, "idle");
     setText(els.scanDuration, "-");
@@ -373,6 +414,7 @@ export function initScanPage() {
   bindScanEvents(els, state);
   renderSourceOptions(els, state);
   setStatus(els, null, "idle");
+  renderScannerReports(els, []);
   renderTable(els, state);
   markI18nReady();
 

@@ -8,8 +8,11 @@ class AppConfig:
     recycle_root: Path = BASE_DIR / "ZeroTraceRecycle"
     scan_max_depth: int = 5
     temp_file_min_age_hours: int = 24
+    empty_item_min_age_hours: int = 24
     browser_cache_min_age_hours: int = 24
     log_file_min_age_days: int = 7
+    thumbnail_cache_min_age_days: int = 7
+    windows_update_min_age_days: int = 14
     temp_dirs: list[Path] = [
         Path("C:/Windows/Temp"),
         Path.home() / "AppData/Local/Temp",
@@ -22,5 +25,12 @@ class AppConfig:
         BASE_DIR / "logs",
         Path("C:/Log"),
     ]
+    windows_update_dirs: list[Path] = [
+        Path("C:/Windows/SoftwareDistribution/Download"),
+    ]
+    thumbnail_cache_dirs: list[Path] = [
+        Path.home() / "AppData/Local/Microsoft/Windows/Explorer",
+    ]
+    empty_scan_dirs: list[Path] = []
 
 settings = AppConfig()

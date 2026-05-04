@@ -246,6 +246,7 @@ function toCategoryLabel(value) {
       temp: t("common.categories.temp"),
       browser_cache: t("common.categories.browserCache"),
       log: t("common.categories.log"),
+      update: t("common.categories.windowsUpdate"),
       thumbnail: t("common.categories.thumbnail"),
       empty: t("common.categories.empty"),
     }[value] ?? value ?? "-"
