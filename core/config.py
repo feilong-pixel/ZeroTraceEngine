@@ -7,6 +7,7 @@ class AppConfig:
     db_path: Path = BASE_DIR / "data" / "zerotrace.db"
     recycle_root: Path = BASE_DIR / "ZeroTraceRecycle"
     scan_max_depth: int = 5
+    temp_file_min_age_hours: int = 24
     temp_dirs: list[Path] = [
         Path("C:/Windows/Temp"),
         Path.home() / "AppData/Local/Temp",

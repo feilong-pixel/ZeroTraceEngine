@@ -9,6 +9,7 @@ function createRecycleState() {
     selectedIds: new Set(),
     isLoading: false,
     isRestoring: false,
+    isPurging: false,
   };
 }
 
@@ -20,6 +21,7 @@ function getRecycleElements() {
     selectAllRecycleButton: $("#selectAllRecycleButton"),
     invertRecycleSelectionButton: $("#invertRecycleSelectionButton"),
     restoreSelectedButton: $("#restoreSelectedButton"),
+    purgeSelectedButton: $("#purgeSelectedButton"),
     recycleCategoryFilter: $("#recycleCategoryFilter"),
     recycleResultBody: $("#recycleResultBody"),
     recycleItemCount: $("#recycleItemCount"),
@@ -69,7 +71,7 @@ function getActiveRecords(state) {
 function updateControls(els, state) {
   const activeRecords = getActiveRecords(state);
   const visibleRecords = getFilteredRecords(els, state);
-  const busy = state.isLoading || state.isRestoring;
+  const busy = state.isLoading || state.isRestoring || state.isPurging;
   const hasActiveRecords = activeRecords.length > 0;
   const hasVisibleRecords = visibleRecords.length > 0;
   const hasSelection = state.selectedIds.size > 0;
@@ -88,6 +90,9 @@ function updateControls(els, state) {
   }
   if (els.restoreSelectedButton) {
     els.restoreSelectedButton.disabled = busy || !hasSelection;
+  }
+  if (els.purgeSelectedButton) {
+    els.purgeSelectedButton.disabled = busy || !hasSelection;
   }
 
   els.recycleResultBody
@@ -127,7 +132,7 @@ function renderTable(els, state) {
   els.recycleResultBody.innerHTML = records
     .map((record) => {
       const checked = state.selectedIds.has(record.id) ? "checked" : "";
-      const disabled = state.isLoading || state.isRestoring ? "disabled" : "";
+      const disabled = state.isLoading || state.isRestoring || state.isPurging ? "disabled" : "";
       const originalPath = escapeHtml(record.original_path);
       const recyclePath = escapeHtml(record.recycle_path);
 
@@ -235,6 +240,43 @@ async function restoreSelected(els, state) {
   }
 }
 
+async function purgeSelected(els, state) {
+  const ids = Array.from(state.selectedIds);
+
+  if (ids.length === 0) {
+    setText(els.recycleStatus, t("recycle.status.emptySelection"));
+    return;
+  }
+
+  const ok = await showConfirm(t("recycle.confirmPurge", ids.length));
+  if (!ok) return;
+
+  setText(els.recycleStatus, t("recycle.status.purging"));
+  state.isPurging = true;
+  updateControls(els, state);
+
+  try {
+    const res = await fetch("/recycle/purge", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ ids }),
+    });
+
+    if (!res.ok) throw new Error(`Purge API failed: ${res.status}`);
+
+    await loadRecycleRecords(els, state);
+    setText(els.recycleStatus, t("recycle.status.purged"));
+  } catch (error) {
+    console.error(error);
+    setText(els.recycleStatus, t("recycle.status.purgeFailed"));
+  } finally {
+    state.isPurging = false;
+    updateControls(els, state);
+  }
+}
+
 function bindRecycleEvents(els, state) {
   on(els.backButton, "click", () => {
     location.href = "/";
@@ -243,6 +285,7 @@ function bindRecycleEvents(els, state) {
   on(els.selectAllRecycleButton, "click", () => selectAllVisible(els, state));
   on(els.invertRecycleSelectionButton, "click", () => invertSelection(els, state));
   on(els.restoreSelectedButton, "click", () => restoreSelected(els, state));
+  on(els.purgeSelectedButton, "click", () => purgeSelected(els, state));
   on(els.recycleCategoryFilter, "change", () => renderTable(els, state));
   on(els.openLogsButton, "click", () => {location.href = "/logs";});
 

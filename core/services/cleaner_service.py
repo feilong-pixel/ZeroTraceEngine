@@ -2,7 +2,7 @@ import uuid
 from datetime import datetime
 from pathlib import Path
 
-from core.config import settings
+from core.scanners.temp_scanner import get_windows_temp_dirs
 from core.models import CleanRecord, ScanItem
 from core.storage.clean_log_repository import (
     insert_clean_records,
@@ -10,12 +10,6 @@ from core.storage.clean_log_repository import (
 )
 from core.utils.file_transfer import transfer_file_safe
 from core.utils.recycling import generate_recycle_path
-
-EMPTY_DIR_STOP_PATHS = {
-    settings.temp_dirs[0].resolve(),
-    settings.temp_dirs[1].resolve(),
-}
-
 
 def move_to_recycle(item: ScanItem) -> CleanRecord:
     original = Path(item.path)
@@ -65,7 +59,8 @@ def move_empty_parent_dirs_to_recycle(items: list[ScanItem]) -> list[CleanRecord
         if not is_under_empty_dir_cleanup_root(resolved_parent):
             continue
 
-        while resolved_parent not in EMPTY_DIR_STOP_PATHS:
+        stop_paths = get_empty_dir_stop_paths()
+        while resolved_parent not in stop_paths:
             candidate_dirs.append(parent)
             parent = parent.parent
             try:
@@ -102,7 +97,7 @@ def is_recyclable_empty_dir(directory: Path) -> bool:
     except OSError:
         return False
 
-    if resolved in EMPTY_DIR_STOP_PATHS:
+    if resolved in get_empty_dir_stop_paths():
         return False
     if not directory.exists() or not directory.is_dir():
         return False
@@ -117,10 +112,22 @@ def is_recyclable_empty_dir(directory: Path) -> bool:
 
 
 def is_under_empty_dir_cleanup_root(path: Path) -> bool:
-    for root in EMPTY_DIR_STOP_PATHS:
+    for root in get_empty_dir_stop_paths():
         try:
             path.relative_to(root)
             return path != root
         except ValueError:
             continue
     return False
+
+
+def get_empty_dir_stop_paths() -> set[Path]:
+    roots = set()
+
+    for root in get_windows_temp_dirs():
+        try:
+            roots.add(root.resolve())
+        except (OSError, ValueError):
+            continue
+
+    return roots

@@ -130,3 +130,19 @@ def mark_record_restored(record_id: str, restored_at: str) -> None:
         conn.commit()
     finally:
         conn.close()
+
+
+def mark_record_purged(record_id: str, purged_at: str) -> None:
+    init_db()
+    conn = get_conn()
+    cur = conn.cursor()
+
+    try:
+        cur.execute("""
+            UPDATE clean_log
+            SET purged_at = ?
+            WHERE id = ?
+        """, (purged_at, record_id))
+        conn.commit()
+    finally:
+        conn.close()

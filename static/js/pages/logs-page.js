@@ -237,11 +237,10 @@ function normalizeRecycleRecords(records) {
       detail: t("logs.details.movedToRecycle", record.recycle_path ?? ""),
     };
 
-    if (!record.restored_at) return [cleanLog];
+    const derivedLogs = [cleanLog];
 
-    return [
-      cleanLog,
-      {
+    if (record.restored_at) {
+      derivedLogs.push({
         id: `${cleanLog.id}-restore`,
         timestamp: String(record.restored_at),
         action: "restore",
@@ -250,8 +249,23 @@ function normalizeRecycleRecords(records) {
         result: "success",
         source: "recycle",
         detail: t("logs.details.restoredFromRecycle", record.recycle_path ?? ""),
-      },
-    ];
+      });
+    }
+
+    if (record.purged_at) {
+      derivedLogs.push({
+        id: `${cleanLog.id}-purge`,
+        timestamp: String(record.purged_at),
+        action: "delete",
+        target: String(record.recycle_path ?? ""),
+        size: Number(record.size ?? 0),
+        result: "success",
+        source: "recycle",
+        detail: t("logs.details.purgedFromRecycle", record.recycle_path ?? ""),
+      });
+    }
+
+    return derivedLogs;
   });
 }
 

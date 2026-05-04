@@ -13,6 +13,7 @@ export default {
       reloadLogs: "Reload Logs",
       resetPlan: "Reset Plan",
       restoreSelected: "Restore Selected",
+      purgeSelected: "Delete Permanently",
       selectAll: "Select All",
       startScan: "Start Scan",
       viewLogs: "View Logs",
@@ -229,7 +230,7 @@ export default {
     itemCount: "Recycle Items",
     totalSize: "Used Space",
     tableTitle: "Recycle Items",
-    tableHint: "Restore attempts to return items to their original paths. If the path exists, confirm manually.",
+    tableHint: "Restore returns items to their original paths. Purge permanently removes them from ZeroTraceRecycle.",
     originalPath: "Original Path",
     recyclePath: "Recycle Path",
     cleanedAt: "Cleaned At",
@@ -243,8 +244,12 @@ export default {
       restoring: "Restoring",
       restored: "Restored",
       restoreFailed: "Restore Failed",
+      purging: "Purging",
+      purged: "Purged",
+      purgeFailed: "Purge Failed",
     },
     confirmRestore: (count) => `Restore ${count} items?`,
+    confirmPurge: (count) => `Permanently purge ${count} items from ZeroTraceRecycle?\n\nThis cannot be restored later.`,
   },
 
   logs: {
@@ -290,6 +295,7 @@ export default {
     details: {
       movedToRecycle: (path) => `Moved to recycle: ${path}`,
       restoredFromRecycle: (path) => `Restored from recycle: ${path}`,
+      purgedFromRecycle: (path) => `Permanently deleted from ZeroTraceRecycle: ${path}`,
     },
     csvHeaders: ["Time", "Action", "Target", "Size", "Result", "Source", "Detail"],
   },

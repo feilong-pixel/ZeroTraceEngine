@@ -1,4 +1,5 @@
-from datetime import datetime
+import os
+from datetime import datetime, timedelta
 from pathlib import Path
 from .base import BaseScanner
 from core.models import ScanItem
@@ -28,6 +29,7 @@ class TempScanner(BaseScanner):
 
     def scan(self):
         results = []
+        min_mtime = datetime.now() - timedelta(hours=settings.temp_file_min_age_hours)
 
         for d in self.get_temp_dirs():
             if not d.exists():
@@ -37,12 +39,16 @@ class TempScanner(BaseScanner):
                 try:
                     if f.is_file():
                         stat = f.stat()
+                        mtime = datetime.fromtimestamp(stat.st_mtime)
+                        if mtime > min_mtime:
+                            continue
+
                         category = classify_temp_file_category(stat.st_size)
 
                         results.append(ScanItem(
                             path=str(f),
                             size=stat.st_size,
-                            mtime=datetime.fromtimestamp(stat.st_mtime),
+                            mtime=mtime,
                             file_type="file",
                             category=category,
                             source="Windows",
@@ -52,10 +58,14 @@ class TempScanner(BaseScanner):
 
                     elif is_empty_dir(f):
                         stat = f.stat()
+                        mtime = datetime.fromtimestamp(stat.st_mtime)
+                        if mtime > min_mtime:
+                            continue
+
                         results.append(ScanItem(
                             path=str(f),
                             size=0,
-                            mtime=datetime.fromtimestamp(stat.st_mtime),
+                            mtime=mtime,
                             file_type="folder",
                             category="empty",
                             source="Windows",
@@ -69,7 +79,7 @@ class TempScanner(BaseScanner):
         return results
 
     def get_temp_dirs(self):
-        return settings.temp_dirs
+        return get_windows_temp_dirs()
 
 
 Scanner = TempScanner
@@ -77,6 +87,34 @@ Scanner = TempScanner
 
 def classify_temp_file_category(size: int) -> str:
     return "empty" if size == 0 else "temp"
+
+
+def get_windows_temp_dirs() -> list[Path]:
+    candidates = [
+        *settings.temp_dirs,
+        os.environ.get("TEMP"),
+        os.environ.get("TMP"),
+    ]
+    roots = []
+    seen = set()
+
+    for candidate in candidates:
+        if not candidate:
+            continue
+
+        path = Path(candidate).expanduser()
+        try:
+            key = str(path.resolve()).casefold()
+        except (OSError, ValueError):
+            key = str(path.absolute()).casefold()
+
+        if key in seen:
+            continue
+
+        seen.add(key)
+        roots.append(path)
+
+    return roots
 
 
 def is_empty_dir(path: Path) -> bool:

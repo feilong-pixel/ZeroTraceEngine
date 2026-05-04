@@ -13,6 +13,7 @@ export default {
       reloadLogs: "刷新日志",
       resetPlan: "重置计划",
       restoreSelected: "恢复选中",
+      purgeSelected: "彻底删除",
       selectAll: "全选",
       startScan: "开始扫描",
       viewLogs: "查看日志",
@@ -229,7 +230,7 @@ export default {
     itemCount: "回收项目",
     totalSize: "占用空间",
     tableTitle: "回收区项目",
-    tableHint: "恢复时会尝试还原到原始路径。若原路径已存在，请手动确认。",
+    tableHint: "恢复会还原到原始路径；清除会从 ZeroTraceRecycle 中永久移除。",
     originalPath: "原始路径",
     recyclePath: "回收区路径",
     cleanedAt: "清理时间",
@@ -243,8 +244,12 @@ export default {
       restoring: "恢复中",
       restored: "恢复完成",
       restoreFailed: "恢复失败",
+      purging: "清除中",
+      purged: "清除完成",
+      purgeFailed: "清除失败",
     },
     confirmRestore: (count) => `确认恢复 ${count} 个项目？`,
+    confirmPurge: (count) => `确认从 ZeroTraceRecycle 永久清除 ${count} 个项目？\n\n清除后无法再恢复。`,
   },
 
   logs: {
@@ -290,6 +295,7 @@ export default {
     details: {
       movedToRecycle: (path) => `移入回收区：${path}`,
       restoredFromRecycle: (path) => `从回收区恢复：${path}`,
+      purgedFromRecycle: (path) => `已从回收区彻底删除：${path}`,
     },
     csvHeaders: ["时间", "操作", "对象", "大小", "结果", "来源", "详情"],
   },

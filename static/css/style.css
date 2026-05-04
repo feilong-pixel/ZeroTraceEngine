@@ -120,6 +120,19 @@ p {
   color: var(--ink);
 }
 
+.danger-button {
+  min-height: 42px;
+  border-color: var(--danger);
+  background: var(--danger);
+  color: #ffffff;
+}
+
+.danger-button:hover,
+.danger-button:focus-visible {
+  border-color: #9b2c2c;
+  background: #9b2c2c;
+}
+
 .ghost {
   background: transparent;
 }
@@ -258,6 +271,10 @@ p {
 
 .cleanup-page .header-actions {
   grid-template-columns: 132px 144px 132px 156px;
+}
+
+.recycle-page .toolbar-right {
+  grid-template-columns: 88px 88px 120px 144px;
 }
 
 .header-actions button,

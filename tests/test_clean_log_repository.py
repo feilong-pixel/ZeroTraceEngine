@@ -5,6 +5,7 @@ from core.storage.clean_log_repository import (
     get_clean_record,
     insert_clean_record,
     list_clean_records,
+    mark_record_purged,
     mark_record_restored,
 )
 from core.storage.database import get_conn, init_db
@@ -43,3 +44,8 @@ def test_clean_log_repository_lists_active_and_marks_restored(isolated_db):
     assert [row["id"] for row in list_clean_records(active_only=True)] == ["rec-2"]
     assert {row["id"] for row in list_clean_records(active_only=False)} == {"rec-1", "rec-2"}
     assert get_clean_record("rec-1")["restored_at"] == "2026-05-04T11:00:00"
+
+    mark_record_purged("rec-2", "2026-05-04T12:00:00")
+
+    assert list_clean_records(active_only=True) == []
+    assert get_clean_record("rec-2")["purged_at"] == "2026-05-04T12:00:00"
