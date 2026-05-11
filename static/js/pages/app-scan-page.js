@@ -1064,7 +1064,7 @@ async function clearResults(state, els) {
   if (!ok) return;
   try {
     els.clearButton.disabled = true;
-    const res = await fetch("/app-scan/results", { method: "DELETE" });
+    const res = await fetch("/app-scan/results/clear", { method: "POST" });
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
     state.status = "idle";
     state.meta = null;

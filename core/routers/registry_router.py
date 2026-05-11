@@ -68,9 +68,14 @@ def registry_results() -> dict[str, Any]:
     return get_saved_registry_results()
 
 
-@router.delete("/registry/results")
+@router.post("/registry/results/clear")
 def registry_clear_results() -> dict[str, Any]:
     return clear_saved_registry_results()
+
+
+@router.delete("/registry/results")
+def registry_clear_results_legacy() -> dict[str, Any]:
+    return registry_clear_results()
 
 
 @router.get("/registry/capabilities")

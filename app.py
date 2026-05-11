@@ -23,6 +23,7 @@ PAGE_FILES = {
     "/recycle": STATIC_DIR / "recycle.html",
     "/logs": STATIC_DIR / "logs.html",
     "/tools": STATIC_DIR / "tools.html",
+    "/user-directory": STATIC_DIR / "user-directory.html",
     "/app-scan": STATIC_DIR / "app-scan.html",
 }
 NO_CACHE_PATHS = {"/", "/index.html", *PAGE_FILES.keys()}

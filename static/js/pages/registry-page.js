@@ -841,7 +841,7 @@ export function initRegistryPage() {
   on(els.clearButton, "click", async () => {
     const ok = await showConfirm(t("registry.confirmClear"));
     if (!ok) return;
-    await fetch("/registry/results", { method: "DELETE" });
+    await fetch("/registry/results/clear", { method: "POST" });
     state.issues = [];
     state.reports = [];
     state.stats  = null;

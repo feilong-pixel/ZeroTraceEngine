@@ -80,6 +80,11 @@ def user_directory_top_items(limit: int = 16) -> dict[str, Any]:
     return get_user_directory_top_items(limit=max(0, min(limit, 16)))
 
 
-@router.delete("/user-directory/results")
+@router.post("/user-directory/results/clear")
 def user_directory_clear() -> dict[str, Any]:
     return clear_user_directory_results()
+
+
+@router.delete("/user-directory/results")
+def user_directory_clear_legacy() -> dict[str, Any]:
+    return user_directory_clear()

@@ -83,6 +83,11 @@ def app_scan_drive_usage() -> dict[str, Any]:
     return get_app_scan_drive_usage()
 
 
-@router.delete("/app-scan/results")
+@router.post("/app-scan/results/clear")
 def app_scan_clear() -> dict[str, Any]:
     return clear_app_scan_service()
+
+
+@router.delete("/app-scan/results")
+def app_scan_clear_legacy() -> dict[str, Any]:
+    return app_scan_clear()
