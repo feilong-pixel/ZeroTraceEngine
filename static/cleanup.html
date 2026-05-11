@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>ZeroTrace Engine - Cleanup</title>
+  <title>ZeroTrace Engine - Plan</title>
   <link rel="stylesheet" href="/static/css/style.css" />
 </head>
 
@@ -12,15 +12,15 @@
     <header class="page-header">
       <div>
         <p class="eyebrow">ZeroTrace Engine</p>
-        <h1 data-i18n="cleanup.title">Cleanup Plan</h1>
-        <p class="page-desc" data-i18n="cleanup.description">Confirm this cleanup target list. Files are moved to ZeroTraceRecycle first.</p>
+        <h1 data-i18n="cleanup.title">Organizing Plan</h1>
+        <p class="page-desc" data-i18n="cleanup.description">Confirm this file organization plan. Files are moved to ZeroTraceRecycle first.</p>
       </div>
 
       <div class="header-actions">
         <button id="backButton" class="ghost-button nav-button" type="button"><span class="button-icon">↩</span><span data-i18n="common.buttons.backToMain">Back to Home</span></button>
         <button id="backScanButton" class="ghost-button nav-button" type="button"><span class="button-icon">↩</span><span data-i18n="common.buttons.backToScan">Back to Scan</span></button>
         <button id="reloadPlanButton" class="ghost-button" type="button"><span class="button-icon">↻</span><span data-i18n="common.buttons.resetPlan">Reset Plan</span></button>
-        <button id="executePlanButton" class="primary-button" type="button" disabled><span class="button-icon">🛡</span><span data-i18n="cleanup.execute">Execute Cleanup</span></button>
+        <button id="executePlanButton" class="primary-button" type="button" disabled><span class="button-icon">🛡</span><span data-i18n="cleanup.execute">Execute Plan</span></button>
       </div>
     </header>
 
@@ -110,10 +110,10 @@
 
         <label class="confirm-check">
           <input id="confirmExecuteCheck" type="checkbox" />
-          <span data-i18n="cleanup.confirmChecked">I have confirmed this cleanup plan</span>
+          <span data-i18n="cleanup.confirmChecked">I have confirmed this organizing plan</span>
         </label>
 
-        <p id="planHint" class="hint-text" data-i18n="cleanup.hints.confirm">Confirm the plan before executing cleanup.</p>
+        <p id="planHint" class="hint-text" data-i18n="cleanup.hints.confirm">Confirm the plan before execution.</p>
       </article>
     </section>
 
@@ -148,7 +148,7 @@
 
           <tbody id="planTableBody">
             <tr>
-              <td colspan="7" class="empty-cell" data-i18n="cleanup.noPlan">No cleanup plan</td>
+              <td colspan="7" class="empty-cell" data-i18n="cleanup.noPlan">No organizing plan</td>
             </tr>
           </tbody>
         </table>

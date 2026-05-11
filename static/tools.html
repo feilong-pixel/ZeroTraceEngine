@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="zh-CN" class="i18n-pending">
+
+<head>
+  <meta charset="UTF-8" />
+  <title>ZeroTrace Engine - Manual Tools</title>
+  <link rel="stylesheet" href="/static/css/style.css" />
+</head>
+
+<body>
+  <main class="tools-page">
+    <section class="page-header">
+      <div>
+        <p class="eyebrow" data-i18n="tools.heroKicker">Manual Entries</p>
+        <h1 data-i18n="tools.heroTitle">Manual Tools</h1>
+        <p class="page-desc" data-i18n="tools.heroDescription">Use this page as a manual entry table for ZeroTraceEngine, Windows, and browser cleanup tools.</p>
+      </div>
+      <div class="header-actions">
+        <button id="backButton" class="ghost-button" data-i18n="common.buttons.backToMain">Back to Home</button>
+      </div>
+    </section>
+
+    <section class="tools-grid">
+      <article class="panel-card">
+        <div>
+          <span class="card-kicker" data-i18n="tools.windowsCleanupKicker">Windows Built-in</span>
+          <h2 data-i18n="tools.windowsCleanupTitle">Windows Cleanup Tools</h2>
+          <p data-i18n="tools.windowsCleanupDesc">Open or copy Windows cleanup entries. These are manual system tools and are not executed by ZeroTraceEngine.</p>
+        </div>
+        <div class="tool-list">
+          <div class="browser-history-row">
+            <label for="diskCleanupCommand" data-i18n="tools.windowsDiskCleanup">Disk Cleanup</label>
+            <input id="diskCleanupCommand" class="path-readonly-input" type="text" value="cleanmgr /d C:" readonly />
+            <button id="copyDiskCleanupCommand" class="ghost-button" data-copy-value="cleanmgr /d C:" data-copy-status="#windowsToolsStatus" data-i18n="tools.copyAddress">Copy</button>
+          </div>
+          <div class="browser-history-row">
+            <label for="advancedDiskCleanupCommand" data-i18n="tools.windowsAdvancedCleanup">Advanced Disk Cleanup</label>
+            <input id="advancedDiskCleanupCommand" class="path-readonly-input" type="text" value="cleanmgr /sageset:1" readonly />
+            <button id="copyAdvancedDiskCleanupCommand" class="ghost-button" data-copy-value="cleanmgr /sageset:1" data-copy-status="#windowsToolsStatus" data-i18n="tools.copyAddress">Copy</button>
+          </div>
+          <div class="browser-history-row">
+            <label for="lowDiskCleanupCommand" data-i18n="tools.windowsLowDiskCleanup">Low Disk Cleanup</label>
+            <input id="lowDiskCleanupCommand" class="path-readonly-input" type="text" value="cleanmgr /LOWDISK" readonly />
+            <button id="copyLowDiskCleanupCommand" class="ghost-button" data-copy-value="cleanmgr /LOWDISK" data-copy-status="#windowsToolsStatus" data-i18n="tools.copyAddress">Copy</button>
+          </div>
+          <div class="browser-history-row">
+            <label data-i18n="tools.windowsStorageSettings">Windows Storage</label>
+            <input class="path-readonly-input" type="text" value="ms-settings:storagesense" readonly />
+            <a class="ghost-button tool-link-button" href="ms-settings:storagesense" data-i18n="tools.openSettings">Open</a>
+          </div>
+          <div class="browser-history-row">
+            <label data-i18n="tools.windowsCleanupRecommendations">Cleanup Recommendations</label>
+            <input class="path-readonly-input" type="text" value="ms-settings:storagerecommendations" readonly />
+            <a class="ghost-button tool-link-button" href="ms-settings:storagerecommendations" data-i18n="tools.openSettings">Open</a>
+          </div>
+          <div class="browser-history-row">
+            <label data-i18n="tools.windowsStorageSense">Storage Sense</label>
+            <input class="path-readonly-input" type="text" value="ms-settings:storagepolicies" readonly />
+            <a class="ghost-button tool-link-button" href="ms-settings:storagepolicies" data-i18n="tools.openSettings">Open</a>
+          </div>
+          <div class="tool-guide">
+            <h3 data-i18n="tools.windowsGuideTitle">Windows Cleanup Commands</h3>
+            <ol class="guide-step-list">
+              <li data-i18n-html="tools.windowsGuideStep1">Run <code>cleanmgr /d C:</code> to analyze disk cleanup options for the system drive.</li>
+              <li data-i18n-html="tools.windowsGuideStep2">Open <code>ms-settings:storagesense</code> to review Storage Sense settings and automatic cleanup policies.</li>
+              <li data-i18n-html="tools.windowsGuideStep3">Open <code>ms-settings:storagerecommendations</code> to get storage cleanup recommendations from Windows.</li>
+              <li data-i18n-html="tools.windowsGuideStep4">Use <code>cleanmgr /sageset:1</code> then <code>cleanmgr /sagerun:1</code> for advanced cleanup profiles.</li>
+            </ol>
+          </div>
+          <p id="windowsToolsStatus" class="muted" role="status" aria-live="polite" data-i18n="tools.windowsToolsNote">Windows built-in tools may show a browser or system confirmation before opening.</p>
+        </div>
+      </article>
+
+      <article class="panel-card">
+        <div>
+          <span class="card-kicker" data-i18n="tools.browserHistoryKicker">Browser History</span>
+          <h2 data-i18n="tools.browserHistoryTitle">Browser History Cleanup</h2>
+          <p data-i18n="tools.browserHistoryDesc">Copy the browser history address, then paste it into that browser's address bar to remove browsing traces with built-in controls.</p>
+        </div>
+        <div class="tool-list">
+          <div class="browser-history-row">
+            <label for="chromeHistoryUrl" data-i18n="tools.openChromeHistory">Chrome History</label>
+            <input id="chromeHistoryUrl" class="path-readonly-input" type="text" value="chrome://history/" readonly />
+            <button id="copyChromeHistory" class="ghost-button" data-copy-value="chrome://history/" data-copy-status="#browserHistoryStatus" data-i18n="tools.copyAddress">Copy</button>
+          </div>
+          <div class="browser-history-row">
+            <label for="braveHistoryUrl" data-i18n="tools.openBraveHistory">Brave History</label>
+            <input id="braveHistoryUrl" class="path-readonly-input" type="text" value="brave://history/" readonly />
+            <button id="copyBraveHistory" class="ghost-button" data-copy-value="brave://history/" data-copy-status="#browserHistoryStatus" data-i18n="tools.copyAddress">Copy</button>
+          </div>
+          <div class="browser-history-row">
+            <label for="edgeHistoryUrl" data-i18n="tools.openEdgeHistory">Edge History</label>
+            <input id="edgeHistoryUrl" class="path-readonly-input" type="text" value="edge://history/all" readonly />
+            <button id="copyEdgeHistory" class="ghost-button" data-copy-value="edge://history/all" data-copy-status="#browserHistoryStatus" data-i18n="tools.copyAddress">Copy</button>
+          </div>
+          <div class="browser-history-row">
+            <label for="firefoxHistoryUrl" data-i18n="tools.openFirefoxHistory">Firefox History</label>
+            <input id="firefoxHistoryUrl" class="path-readonly-input" type="text" value="Ctrl+Shift+Del" readonly />
+            <button id="copyFirefoxHistory" class="ghost-button" data-copy-value="Ctrl+Shift+Del" data-copy-status="#browserHistoryStatus" data-i18n="tools.copyAddress">Copy</button>
+          </div>
+          <div class="browser-history-row">
+            <label for="libreWolfHistoryUrl" data-i18n="tools.openLibreWolfHistory">LibreWolf History</label>
+            <input id="libreWolfHistoryUrl" class="path-readonly-input" type="text" value="Ctrl+Shift+Del" readonly />
+            <button id="copyLibreWolfHistory" class="ghost-button" data-copy-value="Ctrl+Shift+Del" data-copy-status="#browserHistoryStatus" data-i18n="tools.copyAddress">Copy</button>
+          </div>
+          <div class="browser-history-row">
+            <label for="operaHistoryUrl" data-i18n="tools.openOperaHistory">Opera History</label>
+            <input id="operaHistoryUrl" class="path-readonly-input" type="text" value="opera://history/" readonly />
+            <button id="copyOperaHistory" class="ghost-button" data-copy-value="opera://history/" data-copy-status="#browserHistoryStatus" data-i18n="tools.copyAddress">Copy</button>
+          </div>
+          <div class="browser-history-row">
+            <label for="vivaldiHistoryUrl" data-i18n="tools.openVivaldiHistory">Vivaldi History</label>
+            <input id="vivaldiHistoryUrl" class="path-readonly-input" type="text" value="vivaldi://history/" readonly />
+            <button id="copyVivaldiHistory" class="ghost-button" data-copy-value="vivaldi://history/" data-copy-status="#browserHistoryStatus" data-i18n="tools.copyAddress">Copy</button>
+          </div>
+          <div class="tool-guide">
+            <h3 data-i18n="tools.browserGuideTitle">How to clear browser history</h3>
+            <ol class="guide-step-list">
+              <li data-i18n="tools.browserGuideStep1">Paste the browser history address into the browser address bar and press Enter.</li>
+              <li data-i18n="tools.browserGuideStep2">Open the browser history page, then use the built-in option to clear browsing data or delete history.</li>
+              <li data-i18n="tools.browserGuideStep3">Choose the time range you want to remove and confirm the cleanup.</li>
+              <li data-i18n="tools.browserGuideStep4">If the internal URL is blocked, use the browser menu to reach history or privacy settings.</li>
+              <li data-i18n-html="tools.browserGuideStep5">For direct cleanup, copy a clear-data address such as <code>chrome://settings/clearBrowserData</code> or <code>edge://settings/clearBrowserData</code> into the browser address bar.</li>
+            </ol>
+          </div>
+          <p id="browserHistoryStatus" class="muted" role="status" aria-live="polite" data-i18n="tools.browserHistoryNote">Browser history cleanup is handled by the browser. Browser security blocks web pages from opening internal history pages directly.</p>
+        </div>
+      </article>
+    </section>
+  </main>
+
+  <div id="dialogOverlay" class="dialog-overlay is-hidden" role="presentation">
+    <div class="dialog-box" role="dialog" aria-modal="true" aria-labelledby="dialogTitle">
+      <h2 id="dialogTitle">ZeroTraceEngine</h2>
+      <div id="dialogMessage" class="dialog-message"></div>
+      <div class="dialog-actions">
+        <button id="dialogCancelButton" type="button" class="ghost" data-i18n="dialog.buttons.cancel">Cancel</button>
+        <button id="dialogConfirmButton" type="button" class="primary-button" data-i18n="dialog.buttons.ok">OK</button>
+      </div>
+    </div>
+  </div>
+
+  <script type="module" src="/static/js/app.js"></script>
+</body>
+
+</html>

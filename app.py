@@ -11,15 +11,19 @@ from starlette.responses import Response
 from core.storage.database import (
     init_db,
 )
-from routers import ROUTERS
+from core.routers import ROUTERS
 
 BASE_DIR = Path(__file__).resolve().parent
 STATIC_DIR = BASE_DIR / "static"
 PAGE_FILES = {
     "/scan": STATIC_DIR / "scan.html",
+    "/duplicates": STATIC_DIR / "duplicates.html",
+    "/registry": STATIC_DIR / "registry.html",
     "/cleanup": STATIC_DIR / "cleanup.html",
     "/recycle": STATIC_DIR / "recycle.html",
     "/logs": STATIC_DIR / "logs.html",
+    "/tools": STATIC_DIR / "tools.html",
+    "/app-scan": STATIC_DIR / "app-scan.html",
 }
 NO_CACHE_PATHS = {"/", "/index.html", *PAGE_FILES.keys()}
 NO_CACHE_SUFFIXES = (".html", ".js", ".css")

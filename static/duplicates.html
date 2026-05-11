@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="zh-CN" class="i18n-pending">
+
+<head>
+  <meta charset="UTF-8" />
+  <title>ZeroTrace Engine - Duplicate Scan</title>
+  <link rel="stylesheet" href="/static/css/style.css" />
+</head>
+
+<body>
+  <main class="duplicates-page">
+    <header class="page-header">
+      <div>
+        <p class="eyebrow">ZeroTrace Engine</p>
+        <h1 data-i18n="duplicates.title">Duplicate Scan</h1>
+        <p class="page-desc" data-i18n="duplicates.description">Scan folders for duplicate files. Results are displayed only until you generate a reversible organizing plan.</p>
+      </div>
+      <div class="header-actions">
+        <button id="backButton" class="ghost-button nav-button" data-i18n="common.buttons.backToMain">Back to Home</button>
+        <button id="clearDuplicateResultsButton" class="ghost-button danger-outline" disabled data-i18n="duplicates.clearResults">Clear Results</button>
+        <button id="startDuplicateScanButton" class="primary-button" data-i18n="duplicates.startScan">Start Duplicate Scan</button>
+      </div>
+    </header>
+
+    <section class="duplicate-lifecycle-panel">
+      <div class="duplicate-lifecycle-status">
+        <span class="summary-label" data-i18n="duplicates.lifecycle.title">Scan Lifecycle</span>
+        <strong id="duplicateLifecycleState" data-i18n="duplicates.status.idle">Not Scanned</strong>
+        <p><span data-i18n="duplicates.lifecycle.stage">Stage</span>: <b id="duplicateLifecycleStage">-</b></p>
+        <p class="duplicate-current-file-row">
+          <span data-i18n="duplicates.lifecycle.currentFile">Current File</span>:
+          <b id="duplicateCurrentFile">-</b>
+          <button id="copyDuplicateCurrentFileButton" class="copy-mini-button" type="button"
+            data-i18n-title="duplicates.copyCurrentFile" title="Copy file name">Copy</button>
+        </p>
+      </div>
+      <div class="duplicate-lifecycle-main">
+        <div class="duplicate-stage-track" aria-label="Duplicate scan stages">
+          <span class="duplicate-stage is-active" data-stage="size" data-i18n="duplicates.stages.size">Size Grouping</span>
+          <span class="duplicate-stage" data-stage="quick" data-i18n="duplicates.stages.quick">Quick Hash</span>
+          <span class="duplicate-stage" data-stage="full" data-i18n="duplicates.stages.full">Full Hash</span>
+          <span class="duplicate-stage" data-stage="groups" data-i18n="duplicates.stages.groups">Group Build</span>
+        </div>
+        <div class="duplicate-progress-track" aria-hidden="true">
+          <span id="duplicateProgressBar"></span>
+        </div>
+      </div>
+      <div class="duplicate-lifecycle-metrics">
+        <span><b id="duplicateScannedFiles">0</b> <span data-i18n="duplicates.lifecycle.filesChecked">files checked</span></span>
+        <span><b id="duplicateCandidateFiles">0</b> <span data-i18n="duplicates.lifecycle.candidates">hash candidates</span></span>
+        <!-- <span><b id="duplicateScanSpeed">-</b> <span data-i18n="duplicates.lifecycle.speed">files/s</span></span>
+        <span><b id="duplicateRemainingTime">-</b> <span data-i18n="duplicates.lifecycle.remaining">remaining</span></span> -->
+      </div>
+    </section>
+
+    <section class="toolbar-panel duplicate-input-panel">
+      <label class="path-input-wide">
+        <span data-i18n="duplicates.pathInput">Folder Path</span>
+        <input id="duplicatePathInput" class="path-readonly-input editable-path-input" type="text"
+          data-i18n-placeholder="duplicates.pathPlaceholder" placeholder="Enter a folder path to scan" />
+      </label>
+      <button id="addDuplicateRootButton" class="ghost-button" data-i18n="duplicates.addRoot">Add</button>
+      <p id="duplicateInputStatus" class="muted" role="status" aria-live="polite"></p>
+    </section>
+
+    <section class="table-panel">
+      <div class="table-header">
+        <h2 data-i18n="duplicates.rootListTitle">Scan Folders</h2>
+        <p data-i18n="duplicates.rootListHint">The folder list is locked while scanning.</p>
+      </div>
+      <div class="scan-table-wrap">
+        <table class="scan-table duplicate-root-table">
+          <thead>
+            <tr>
+              <th class="col-path" data-i18n="common.labels.path">Path</th>
+              <th class="col-status" data-i18n="common.labels.status">Status</th>
+              <th class="col-action" data-i18n="common.labels.action">Action</th>
+            </tr>
+          </thead>
+          <tbody id="duplicateRootBody"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="summary-grid duplicate-result-summary">
+      <article class="summary-card">
+        <span class="summary-label" data-i18n="duplicates.groupCount">Duplicate Groups</span>
+        <strong id="duplicateGroupCount">0</strong>
+      </article>
+      <article class="summary-card">
+        <span class="summary-label" data-i18n="duplicates.fileCount">Duplicate Files</span>
+        <strong id="duplicateFileCount">0</strong>
+      </article>
+      <article class="summary-card">
+        <span class="summary-label" data-i18n="duplicates.reclaimableSpace">Reclaimable Space</span>
+        <strong id="duplicateTotalSize">0 B</strong>
+      </article>
+      <article class="summary-card">
+        <span class="summary-label" data-i18n="common.labels.selected">Selected</span>
+        <strong class="summary-inline-value"><span id="duplicateSelectedCount">0</span><small
+            id="duplicateSelectedSize">0 B</small></strong>
+      </article>
+      <article class="summary-card">
+        <span class="summary-label" data-i18n="common.labels.status">Status</span>
+        <strong id="duplicateScanStatus" data-i18n="duplicates.status.idle">Not Scanned</strong>
+      </article>
+    </section>
+
+    <section class="toolbar-panel duplicate-filter-panel">
+      <div class="toolbar-left">
+        <label>
+          <span data-i18n="common.labels.category">Category</span>
+          <select id="duplicateCategoryFilter">
+            <option value="" data-i18n="common.labels.all">All</option>
+            <option value="image" data-i18n="duplicates.categories.image">Images</option>
+            <option value="video" data-i18n="duplicates.categories.video">Videos</option>
+            <option value="document" data-i18n="duplicates.categories.document">Documents</option>
+            <option value="archive" data-i18n="duplicates.categories.archive">Archives</option>
+            <option value="other" data-i18n="common.categories.other">Other</option>
+          </select>
+        </label>
+        <label>
+          <span data-i18n="common.labels.size">Size</span>
+          <select id="duplicateSizeFilter">
+            <option value="0" data-i18n="common.labels.all">All</option>
+            <option value="1048576">&gt; 1 MB</option>
+            <option value="10485760">&gt; 10 MB</option>
+            <option value="104857600">&gt; 100 MB</option>
+          </select>
+        </label>
+        <label>
+          <span data-i18n="common.labels.riskLevel">Risk Level</span>
+          <select id="duplicateRiskFilter">
+            <option value="" data-i18n="common.labels.all">All</option>
+            <option value="low" data-i18n="common.risks.low">Low</option>
+            <option value="medium" data-i18n="common.risks.medium">Medium</option>
+            <option value="high" data-i18n="common.risks.high">High</option>
+          </select>
+        </label>
+      </div>
+      <div class="duplicate-strategy-group" role="radiogroup" aria-label="Duplicate selection strategies">
+        <label class="duplicate-strategy-option">
+          <input type="radio" name="duplicateSelectionStrategy" value="smart" checked />
+          <span data-i18n="duplicates.smartSelect">Smart Select</span>
+        </label>
+        <label class="duplicate-strategy-option">
+          <input type="radio" name="duplicateSelectionStrategy" value="highRisk" />
+          <span data-i18n="duplicates.highRiskOnly">High Risk Only</span>
+        </label>
+        <label class="duplicate-strategy-option">
+          <input type="radio" name="duplicateSelectionStrategy" value="newest" />
+          <span data-i18n="duplicates.keepNewest">Keep Newest</span>
+        </label>
+        <label class="duplicate-strategy-option">
+          <input type="radio" name="duplicateSelectionStrategy" value="oldest" />
+          <span data-i18n="duplicates.keepOldest">Keep Oldest</span>
+        </label>
+      </div>
+      <div class="duplicate-strategy-row">
+        <div class="toolbar-left">
+          <label>
+            <span data-i18n="duplicates.sortLabel">Sort</span>
+            <select id="duplicateSortSelect">
+              <option value="reclaimable" data-i18n="duplicates.sort.reclaimable">Reclaimable</option>
+              <option value="risk" data-i18n="duplicates.sort.risk">Risk</option>
+              <option value="time" data-i18n="duplicates.sort.time">Newest</option>
+              <option value="path" data-i18n="duplicates.sort.path">Path</option>
+            </select>
+          </label>
+          <label>
+            <span data-i18n="duplicates.searchLabel">Search</span>
+            <input id="duplicateSearchInput" type="search" data-i18n-placeholder="duplicates.searchPlaceholder" placeholder="File name or path" />
+          </label>
+        </div>
+        <button id="selectAllDuplicatesButton" class="ghost-button" disabled data-i18n="duplicates.selectCurrent">Select</button>
+        <button id="clearDuplicateSelectionButton" class="ghost-button" disabled data-i18n="duplicates.clearSelection">Clear Selection</button>
+        <button id="createDuplicatePlanButton" class="primary-button" disabled data-i18n="duplicates.createPlan">Create Organizing Plan</button>
+      </div>
+    </section>
+
+    <section class="table-panel">
+      <div class="table-header">
+        <h2 data-i18n="duplicates.resultTitle">Duplicate Groups</h2>
+        <p data-i18n="duplicates.resultHint">Each group keeps at least one file. Selected files can be moved to ZeroTraceRecycle from the organizing plan.</p>
+      </div>
+      <div id="duplicateGroupList" class="duplicate-group-list">
+        <p class="muted" data-i18n="duplicates.noResults">No duplicate results</p>
+      </div>
+    </section>
+  </main>
+
+  <div id="dialogOverlay" class="dialog-overlay is-hidden" role="presentation">
+    <div class="dialog-box" role="dialog" aria-modal="true" aria-labelledby="dialogTitle">
+      <h2 id="dialogTitle">ZeroTraceEngine</h2>
+      <div id="dialogMessage" class="dialog-message"></div>
+      <div class="dialog-actions">
+        <button id="dialogCancelButton" type="button" class="ghost" data-i18n="dialog.buttons.cancel">Cancel</button>
+        <button id="dialogConfirmButton" type="button" class="primary-button" data-i18n="dialog.buttons.ok">OK</button>
+      </div>
+    </div>
+  </div>
+
+  <script type="module" src="/static/js/app.js"></script>
+</body>
+
+</html>

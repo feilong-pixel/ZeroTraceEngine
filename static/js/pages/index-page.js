@@ -8,8 +8,13 @@ function getIndexElements() {
     openRecycleButton: $("#openRecycleButton"),
     openScanButton: $("#openScanButton"),
     openCleanupButton: $("#openCleanupButton"),
+    openToolsButton: $("#openToolsButton"),
     openRecycleCardButton: $("#openRecycleCardButton"),
     openLogsButton: $("#openLogsButton"),
+    openRegistryButton: $("#openRegistryButton"),
+    openDuplicatesButton: $("#openDuplicatesButton"),
+    openUserdirButton: $("#openUserdirButton"),
+    openAppscanButton: $("#openAppscanButton"),
     recycleCount: $("#recycleCount"),
     logCount: $("#logCount"),
   };
@@ -53,9 +58,14 @@ function bindIndexEvents(els) {
   on(els.startScanButton, "click", () => goTo("/scan"));
   on(els.openScanButton, "click", () => goTo("/scan"));
   on(els.openCleanupButton, "click", () => goTo("/cleanup"));
+  on(els.openToolsButton, "click", () => goTo("/tools"));
   on(els.openRecycleButton, "click", () => goTo("/recycle"));
   on(els.openRecycleCardButton, "click", () => goTo("/recycle"));
   on(els.openLogsButton, "click", () => goTo("/logs"));
+  if (els.openRegistryButton) on(els.openRegistryButton, "click", () => goTo("/registry"));
+  if (els.openDuplicatesButton) on(els.openDuplicatesButton, "click", () => goTo("/duplicates"));
+  if (els.openUserdirButton) on(els.openUserdirButton, "click", () => goTo("/user-directory"));
+  if (els.openAppscanButton) on(els.openAppscanButton, "click", () => goTo("/app-scan"));
 }
 
 export function initIndexPage() {

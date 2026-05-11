@@ -4,7 +4,7 @@ from fastapi import APIRouter
 from fastapi.responses import FileResponse, Response
 
 
-BASE_DIR = Path(__file__).resolve().parent.parent
+BASE_DIR = Path(__file__).resolve().parent.parent.parent
 STATIC_DIR = BASE_DIR / "static"
 INDEX_FILE = STATIC_DIR / "index.html"
 FAVICON_FILE = BASE_DIR / "ZeroTrace.ico"

@@ -232,13 +232,14 @@ fileList.txt
 data/
 logs/
 ZeroTraceRecycle/
+ZeroTraceRegistryRecycle/
 
 # Local project notes
 AGENTS.md
 SCHEMA.md
-開発線路.md
 README.md
 README_zh.md
 
 # Local media/assets not for GitHub
 docs/screenshots/
+

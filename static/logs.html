@@ -13,7 +13,7 @@
       <div>
         <p class="eyebrow">ZeroTrace Engine</p>
         <h1 data-i18n="logs.title">Audit Logs</h1>
-        <p class="page-desc" data-i18n="logs.description">Review cleanup, restore, failure, and other key operation records.</p>
+        <p class="page-desc" data-i18n="logs.description">Review organize, restore, failure, and other key operation records.</p>
       </div>
 
       <div class="header-actions">
@@ -55,6 +55,8 @@
             <option value="scan" data-i18n="common.actions.scan">Scan</option>
             <option value="plan" data-i18n="common.actions.plan">Plan Created</option>
             <option value="clean" data-i18n="common.actions.clean">Clean</option>
+            <option value="registry_execute" data-i18n="common.actions.registryExecute">Registry Execute</option>
+            <option value="registry_restore" data-i18n="common.actions.registryRestore">Registry Restore</option>
             <option value="restore" data-i18n="common.actions.restore">Restore</option>
             <option value="delete" data-i18n="common.actions.delete">Delete</option>
           </select>
@@ -75,7 +77,8 @@
           <select id="auditSourceFilter">
             <option value="" data-i18n="common.labels.all">All</option>
             <option value="scan" data-i18n="logs.sourceScan">Scan Page</option>
-            <option value="plan" data-i18n="logs.sourcePlan">Cleanup Plan</option>
+            <option value="plan" data-i18n="logs.sourcePlan">Organizing Plan</option>
+            <option value="registry" data-i18n="logs.sourceRegistry">Registry</option>
             <option value="recycle" data-i18n="logs.sourceRecycle">Recycle Bin</option>
             <option value="system" data-i18n="common.states.system">System</option>
           </select>
@@ -92,7 +95,7 @@
       <article class="panel-card">
         <p class="eyebrow">Audit</p>
         <h2 data-i18n="logs.scopeTitle">Record Scope</h2>
-        <p class="muted" data-i18n="logs.scopeDescription">Audit logs track key operations, including cleanup execution, restore, and failures.</p>
+        <p class="muted" data-i18n="logs.scopeDescription">Audit logs track key operations, including plan execution, restore, and failures.</p>
       </article>
 
       <article class="panel-card">

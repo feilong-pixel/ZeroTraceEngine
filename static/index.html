@@ -15,8 +15,8 @@
           <p class="eyebrow">ZeroTrace Engine v0.1</p>
           <span class="safety-pill"><span class="status-dot"></span><span data-i18n="main.safetyMode">Safety Mode: Enabled</span></span>
         </div>
-        <h1 data-i18n="main.intro">System Cleanup Tool · Auditable · Reversible</h1>
-        <p class="page-desc" data-i18n="main.description">A local cleanup and recycle workspace. Scan first, confirm next, move last.</p>
+        <h1 data-i18n="main.intro">Local File Organizer · Auditable · Reversible</h1>
+        <p class="page-desc" data-i18n="main.description">A local-first file organization workspace. Scan first, confirm next, move last.</p>
 
         <div class="hero-actions">
           <button id="startScanButton" class="primary-button"><span class="button-icon">🔍</span><span data-i18n="common.buttons.startScan">Start Scan</span></button>
@@ -58,7 +58,7 @@
       <div class="workflow-panel">
         <div class="section-heading">
           <p class="eyebrow">Workflow</p>
-          <h2 data-i18n="main.workflow">Cleanup Workflow</h2>
+          <h2 data-i18n="main.workflow">Organizing Workflow</h2>
         </div>
 
         <div class="workflow-steps">
@@ -116,11 +116,56 @@
 
         <article class="dashboard-card">
           <div>
+            <span class="card-kicker">Duplicate</span>
+            <h2 data-i18n="duplicates.title">Duplicate Scan</h2>
+            <p data-i18n="duplicates.description">Scan folders for duplicate files. Results are displayed only until you generate a reversible organizing plan.</p>
+          </div>
+          <button id="openDuplicatesButton" class="ghost-button" data-i18n="main.openDuplicates">Open Duplicate Scan</button>
+        </article>
+
+        <article class="dashboard-card">
+          <div>
+            <span class="card-kicker">Registry</span>
+            <h2 data-i18n="registry.title">Registry Scan</h2>
+            <p data-i18n="registry.description">Scan the Windows registry for invalid, orphaned, and residual entries.</p>
+          </div>
+          <button id="openRegistryButton" class="ghost-button" data-i18n="registry.buttons.startScan">Open Registry Scan</button>
+        </article>
+
+        <article class="dashboard-card">
+          <div>
+            <span class="card-kicker">User Dir</span>
+            <h2 data-i18n="main.userdirCardTitle">User Directory Scan</h2>
+            <p data-i18n="main.userdirCardDesc">Deep-scan %USERPROFILE% to identify AI cache, Python env, IDE build cache, logs, and large files.</p>
+          </div>
+          <button id="openUserdirButton" class="ghost-button" data-i18n="main.openUserdir">Open User Directory Scan</button>
+        </article>
+
+        <article class="dashboard-card">
+          <div>
+            <span class="card-kicker">App Scan</span>
+            <h2 data-i18n="appscan.title">Application Scan</h2>
+            <p data-i18n="appscan.description">Identify installed applications, detect residual registry entries, and visualize disk usage by install directory.</p>
+          </div>
+          <button id="openAppscanButton" class="ghost-button" data-i18n="appscan.buttons.startScan">Open App Scan</button>
+        </article>
+
+        <article class="dashboard-card">
+          <div>
             <span class="card-kicker">Audit</span>
             <h2 data-i18n="main.logsCardTitle">Audit Logs</h2>
-            <p data-i18n="main.logsCardDesc">Review scan, cleanup, restore, and failure records.</p>
+            <p data-i18n="main.logsCardDesc">Review scan, organize, restore, and failure records.</p>
           </div>
           <button id="openLogsButton" class="ghost-button" data-i18n="main.openLogs">View Logs</button>
+        </article>
+
+        <article class="dashboard-card">
+          <div>
+            <span class="card-kicker" data-i18n="tools.cardKicker">Tools</span>
+            <h2 data-i18n="main.toolsCardTitle">Manual Tools</h2>
+            <p data-i18n="main.toolsCardDesc">Open system and browser cleanup entries for manual operation.</p>
+          </div>
+          <button id="openToolsButton" class="ghost-button" data-i18n="main.openTools">Open Tools</button>
         </article>
       </div>
     </section>

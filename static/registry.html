@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="zh-CN" class="i18n-pending">
+
+<head>
+  <meta charset="UTF-8" />
+  <title>ZeroTrace Engine - Registry Scan</title>
+  <link rel="stylesheet" href="/static/css/style.css" />
+</head>
+
+<body>
+  <main class="registry-page">
+
+    <header class="page-header">
+      <div>
+        <p class="eyebrow">ZeroTrace Engine</p>
+        <h1 data-i18n="registry.title">Registry Scan</h1>
+        <p class="page-desc" data-i18n="registry.description">Scan the Windows registry for invalid, orphaned, and residual entries. Generate a reversible cleanup plan.</p>
+      </div>
+      <div class="header-actions">
+        <button id="registryBackButton" class="ghost-button nav-button" data-i18n="common.buttons.backToMain">Back to Home</button>
+        <button id="registryClearButton" class="ghost-button danger-outline" disabled data-i18n="registry.buttons.clearResults">Clear Results</button>
+        <button id="registryStartButton" class="primary-button" data-i18n="registry.buttons.startScan">Start Scan</button>
+      </div>
+    </header>
+
+    <section class="toolbar-panel registry-control-bar">
+      <label class="control-label-group">
+        <span data-i18n="registry.labels.scope">Scope</span>
+        <select id="registryScopeSelect" class="select-input">
+          <option value="Standard" data-i18n="registry.scope.standard">Standard (Recommended)</option>
+          <option value="Extended" data-i18n="registry.scope.extended">Extended (Services + COM)</option>
+        </select>
+      </label>
+      <label class="control-label-group">
+        <span data-i18n="registry.labels.mode">Mode</span>
+        <select id="registryModeSelect" class="select-input">
+          <option value="Safe" data-i18n="registry.mode.safe">Safe Mode (Default)</option>
+          <option value="Advanced" data-i18n="registry.mode.advanced">Advanced Mode</option>
+        </select>
+      </label>
+      <div class="control-status-group">
+        <span id="registryScanStatusText" class="muted" data-i18n="registry.status.idle">Ready to scan</span>
+      </div>
+    </section>
+
+    <section id="registryScanProgress" class="toolbar-panel registry-phase-bar is-hidden">
+      <div class="duplicate-stage-track">
+        <span class="duplicate-stage is-active" id="phaseCollect" data-i18n="registry.phases.collect">Collecting keys</span>
+        <span class="duplicate-stage" id="phaseResolve" data-i18n="registry.phases.resolve">Resolving targets</span>
+        <span class="duplicate-stage" id="phaseRules" data-i18n="registry.phases.rules">Applying rules</span>
+        <span class="duplicate-stage" id="phaseRisk" data-i18n="registry.phases.risk">Risk analysis</span>
+      </div>
+      <div class="duplicate-progress-track">
+        <span id="registryProgressBar" class="progress-indeterminate"></span>
+      </div>
+    </section>
+
+    <section id="registryEmptyState" class="empty-state-section">
+      <div class="empty-state">
+        <p class="empty-title" data-i18n="registry.empty.title">No scan performed yet</p>
+        <p class="empty-desc" data-i18n="registry.empty.description">Select a scope and click Start Scan to analyse the Windows registry.</p>
+      </div>
+    </section>
+
+    <section id="registryNoIssues" class="empty-state-section is-hidden">
+      <div class="empty-state">
+        <p class="empty-title" data-i18n="registry.noIssues.title">No issues found</p>
+        <p class="empty-desc" data-i18n="registry.noIssues.description">Your registry is clean. Try Extended or Advanced mode for a deeper scan.</p>
+        <button id="registryRescanButton" class="ghost-button" data-i18n="registry.buttons.rescan">Rescan</button>
+      </div>
+    </section>
+
+    <section id="registryErrorState" class="empty-state-section is-hidden">
+      <div class="empty-state empty-state-error">
+        <p class="empty-title" data-i18n="registry.error.title">Scan failed</p>
+        <p id="registryErrorMessage" class="empty-desc"></p>
+        <button id="registryRetryButton" class="ghost-button" data-i18n="registry.buttons.retry">Retry</button>
+      </div>
+    </section>
+
+    <section id="registryResultsSection" class="registry-results-section is-hidden">
+
+      <!-- Stats cards -->
+      <div class="registry-stats-grid">
+        <article class="summary-card summary-card-primary">
+          <span class="summary-label" data-i18n="registry.stats.total">Total Issues</span>
+          <strong id="registryStatTotal">0</strong>
+        </article>
+        <article class="summary-card">
+          <span class="summary-label" data-i18n="registry.stats.safe">Safe</span>
+          <strong id="registryStatSafe">0</strong>
+        </article>
+        <article class="summary-card">
+          <span class="summary-label" data-i18n="registry.stats.medium">Medium</span>
+          <strong id="registryStatMedium">0</strong>
+        </article>
+        <article class="summary-card">
+          <span class="summary-label" data-i18n="registry.stats.high">High</span>
+          <strong id="registryStatHigh">0</strong>
+        </article>
+        <article class="summary-card">
+          <span class="summary-label" data-i18n="registry.stats.selected">Selected</span>
+          <strong id="registryStatSelected">0</strong>
+        </article>
+      </div>
+
+      <!-- Filter bar -->
+      <div class="toolbar-panel registry-filter-bar">
+        <label class="filter-label-group">
+          <span data-i18n="common.labels.category">Category</span>
+          <select id="registryCategoryFilter" class="select-input select-input-sm">
+            <option value="" data-i18n="common.labels.all">All</option>
+            <option value="InvalidPath"      data-i18n="registry.categories.invalidPath">Invalid Path</option>
+            <option value="OrphanCOM"        data-i18n="registry.categories.orphanCom">Orphan COM</option>
+            <option value="InvalidUninstall" data-i18n="registry.categories.invalidUninstall">Invalid Uninstall</option>
+            <option value="InvalidService"   data-i18n="registry.categories.invalidService">Invalid Service</option>
+            <option value="StartupIssue"     data-i18n="registry.categories.startupIssue">Startup Issue</option>
+            <option value="FileAssociation"  data-i18n="registry.categories.fileAssociation">File Association</option>
+          </select>
+        </label>
+        <label class="filter-label-group">
+          <span data-i18n="common.labels.riskLevel">Risk</span>
+          <select id="registryRiskFilter" class="select-input select-input-sm">
+            <option value="" data-i18n="common.labels.all">All</option>
+            <option value="Safe" data-i18n="registry.risks.safe">Safe</option>
+            <option value="Medium" data-i18n="registry.risks.medium">Medium</option>
+            <option value="High" data-i18n="registry.risks.high">High</option>
+          </select>
+        </label>
+        <label class="filter-label-group">
+          <span data-i18n="common.labels.source">Source</span>
+          <select id="registrySourceFilter" class="select-input select-input-sm">
+            <option value="" data-i18n="common.labels.all">All</option>
+            <option value="Startup"         data-i18n="registry.sources.startup">Startup</option>
+            <option value="StartupApproved" data-i18n="registry.sources.startupApproved">Startup Approved</option>
+            <option value="Uninstall"       data-i18n="registry.sources.uninstall">Uninstall</option>
+            <option value="AppPaths"        data-i18n="registry.sources.appPaths">App Paths</option>
+            <option value="COM"             data-i18n="registry.sources.com">COM</option>
+            <option value="Service"         data-i18n="registry.sources.service">Service</option>
+            <option value="FileAssociation" data-i18n="registry.sources.fileAssociation">File Assoc</option>
+            <option value="ScheduledTask"   data-i18n="registry.sources.scheduledTask">Scheduled Task</option>
+          </select>
+        </label>
+        <label class="filter-label-group">
+          <span data-i18n="registry.labels.hive">Hive</span>
+          <select id="registryHiveFilter" class="select-input select-input-sm">
+            <option value="" data-i18n="common.labels.all">All</option>
+            <option value="HKCU">HKCU</option>
+            <option value="HKLM">HKLM</option>
+            <option value="HKCR">HKCR</option>
+            <option value="HKU">HKU</option>
+            <option value="HKCC">HKCC</option>
+          </select>
+        </label>
+        <label class="filter-label-group">
+          <span data-i18n="registry.labels.confidence">Confidence</span>
+          <select id="registryConfidenceFilter" class="select-input select-input-sm">
+            <option value="" data-i18n="common.labels.all">All</option>
+            <option value="High" data-i18n="registry.confidence.high">High confidence</option>
+            <option value="Medium" data-i18n="registry.confidence.medium">Medium confidence</option>
+            <option value="Low" data-i18n="registry.confidence.low">Low confidence</option>
+          </select>
+        </label>
+        <label class="filter-label-group">
+          <span data-i18n="registry.labels.validation">Validation</span>
+          <select id="registryValidationFilter" class="select-input select-input-sm">
+            <option value="" data-i18n="common.labels.all">All</option>
+            <option value="path_missing" data-i18n="registry.validation.pathMissingShort">Path missing</option>
+            <option value="command_missing" data-i18n="registry.validation.commandMissingShort">Command missing</option>
+            <option value="unverifiable_path" data-i18n="registry.validation.unverifiablePathShort">Unverifiable</option>
+            <option value="no_target" data-i18n="registry.validation.noTargetShort">No target</option>
+          </select>
+        </label>
+        <label class="filter-label-group filter-search-group">
+          <span data-i18n="registry.labels.search">Search</span>
+          <input id="registrySearchInput" class="search-input" type="text" data-i18n-placeholder="registry.labels.searchPlaceholder" placeholder="Key path / value / target…" />
+        </label>
+      </div>
+
+      <div class="registry-layer-tabs" role="group" aria-label="Registry result layers">
+        <button class="registry-layer-tab is-active" data-layer="all" type="button" data-i18n="registry.layers.all">All</button>
+        <button class="registry-layer-tab" data-layer="executable" type="button" data-i18n="registry.layers.executable">Executable</button>
+        <button class="registry-layer-tab" data-layer="review" type="button" data-i18n="registry.layers.review">Review</button>
+        <button class="registry-layer-tab" data-layer="diagnostic" type="button" data-i18n="registry.layers.diagnostic">Diagnostic</button>
+      </div>
+
+      <div id="registryGroupList" class="registry-group-list"></div>
+
+    </section>
+
+    <section id="registryDiagnosticsSection" class="registry-results-section is-hidden">
+      <div class="section-heading">
+        <p class="eyebrow" data-i18n="registry.diagnostics.kicker">Diagnostics</p>
+        <h2 data-i18n="registry.diagnostics.title">Scan Diagnostics</h2>
+      </div>
+      <div id="registryDiagnosticsList" class="registry-group-list"></div>
+    </section>
+
+    <section id="registryPlanHistorySection" class="registry-results-section registry-plan-history is-hidden">
+      <div class="section-heading">
+        <p class="eyebrow" data-i18n="registry.history.kicker">History</p>
+        <h2 data-i18n="registry.history.title">Registry Plans</h2>
+      </div>
+      <div id="registryPlanHistoryList" class="registry-group-list"></div>
+    </section>
+
+    <section id="registryActionBar" class="registry-action-bar is-hidden">
+      <div class="action-bar-left">
+        <span data-i18n="registry.auto.label">Auto-select:</span>
+        <button id="autoSelectSafe"   class="ghost-button ghost-button-sm" data-i18n="registry.auto.safeOnly">Safe only (Recommended)</button>
+        <button id="autoSelectAll"    class="ghost-button ghost-button-sm" data-i18n="registry.auto.safeAndMedium">Safe + Medium</button>
+        <button id="selectNone"       class="ghost-button ghost-button-sm" data-i18n="registry.buttons.clearSelection">Clear</button>
+      </div>
+      <div class="action-bar-right">
+        <button id="registryGeneratePlanButton" class="primary-button" disabled data-i18n="registry.buttons.generatePlan">Generate Cleanup Plan</button>
+      </div>
+    </section>
+
+    <div id="registryPlanDialog" class="dialog-overlay is-hidden" role="presentation">
+      <div class="dialog-box plan-dialog" role="dialog" aria-modal="true" aria-labelledby="registryPlanDialogTitle">
+        <div class="plan-dialog-content">
+        <h2 id="registryPlanDialogTitle" data-i18n="registry.plan.title">Registry Cleanup Plan</h2>
+        <div id="registryPlanPreview" class="plan-preview"></div>
+        <div class="plan-dialog-actions">
+          <button id="planDialogCancel"  class="ghost-button" data-i18n="common.buttons.cancel">Cancel</button>
+          <button id="planDialogSave"    class="ghost-button" data-i18n="registry.buttons.savePlan">Save Plan Only</button>
+          <button id="planDialogExecute" class="primary-button" data-i18n="registry.buttons.saveAndExecute">Save &amp; Execute</button>
+        </div>
+      </div>
+      </div>
+    </div>
+
+    <div id="registryPlanDetailDialog" class="dialog-overlay is-hidden" role="presentation">
+      <div class="dialog-box plan-detail-dialog" role="dialog" aria-modal="true" aria-labelledby="registryPlanDetailTitle">
+        <div class="plan-dialog-content">
+          <h2 id="registryPlanDetailTitle" data-i18n="registry.history.detailTitle">Registry Plan Detail</h2>
+          <div id="registryPlanDetailContent" class="plan-preview"></div>
+          <div class="plan-dialog-actions">
+            <button id="registryPlanDetailClose" class="primary-button" data-i18n="dialog.buttons.ok">OK</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div id="dialogOverlay" class="dialog-overlay is-hidden" role="presentation">
+    <div class="dialog-box" role="dialog" aria-modal="true" aria-labelledby="dialogTitle">
+      <h2 id="dialogTitle">ZeroTraceEngine</h2>
+      <div id="dialogMessage" class="dialog-message"></div>
+      <div class="dialog-actions">
+        <button id="dialogCancelButton" type="button" class="ghost" data-i18n="dialog.buttons.cancel">Cancel</button>
+        <button id="dialogConfirmButton" type="button" class="primary-button" data-i18n="dialog.buttons.ok">OK</button>
+      </div>
+    </div>
+  </div>
+  </main>
+
+  <script type="module" src="/static/js/app.js"></script>
+</body>
+
+</html>

@@ -1,8 +1,8 @@
 # ZeroTrace Engine
 
-> 安全、透明、可审计、可回滚的本地文件整理引擎。
+> 本地文件与注册表整理、可回滚操作引擎。
 
-ZeroTrace Engine 不是自动清理工具，而是一个本地优先的文件操作工作台。它的目标是在用户明确确认后，把可整理项目移动到项目回收区，并保留可查询、可恢复的操作记录。
+ZeroTrace Engine 不是 Windows 自动清理工具，而是一个本地优先的整理工作台。它的目标是在用户明确确认后，把可整理的文件移动到项目回收区、把可清理的注册表项写入 `.reg` 备份，并保留可查询、可恢复的操作记录。
 
 ## 项目定位
 
@@ -10,30 +10,60 @@ ZeroTrace Engine 遵循以下原则：
 
 - 不做黑箱清理
 - 不做静默操作
-- 不直接永久删除文件
+- 不直接永久删除文件或注册表项
 - 不上传任何本地数据
-- 扫描结果、清理计划和回收记录都应可见、可确认、可追溯
+- 扫描结果、整理计划和回收记录都应可见、可确认、可追溯
 
 ## 当前功能
 
-- 扫描本机可整理项目
+### 系统扫描
+- 扫描本机可整理项目（临时文件、日志文件、缩略图缓存、Windows Update 缓存、空文件/空文件夹）
 - 展示路径、大小、来源、分类和风险等级
-- 从扫描结果生成清理计划
-- 执行清理时移动到 `ZeroTraceRecycle/`
-- 支持从回收区恢复到原始路径
-- 使用 SQLite 保存扫描结果和清理审计记录
-- 提供扫描、清理计划、回收区、审计日志和首页 5 个页面
+- 应用残留扫描能力
+
+### 重复文件检测
+- 基于 SHA-256 哈希识别重复文件
+- 支持图片、视频、文档、压缩包等常见文件类型
+- 按哈希分组展示，用户选择保留或清理
+- 扫描阶段只读；整理统一进入 `ZeroTraceRecycle/`
+
+### 注册表扫描
+- 扫描 Windows 注册表中的无效、孤立或损坏条目
+- 覆盖六类问题：无效路径引用、孤立 COM 对象、无效卸载记录、失效服务、启动项问题、文件关联损坏
+- 四阶段算法：收集键值 → 解析目标路径 → 规则引擎匹配 → 风险评分
+- 风险等级：Safe / Medium / High，系统关键项强制标注
+- 整理前自动导出 `.reg` 备份文件到 `ZeroTraceRegistryRecycle/`，支持一键恢复（`reg.exe import`）
+
+### 整理与回收
+- 从扫描结果生成整理计划
+- 执行整理计划时移动文件到 `ZeroTraceRecycle/`
+- 注册表整理备份写入 `ZeroTraceRegistryRecycle/`
+- 支持从回收区恢复文件到原始路径
+- 支持从注册表回收区还原注册表项
+- 完整的审计日志记录
+
+### 持久化
+- SQLite（WAL 模式）保存扫描结果、整理计划、审计记录、文件哈希和设置
+- 注册表相关：`registry_scan_results`、`registry_cleanup_plans`、`registry_cleanup_actions` 三张独立表
+
+### 前端
+- 多页面：首页、扫描、整理计划、回收区、审计日志、重复文件、注册表扫描、手动工具
+- 浏览器 i18n（中/英）无后端依赖
+- 原生 JS ES6 模块，无前端框架
 
 ## 架构分层
 
 当前代码按以下边界组织：
 
 ```text
-routers/
+app.py
+  只做 FastAPI 挂载、路由注册、静态文件服务
+
+core/routers/
   只处理 FastAPI 路由、请求模型和响应转发
 
 core/services/
-  处理业务编排，例如扫描执行、清理计划执行、回收恢复
+  处理业务编排，例如扫描执行、整理计划执行、回收恢复、注册表扫描与清理
 
 core/storage/
   处理 SQLite 连接、建表和 repository 读写
@@ -44,18 +74,24 @@ core/scanners/
 core/utils/
   放置文件移动、回收路径生成等底层辅助能力
 
+core/models.py
+  文件扫描相关 Pydantic 模型
+
+core/registry_models.py
+  注册表扫描相关 Pydantic 模型（与文件扫描模型独立）
+
 static/
   前端页面、页面脚本、样式和 i18n 文案
 ```
 
-旧入口 `core/scanner.py`、`core/cleaner.py`、`core/recycle.py` 目前保留为兼容层。新代码应优先使用 `core.services.*` 和 `core.storage.*`。
+> **兼容层** `core/scanner.py`、`core/cleaner.py`、`core/recycle.py`、`core/analyzer.py`、`core/paths.py` 目前保留为兼容层。新代码应优先使用 `core.services.*`、`core.storage.*` 和 `core.scanners/`。
 
 ## 安全规则
 
-- 文件清理必须先移动到 `ZeroTraceRecycle/`
-- 不使用 `os.remove()`、`Path.unlink()` 或 `shutil.rmtree()` 执行清理
-- Restore 前必须检查原路径是否已存在
-- Scanner 必须保持只读，不移动、不删除、不写入文件
+- 文件清理必须先移动到 `ZeroTraceRecycle/`，不使用 `os.remove()`、`Path.unlink()` 或 `shutil.rmtree()`
+- 注册表清理必须先导出 `.reg` 备份到 `ZeroTraceRegistryRecycle/`，再执行 `winreg.DeleteValue()` / `winreg.DeleteKey()`
+- Restore 前必须检查原路径或注册表项是否已存在
+- Scanner 必须保持只读，不移动、不删除、不写入
 - Router 不直接调用文件操作或数据库细节
 - DB 写入集中在 repository 层
 
@@ -63,9 +99,9 @@ static/
 
 - Python + FastAPI
 - Pydantic
-- SQLite
-- pathlib / shutil
-- 原生 HTML / CSS / JavaScript
+- SQLite（WAL 模式）
+- `winreg` / `pathlib` / `shutil` / `subprocess`
+- 原生 HTML / CSS / JavaScript（无前端框架）
 
 ## 开发环境
 
@@ -76,7 +112,13 @@ static/
 ~\.virtualenvs\venv\Scripts\python.exe -m pip install -r requirements-dev.txt
 ```
 
-启动服务：
+启动服务（热重载）：
+
+```powershell
+.\start-dev.ps1
+```
+
+或直接：
 
 ```powershell
 ~\.virtualenvs\venv\Scripts\python.exe -m uvicorn app:app --reload
@@ -90,13 +132,11 @@ http://127.0.0.1:8000
 
 ## 测试
 
-运行当前回归测试：
-
 ```powershell
 .\test.ps1
 ```
 
-或直接执行：
+或直接：
 
 ```powershell
 ~\.virtualenvs\venv\Scripts\python.exe -m pytest -q
@@ -104,68 +144,87 @@ http://127.0.0.1:8000
 
 测试会使用仓库内 `.test-tmp/` 临时目录和隔离 SQLite DB，避免触碰真实系统目录。
 
-## 当前清理能力
+## 扫描能力
 
-### Windows 临时目录扫描
-
-- 扫描 `C:\Windows\Temp`、当前用户 `AppData\Local\Temp`，以及环境变量 `TEMP` / `TMP` 指向的临时目录。
-- 扫描结果会去重，避免同一目录通过配置和环境变量重复出现。
-- 默认跳过最近 24 小时内修改过的文件和空目录，降低误处理正在使用的临时文件的风险。
-- 扫描阶段只读；真正处理时仍统一进入 `ZeroTraceRecycle`，之后可恢复或彻底删除。
-
-### 浏览器缓存扫描（暂不默认启用）
-
-- 扫描当前用户 `LOCALAPPDATA` 下的 Google Chrome、Microsoft Edge、Brave 缓存目录。
-- 目前覆盖 Chromium 系浏览器的 `Cache/Cache_Data`。
-- 暂不扫描 `Code Cache/js`，这类文件更容易被浏览器锁定，清理失败率较高。
-- 实机测试发现 `Cache/Cache_Data` 也可能被浏览器或系统组件锁定，导致手动删除失败。
-- 因此该 scanner 先保留为代码能力，不加入默认扫描流程；后续做高级模式或浏览器关闭检测后再启用。
+### 临时目录扫描
+- 扫描 `C:\Windows\Temp`、用户 `AppData\Local\Temp` 及 `TEMP`/`TMP` 环境变量指向的目录
+- 扫描结果去重，默认跳过最近 24 小时内修改的文件
 
 ### 日志文件扫描
-
-- 默认扫描仓库 `logs/` 目录，以及 Windows 临时目录中的日志文件。
-- 识别 `.log`、`.old`、`.bak`、`.tmp` 和常见轮转日志名，例如 `app.log.1`。
-- 默认跳过最近 7 天内修改过的日志文件，降低影响正在写入日志的风险。
-- 扫描阶段只读；清理仍需用户确认，并统一进入 `ZeroTraceRecycle`。
+- 默认扫描仓库 `logs/` 和 Windows 临时目录中的日志
+- 识别 `.log`、`.old`、`.bak`、`.tmp` 及常见轮转日志名
+- 默认跳过最近 7 天内修改的文件
 
 ### 空文件 / 空文件夹扫描
-
-- 默认只在低风险根目录中检测空文件和叶子空文件夹，包括 Windows 临时目录、仓库 `logs/` 和 Windows Update 下载缓存目录。
-- 默认跳过最近 24 小时内修改过的空文件和空文件夹。
-- 空目录只报告叶子目录，不把扫描根目录本身作为候选。
-- 扫描阶段只读；清理仍需用户确认，并统一进入 `ZeroTraceRecycle`。
+- 仅在低风险根目录中检测空文件和叶子空文件夹
+- 默认跳过最近 24 小时内修改的条目
 
 ### Windows Update 清理候选检测
-
-- 默认检测 `C:\Windows\SoftwareDistribution\Download` 下的旧下载缓存文件。
-- 默认跳过最近 14 天内修改过的文件，避免影响近期更新流程。
-- 候选项分类为 `Windows Update`，风险等级为中等，便于在清理计划中单独筛选确认。
-- 扫描阶段只读；清理仍需用户确认，并统一进入 `ZeroTraceRecycle`。
+- 检测 `C:\Windows\SoftwareDistribution\Download` 下的旧下载缓存
+- 默认跳过最近 14 天内修改的文件
 
 ### 缩略图缓存扫描
+- 检测用户 Windows Explorer 缩略图缓存（`thumbcache_*.db`、`iconcache_*.db`）
+- 默认跳过最近 7 天内修改的文件
 
-- 默认检测当前用户 Windows Explorer 缩略图缓存目录。
-- 识别 `thumbcache_*.db` 和 `iconcache_*.db`。
-- 默认跳过最近 7 天内修改过的缓存文件，降低影响资源管理器正在使用缓存的风险。
-- 候选项分类为缩略图缓存，风险等级为中等；清理仍需用户确认，并统一进入 `ZeroTraceRecycle`。
+### 应用残留扫描
+- 检测常见 Windows 应用卸载后的遗留文件夹和配置
+- 目前为初始能力，覆盖范围将逐步扩展
+
+### 重复文件检测
+- 两阶段哈希：快速头部哈希预过滤 + SHA-256 全文哈希确认
+- 支持图片、视频、文档、压缩包
+
+### 注册表扫描
+- **InvalidPath**：Run/RunOnce 启动项引用路径不存在
+- **OrphanCOM**：HKCR\CLSID 注册的 COM 对象 DLL/EXE 已缺失
+- **InvalidUninstall**：Uninstall 注册表项中的卸载程序路径不存在
+- **InvalidService**：服务注册表项中的执行文件路径不存在
+- **StartupIssue**：启动项目标文件损坏或路径格式异常
+- **FileAssociation**：文件关联的打开方式程序已缺失
+
+> 所有扫描阶段只读；处理时统一进入对应回收区，之后可恢复或彻底删除。
+
+### 浏览器缓存扫描（暂不默认启用）
+- 扫描 Chromium 系浏览器（Chrome、Edge、Brave）Cache 目录
+- 因浏览器运行时可能锁定文件，暂保留为代码能力，不加入默认扫描流程
 
 ## 运行时目录
 
 以下目录是本地运行状态，不应作为源码提交：
 
 ```text
-data/
-logs/
-ZeroTraceRecycle/
-.test-tmp/
+data/                      # SQLite 数据库文件
+logs/                      # 运行时日志
+ZeroTraceRecycle/          # 文件回收暂存区
+ZeroTraceRegistryRecycle/  # 注册表备份 .reg 文件区
+.test-tmp/                 # 测试临时目录
 ```
+
+## 页面路由
+
+| 路径 | 页面 | 说明 |
+|------|------|------|
+| `/` | 首页 | 功能概览与快速入口 |
+| `/scan` | 系统扫描 | 执行文件系统扫描 |
+| `/cleanup` | 整理计划 | 管理待清理文件列表 |
+| `/recycle` | 回收区 | 查看和恢复已回收文件 |
+| `/logs` | 审计日志 | 查询操作记录 |
+| `/duplicates` | 重复文件 | 重复文件检测与处理 |
+| `/registry` | 注册表扫描 | 注册表问题检测与清理 |
+| `/tools` | 手动工具 | 辅助功能与快速导航 |
 
 ## 路线图
 
-- 重复文件检测集成
-- 更完整的审计查询
-- 更稳定的多语言文案管理
+- 注册表扫描规则扩展（MUI 缓存、字体注册等）
+- 更完整的审计查询与筛选
+- 更多应用残留检测规则
+- 回收区批量操作优化
 
 ## 理念
 
 系统整理不应该是黑箱行为。用户应该始终知道即将处理什么、已经移动到哪里，以及如何恢复。
+
+## 许可
+
+本项目基于 MIT 许可证开源。详见 [LICENSE](./LICENSE) 文件。

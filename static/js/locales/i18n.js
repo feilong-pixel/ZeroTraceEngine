@@ -74,6 +74,13 @@ export function translateStaticText(root = document) {
     }
   });
 
+  root.querySelectorAll("[data-i18n-html]").forEach((node) => {
+    const value = t(node.dataset.i18nHtml);
+    if (value !== node.dataset.i18nHtml) {
+      node.innerHTML = value;
+    }
+  });
+
   root.querySelectorAll("[data-i18n-title]").forEach((node) => {
     const value = t(node.dataset.i18nTitle);
     if (value !== node.dataset.i18nTitle) {

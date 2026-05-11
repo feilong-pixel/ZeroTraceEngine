@@ -2,7 +2,7 @@ $ErrorActionPreference = "Stop"
 
 Set-Location -Path (Split-Path -Parent $MyInvocation.MyCommand.Path)
 
-$python = "~\.virtualenvs\venv\Scripts\python.exe"
+$python = Join-Path $HOME ".virtualenvs\venv\Scripts\python.exe"
 
 if (-not (Test-Path $python)) {
     Write-Host "ERROR: venv python not found: $python"

@@ -79,7 +79,9 @@ export function showDialog(message, mode = "alert", options = {}) {
   dialogState.mode = mode;
 
   const titleText = options.title || t("dialog.title.confirm");
-  const confirmText = options.confirmText || t("dialog.buttons.confirm");
+  const confirmText = options.confirmText || (
+    mode === "confirm" ? t("dialog.buttons.confirm") : t("dialog.buttons.ok")
+  );
   const cancelText = options.cancelText || t("dialog.buttons.cancel");
 
   setText(dialogTitle, titleText);

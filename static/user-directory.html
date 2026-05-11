@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="en" class="i18n-pending">
+
+<head>
+  <meta charset="UTF-8" />
+  <title>ZeroTrace Engine - User Directory Scan</title>
+  <link rel="stylesheet" href="/static/css/style.css" />
+</head>
+
+<body>
+  <main class="userdir-page">
+
+    <!-- ── Header ─────────────────────────────────────────────────── -->
+    <header class="page-header">
+      <div>
+        <p class="eyebrow">ZeroTrace Engine</p>
+        <h1 data-i18n="userdir.title">User Directory Scan</h1>
+        <p class="page-desc" data-i18n="userdir.description">
+          Deep-scan %USERPROFILE% for AI cache, Python env, IDE build artifacts, user data, and large files. Identify cleanable space by safety level.
+        </p>
+      </div>
+      <div class="userdir-header-right">
+        <div class="header-actions">
+          <button id="userdirBackButton" class="ghost-button nav-button" data-i18n="common.buttons.backToMain">Back to Home</button>
+          <button id="userdirRefreshButton" class="ghost-button" disabled>
+            <span id="userdirRefreshLabel" data-i18n="common.buttons.refresh">Refresh</span>
+          </button>
+          <button id="userdirStartButton" class="primary-button">
+            <span id="userdirStartLabel" data-i18n="userdir.buttons.startScan">Start Scan</span>
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <!-- ── Idle state ────────────────────────────────────────────── -->
+    <section id="userdirIdleState" class="userdir-idle-section">
+      <div class="userdir-idle-content">
+        <div class="userdir-idle-icon" aria-hidden="true">UD</div>
+        <p class="userdir-idle-title" data-i18n="userdir.empty.title">No scan performed yet</p>
+        <p class="userdir-idle-desc muted" data-i18n="userdir.empty.description">Click Start Scan to analyse %USERPROFILE%.</p>
+        <button id="userdirIdleStartBtn" class="primary-button userdir-idle-btn">
+          <span data-i18n="userdir.buttons.startScan">Start Scan</span>
+        </button>
+      </div>
+    </section>
+
+    <!-- ── Scanning state ─────────────────────────────────────────── -->
+    <section id="userdirScanningState" class="toolbar-panel userdir-scan-panel is-hidden">
+      <div class="userdir-scan-header">
+        <div>
+          <p class="eyebrow" data-i18n="userdir.scanning.eyebrow">Scanning in Progress</p>
+          <p class="userdir-scan-title" data-i18n="userdir.scanning.title">Deep-scanning User Directory</p>
+        </div>
+        <div class="userdir-scan-timing">
+          <span id="userdirElapsedTime" class="muted"></span>
+        </div>
+      </div>
+      <div class="userdir-progress-track">
+        <div id="userdirProgressFill" class="userdir-progress-fill"></div>
+      </div>
+      <div class="userdir-scan-meta-row">
+        <code id="userdirCurrentPath" class="userdir-current-path muted"></code>
+      </div>
+    </section>
+
+    <!-- ── Results (completed) ────────────────────────────────────── -->
+    <section id="userdirResultsSection" class="userdir-results-section is-hidden">
+
+      <!-- Config strip -->
+      <div class="userdir-config-strip">
+        <div class="userdir-config-item userdir-config-root">
+          <span class="userdir-config-label" data-i18n="userdir.config.scanRoot">Scan Coverage</span>
+          <span id="userdirConfigRoot" class="userdir-config-value">%USERPROFILE%</span>
+        </div>
+        <div class="userdir-config-item">
+          <span class="userdir-config-label" data-i18n="userdir.config.largeFile">Large File Threshold</span>
+          <span id="userdirConfigThreshold" class="userdir-config-value">≥ 100 MB</span>
+        </div>
+        <div class="userdir-config-item userdir-config-rules">
+          <span class="userdir-config-label" data-i18n="userdir.config.rules">Rules</span>
+          <span id="userdirConfigRules" class="userdir-config-value" data-i18n="userdir.config.rulesValue">Skip .git / node_modules, include hidden items and logs</span>
+        </div>
+        <div class="userdir-config-item">
+          <span class="userdir-config-label" data-i18n="userdir.config.scanTime">Scan Time</span>
+          <span id="userdirConfigScanTime" class="userdir-config-value">—</span>
+        </div>
+        <div class="userdir-config-item">
+          <span class="userdir-config-label" data-i18n="userdir.config.duration">Duration</span>
+          <span id="userdirConfigDuration" class="userdir-config-value">—</span>
+        </div>
+      </div>
+
+      <!-- Stats row -->
+      <div class="userdir-stat-row">
+        <div class="userdir-stat-item">
+          <div class="userdir-stat-label" data-i18n="userdir.stats2.totalUsage">Total Usage</div>
+          <div id="userdirStat2TotalSize" class="userdir-stat-value">—</div>
+          <div id="userdirStat2TotalItems" class="userdir-stat-sub muted">—</div>
+        </div>
+        <div class="userdir-stat-item">
+          <div class="userdir-stat-label" data-i18n="userdir.stats2.fileCount">Total Files</div>
+          <div id="userdirStat2FileCount" class="userdir-stat-value">—</div>
+          <div class="userdir-stat-sub muted" data-i18n="userdir.stats2.fileCountSub">Including dirs</div>
+        </div>
+        <div class="userdir-stat-item">
+          <div class="userdir-stat-label" data-i18n="userdir.stats2.cleanable">Suggested Review Space</div>
+          <div id="userdirStat2Cleanable" class="userdir-stat-value userdir-stat-value-accent">—</div>
+          <div id="userdirStat2CleanablePct" class="userdir-stat-sub muted">—</div>
+          <div class="userdir-stat-note muted" data-i18n="userdir.stats2.cleanableNote">AI tool cache and log files only; not added to a cleanup plan</div>
+        </div>
+        <div class="userdir-stat-item">
+          <div class="userdir-stat-label" data-i18n="userdir.stats2.largeItems">≥ 1 GB Items</div>
+          <div id="userdirStat2LargeItems" class="userdir-stat-value userdir-stat-value-warn">—</div>
+          <div class="userdir-stat-sub muted" data-i18n="userdir.stats2.largeItemsSub">Needs review</div>
+        </div>
+      </div>
+
+      <!-- Category distribution -->
+      <div class="toolbar-panel userdir-cat-section">
+        <div class="userdir-cat-head">
+          <div>
+            <p class="userdir-section-kicker">CATEGORY</p>
+            <p id="userdirCatTitle" class="userdir-section-title">Category Usage</p>
+          </div>
+          <span class="userdir-section-hint" data-i18n="userdir.catSection.hint">Click legend to filter list</span>
+        </div>
+        <div id="userdirCatStrip" class="userdir-cat-strip"></div>
+        <div id="userdirCatLegend" class="userdir-cat-legend"></div>
+      </div>
+
+      <!-- Treemap -->
+      <div class="toolbar-panel userdir-treemap-section">
+        <div class="userdir-treemap-head">
+          <div class="userdir-treemap-title-block">
+            <p class="userdir-section-kicker" data-i18n="userdir.treemap.title">HEATMAP</p>
+            <p class="userdir-section-title" data-i18n="userdir.treemap.hint">Top 16 items · area = size</p>
+          </div>
+          <div id="userdirTreemapLegend" class="userdir-treemap-legend"></div>
+        </div>
+        <div id="userdirTreemapWrap" class="userdir-treemap-wrap">
+          <svg id="userdirTreemapSvg" class="userdir-treemap-svg" height="120"></svg>
+          <div id="userdirTreemapEmpty" class="userdir-treemap-empty is-hidden" data-i18n="userdir.treemap.noData">No visualization data</div>
+        </div>
+      </div>
+
+      <!-- Item list -->
+      <div class="userdir-list-panel">
+        <div class="userdir-list-toprow">
+          <div>
+            <p class="userdir-list-title" data-i18n="userdir.list.title">Scanned Items</p>
+            <p id="userdirListHint" class="muted"></p>
+          </div>
+          <button id="userdirClearFiltersButton" class="ghost-button ghost-button-sm" data-i18n="userdir.buttons.clearFilters">Clear Filters</button>
+        </div>
+        <div class="userdir-filter-bar">
+          <label class="filter-label-group">
+            <span data-i18n="common.labels.category">Category</span>
+            <select id="userdirCategoryFilter" class="select-input select-input-sm">
+              <option value="" data-i18n="common.labels.all">All</option>
+              <option value="AI_TOOL_CACHE"     data-i18n="userdir.categories.aiToolCache">AI Tool Cache</option>
+              <option value="PYTHON_SCI_CACHE"  data-i18n="userdir.categories.pythonSciCache">Python / Science</option>
+              <option value="IDE_BUILD_CACHE"   data-i18n="userdir.categories.ideBuildCache">IDE / Build</option>
+              <option value="SYSTEM_TOOL_CACHE" data-i18n="userdir.categories.systemToolCache">System Tools</option>
+              <option value="USER_DATA"         data-i18n="userdir.categories.userData">User Data</option>
+              <option value="LOG_FILES"         data-i18n="userdir.categories.logFiles">Log Files</option>
+              <option value="OTHER_LARGE_FILES" data-i18n="userdir.categories.otherLargeFiles">Other Large Files</option>
+            </select>
+          </label>
+          <label class="filter-label-group">
+            <span data-i18n="userdir.labels.type">Type</span>
+            <select id="userdirTypeFilter" class="select-input select-input-sm">
+              <option value="" data-i18n="common.labels.all">All</option>
+              <option value="Directory" data-i18n="userdir.labels.directory">Directory</option>
+              <option value="File" data-i18n="userdir.labels.file">File</option>
+            </select>
+          </label>
+          <label class="filter-label-group">
+            <span data-i18n="userdir.labels.minSize">Min Size</span>
+            <select id="userdirMinSizeFilter" class="select-input select-input-sm">
+              <option value="" data-i18n="common.labels.all">All</option>
+              <option value="100">≥ 100 MB</option>
+              <option value="500">≥ 500 MB</option>
+              <option value="1024">≥ 1 GB</option>
+            </select>
+          </label>
+          <label class="filter-label-group filter-search-group">
+            <span data-i18n="userdir.labels.search">Search</span>
+            <input id="userdirSearchInput" class="search-input" type="text"
+                   data-i18n-placeholder="userdir.labels.searchPlaceholder"
+                   placeholder="Path keyword…" />
+          </label>
+        </div>
+        <div class="userdir-list-header" aria-hidden="true">
+          <span></span>
+          <span data-i18n="common.labels.path">Path</span>
+          <span data-i18n="common.labels.category">Category</span>
+          <span data-i18n="common.labels.size">Size</span>
+          <span data-i18n="userdir.list.details">Details</span>
+          <span data-i18n="userdir.list.modified">Modified</span>
+          <span data-i18n="userdir.list.pathAction">Path</span>
+        </div>
+        <div id="userdirItemList" class="userdir-item-list"></div>
+        <div id="userdirListEmpty" class="userdir-list-empty is-hidden" data-i18n="userdir.list.emptyFiltered">No items match the current filters.</div>
+        <div id="userdirLoadMoreRow" class="userdir-load-more-row is-hidden">
+          <button id="userdirLoadMoreButton" class="ghost-button ghost-button-sm" type="button">Load More</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── Empty result state ─────────────────────────────────────── -->
+    <section id="userdirEmptyState" class="empty-state-section is-hidden">
+      <div class="empty-state">
+        <p class="empty-desc muted" data-i18n="userdir.emptyResult.desc">Scan complete, but no cleanable items found.</p>
+      </div>
+    </section>
+
+    <!-- ── Error state ────────────────────────────────────────────── -->
+    <section id="userdirErrorState" class="toolbar-panel userdir-error-card is-hidden">
+      <span class="userdir-error-icon">⚠</span>
+      <div class="userdir-error-body">
+        <p class="userdir-error-title" data-i18n="userdir.error.title">Scan failed</p>
+        <p id="userdirErrorMessage" class="userdir-error-sub muted"></p>
+      </div>
+      <div class="userdir-error-actions">
+        <button id="userdirViewLogsButton" class="ghost-button" data-i18n="common.buttons.viewLogs">View Logs</button>
+        <button id="userdirRetryButton" class="primary-button" data-i18n="userdir.buttons.retry">Retry</button>
+      </div>
+    </section>
+
+    <!-- Dialog placeholder -->
+    <div id="dialogOverlay" class="dialog-overlay is-hidden" role="presentation">
+      <div class="dialog-box" role="dialog" aria-modal="true" aria-labelledby="dialogTitle">
+        <h2 id="dialogTitle">ZeroTraceEngine</h2>
+        <div id="dialogMessage" class="dialog-message"></div>
+        <div class="dialog-actions">
+          <button id="dialogCancelButton" type="button" class="ghost" data-i18n="dialog.buttons.cancel">Cancel</button>
+          <button id="dialogConfirmButton" type="button" class="primary-button" data-i18n="dialog.buttons.ok">OK</button>
+        </div>
+      </div>
+    </div>
+
+  </main>
+
+  <script type="module" src="/static/js/app.js"></script>
+</body>
+
+</html>

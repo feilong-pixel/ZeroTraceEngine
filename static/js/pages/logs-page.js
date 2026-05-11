@@ -226,15 +226,16 @@ function normalizeRecycleRecords(records) {
   if (!Array.isArray(records)) return [];
 
   return records.flatMap((record, index) => {
+    const action = normalizeAuditAction(record.action);
     const cleanLog = {
       id: String(record.id ?? `clean-${index}`),
       timestamp: String(record.created_at ?? ""),
-      action: "clean",
+      action,
       target: String(record.original_path ?? ""),
       size: Number(record.size ?? 0),
       result: "success",
       source: normalizeSource(record.source),
-      detail: t("logs.details.movedToRecycle", record.recycle_path ?? ""),
+      detail: detailForAuditAction(action, record),
     };
 
     const derivedLogs = [cleanLog];
@@ -269,6 +270,23 @@ function normalizeRecycleRecords(records) {
   });
 }
 
+function normalizeAuditAction(value) {
+  const action = String(value ?? "").trim();
+  if (action === "registry_execute") return "registry_execute";
+  if (action === "registry_restore") return "registry_restore";
+  return "clean";
+}
+
+function detailForAuditAction(action, record) {
+  if (action === "registry_execute") {
+    return t("logs.details.registryExecuted", record.recycle_path ?? "", record.hash ?? "");
+  }
+  if (action === "registry_restore") {
+    return t("logs.details.registryRestored", record.recycle_path ?? "", record.hash ?? "");
+  }
+  return t("logs.details.movedToRecycle", record.recycle_path ?? "");
+}
+
 function normalizeSource(value) {
   const source = String(value ?? "system").trim();
   return source || "system";
@@ -280,6 +298,8 @@ function toActionLabel(value) {
       scan: t("common.actions.scan"),
       plan: t("common.actions.plan"),
       clean: t("common.actions.clean"),
+      registry_execute: t("common.actions.registryExecute"),
+      registry_restore: t("common.actions.registryRestore"),
       restore: t("common.actions.restore"),
       delete: t("common.actions.delete"),
     }[value] ?? t("common.labels.action")
