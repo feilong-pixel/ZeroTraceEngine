@@ -979,8 +979,23 @@ p {
   padding: 18px;
 }
 
-.dashboard-grid {
+.dashboard-groups {
   grid-column: span 3;
+  display: grid;
+  gap: 28px;
+}
+
+.dashboard-group {
+  display: grid;
+  gap: 12px;
+}
+
+.dashboard-group-heading h2 {
+  margin: 4px 0 0;
+  font-size: 18px;
+}
+
+.dashboard-grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(260px, 1fr));
   gap: 14px;
@@ -988,19 +1003,10 @@ p {
 
 .tools-grid {
   display: grid;
-  grid-template-columns: minmax(280px, 0.82fr) minmax(360px, 1.18fr);
+  grid-template-columns: repeat(2, minmax(320px, 1fr));
   gap: 16px;
   align-items: start;
   margin-bottom: 16px;
-}
-
-.tools-grid > .panel-card:first-child {
-  grid-row: 1 / span 2;
-}
-
-.tools-grid > .panel-card:nth-child(2),
-.tools-grid > .panel-card:nth-child(3) {
-  grid-column: 2;
 }
 
 .tools-page .panel-card {
@@ -2079,7 +2085,7 @@ p {
 
   .dashboard-hero-main,
   .workflow-panel,
-  .dashboard-grid {
+  .dashboard-groups {
     grid-column: auto;
   }
 
@@ -2138,17 +2144,11 @@ p {
   .registry-control-bar,
   .registry-filter-bar,
   .dashboard-grid,
+  .dashboard-groups,
   .tools-grid,
   .content-grid,
   .workflow-steps {
     grid-template-columns: 1fr !important;
-  }
-
-  .tools-grid > .panel-card:first-child,
-  .tools-grid > .panel-card:nth-child(2),
-  .tools-grid > .panel-card:nth-child(3) {
-    grid-column: auto;
-    grid-row: auto;
   }
 
   .browser-history-row {

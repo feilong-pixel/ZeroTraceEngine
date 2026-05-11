@@ -86,87 +86,111 @@
         </div>
       </div>
 
-      <div class="dashboard-grid" data-i18n-aria-label="main.featureEntries">
-        <article class="dashboard-card dashboard-card-primary">
-          <div>
-            <span class="card-kicker">Scan</span>
-            <h2 data-i18n="main.scanCardTitle">Scan Candidates</h2>
-            <p data-i18n="main.scanCardDesc">Scan temporary files, caches, logs, and other candidates.</p>
+      <div class="dashboard-groups" data-i18n-aria-label="main.featureEntries">
+        <section class="dashboard-group">
+          <div class="dashboard-group-heading">
+            <p class="eyebrow" data-i18n="main.groups.file">File Organization</p>
+            <h2 data-i18n="main.groups.fileTitle">Find, review, and move local file candidates</h2>
           </div>
-          <button id="openScanButton" class="primary-button" data-i18n="main.openScan">Open Scan</button>
-        </article>
+          <div class="dashboard-grid">
+            <article class="dashboard-card dashboard-card-primary">
+              <div>
+                <span class="card-kicker" data-i18n="main.kickers.fileScan">File Scan</span>
+                <h2 data-i18n="main.scanCardTitle">File Scan</h2>
+                <p data-i18n="main.scanCardDesc">Scan temporary files, caches, logs, and other candidates.</p>
+              </div>
+              <button id="openScanButton" class="primary-button" data-i18n="main.openScan">Open File Scan</button>
+            </article>
 
-        <article class="dashboard-card">
-          <div>
-            <span class="card-kicker">Plan</span>
-            <h2 data-i18n="main.cleanupCardTitle">Cleanup Plan</h2>
-            <p data-i18n="main.cleanupCardDesc">Confirm cleanup targets and create a reversible plan.</p>
-          </div>
-          <button id="openCleanupButton" class="ghost-button" data-i18n="main.openCleanup">View Cleanup Plan</button>
-        </article>
+            <article class="dashboard-card">
+              <div>
+                <span class="card-kicker" data-i18n="main.kickers.duplicateScan">Duplicate Scan</span>
+                <h2 data-i18n="duplicates.title">Duplicate Scan</h2>
+                <p data-i18n="duplicates.description">Scan folders for duplicate files. Results are displayed only until you generate a reversible organizing plan.</p>
+              </div>
+              <button id="openDuplicatesButton" class="ghost-button" data-i18n="main.openDuplicates">Open Duplicate Scan</button>
+            </article>
 
-        <article class="dashboard-card">
-          <div>
-            <span class="card-kicker">Recycle</span>
-            <h2 data-i18n="main.recycleCardTitle">Recycle Bin</h2>
-            <p data-i18n="main.recycleCardDesc">Review recycled items and restore them to their original paths.</p>
-          </div>
-          <button id="openRecycleCardButton" class="ghost-button" data-i18n="main.openRecycle">Open Recycle Bin</button>
-        </article>
+            <article class="dashboard-card">
+              <div>
+                <span class="card-kicker" data-i18n="main.kickers.userDirectory">User Directory</span>
+                <h2 data-i18n="main.userdirCardTitle">User Directory Scan</h2>
+                <p data-i18n="main.userdirCardDesc">Deep-scan %USERPROFILE% to identify AI cache, Python env, IDE build cache, logs, and large files.</p>
+              </div>
+              <button id="openUserdirButton" class="ghost-button" data-i18n="main.openUserdir">Open User Directory Scan</button>
+            </article>
 
-        <article class="dashboard-card">
-          <div>
-            <span class="card-kicker">Duplicate</span>
-            <h2 data-i18n="duplicates.title">Duplicate Scan</h2>
-            <p data-i18n="duplicates.description">Scan folders for duplicate files. Results are displayed only until you generate a reversible organizing plan.</p>
-          </div>
-          <button id="openDuplicatesButton" class="ghost-button" data-i18n="main.openDuplicates">Open Duplicate Scan</button>
-        </article>
+            <article class="dashboard-card">
+              <div>
+                <span class="card-kicker" data-i18n="main.kickers.plan">Plan</span>
+                <h2 data-i18n="main.cleanupCardTitle">Organizing Plan</h2>
+                <p data-i18n="main.cleanupCardDesc">Confirm cleanup targets and create a reversible plan.</p>
+              </div>
+              <button id="openCleanupButton" class="ghost-button" data-i18n="main.openCleanup">Open Organizing Plan</button>
+            </article>
 
-        <article class="dashboard-card">
-          <div>
-            <span class="card-kicker">Registry</span>
-            <h2 data-i18n="registry.title">Registry Scan</h2>
-            <p data-i18n="registry.description">Scan the Windows registry for invalid, orphaned, and residual entries.</p>
+            <article class="dashboard-card">
+              <div>
+                <span class="card-kicker" data-i18n="main.kickers.recycle">Recycle</span>
+                <h2 data-i18n="main.recycleCardTitle">Recycle Bin</h2>
+                <p data-i18n="main.recycleCardDesc">Review recycled items and restore them to their original paths.</p>
+              </div>
+              <button id="openRecycleCardButton" class="ghost-button" data-i18n="main.openRecycle">Open Recycle Bin</button>
+            </article>
           </div>
-          <button id="openRegistryButton" class="ghost-button" data-i18n="registry.buttons.startScan">Open Registry Scan</button>
-        </article>
+        </section>
 
-        <article class="dashboard-card">
-          <div>
-            <span class="card-kicker">User Dir</span>
-            <h2 data-i18n="main.userdirCardTitle">User Directory Scan</h2>
-            <p data-i18n="main.userdirCardDesc">Deep-scan %USERPROFILE% to identify AI cache, Python env, IDE build cache, logs, and large files.</p>
+        <section class="dashboard-group">
+          <div class="dashboard-group-heading">
+            <p class="eyebrow" data-i18n="main.groups.system">System Inspection</p>
+            <h2 data-i18n="main.groups.systemTitle">Review application and registry traces</h2>
           </div>
-          <button id="openUserdirButton" class="ghost-button" data-i18n="main.openUserdir">Open User Directory Scan</button>
-        </article>
+          <div class="dashboard-grid">
+            <article class="dashboard-card">
+              <div>
+                <span class="card-kicker" data-i18n="main.kickers.applicationScan">Application Scan</span>
+                <h2 data-i18n="appscan.title">Application Scan</h2>
+                <p data-i18n="appscan.description">Identify installed applications, detect residual registry entries, and visualize disk usage by install directory.</p>
+              </div>
+              <button id="openAppscanButton" class="ghost-button" data-i18n="main.openAppscan">Open Application Scan</button>
+            </article>
 
-        <article class="dashboard-card">
-          <div>
-            <span class="card-kicker">App Scan</span>
-            <h2 data-i18n="appscan.title">Application Scan</h2>
-            <p data-i18n="appscan.description">Identify installed applications, detect residual registry entries, and visualize disk usage by install directory.</p>
+            <article class="dashboard-card">
+              <div>
+                <span class="card-kicker" data-i18n="main.kickers.registryScan">Registry Scan</span>
+                <h2 data-i18n="registry.title">Registry Scan</h2>
+                <p data-i18n="registry.description">Scan the Windows registry for invalid, orphaned, and residual entries.</p>
+              </div>
+              <button id="openRegistryButton" class="ghost-button" data-i18n="main.openRegistry">Open Registry Scan</button>
+            </article>
           </div>
-          <button id="openAppscanButton" class="ghost-button" data-i18n="appscan.buttons.startScan">Open App Scan</button>
-        </article>
+        </section>
 
-        <article class="dashboard-card">
-          <div>
-            <span class="card-kicker">Audit</span>
-            <h2 data-i18n="main.logsCardTitle">Audit Logs</h2>
-            <p data-i18n="main.logsCardDesc">Review scan, organize, restore, and failure records.</p>
+        <section class="dashboard-group">
+          <div class="dashboard-group-heading">
+            <p class="eyebrow" data-i18n="main.groups.support">Support</p>
+            <h2 data-i18n="main.groups.supportTitle">Audit activity and open manual tools</h2>
           </div>
-          <button id="openLogsButton" class="ghost-button" data-i18n="main.openLogs">View Logs</button>
-        </article>
+          <div class="dashboard-grid">
+            <article class="dashboard-card">
+              <div>
+                <span class="card-kicker" data-i18n="main.kickers.audit">Audit</span>
+                <h2 data-i18n="main.logsCardTitle">Audit Logs</h2>
+                <p data-i18n="main.logsCardDesc">Review scan, organize, restore, and failure records.</p>
+              </div>
+              <button id="openLogsButton" class="ghost-button" data-i18n="main.openLogs">Open Audit Logs</button>
+            </article>
 
-        <article class="dashboard-card">
-          <div>
-            <span class="card-kicker" data-i18n="tools.cardKicker">Tools</span>
-            <h2 data-i18n="main.toolsCardTitle">Manual Tools</h2>
-            <p data-i18n="main.toolsCardDesc">Open system and browser cleanup entries for manual operation.</p>
+            <article class="dashboard-card">
+              <div>
+                <span class="card-kicker" data-i18n="main.kickers.tools">Tools</span>
+                <h2 data-i18n="main.toolsCardTitle">Manual Tools</h2>
+                <p data-i18n="main.toolsCardDesc">Open system and browser cleanup entries for manual operation.</p>
+              </div>
+              <button id="openToolsButton" class="ghost-button" data-i18n="main.openTools">Open Manual Tools</button>
+            </article>
           </div>
-          <button id="openToolsButton" class="ghost-button" data-i18n="main.openTools">Open Tools</button>
-        </article>
+        </section>
       </div>
     </section>
   </main>

@@ -4,10 +4,6 @@ import { markI18nReady, t, translateStaticText } from "../locales/i18n.js";
 function getToolsElements() {
   return {
     backButton: $("#backButton"),
-    openScanButton: $("#openScanButton"),
-    openDuplicatesButton: $("#openDuplicatesButton"),
-    openCleanupButton: $("#openCleanupButton"),
-    openRecycleButton: $("#openRecycleButton"),
     copyButtons: document.querySelectorAll("[data-copy-value]"),
   };
 }
@@ -39,18 +35,6 @@ function setStatus(button, message) {
 function bindEvents(els) {
   on(els.backButton, "click", () => {
     location.href = "/";
-  });
-  on(els.openScanButton, "click", () => {
-    location.href = "/scan";
-  });
-  on(els.openDuplicatesButton, "click", () => {
-    location.href = "/duplicates";
-  });
-  on(els.openCleanupButton, "click", () => {
-    location.href = "/cleanup";
-  });
-  on(els.openRecycleButton, "click", () => {
-    location.href = "/recycle";
   });
 
   els.copyButtons.forEach((button) => {
