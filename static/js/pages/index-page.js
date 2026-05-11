@@ -21,10 +21,6 @@ function getIndexElements() {
   };
 }
 
-function applyDocumentLang(lang) {
-  document.documentElement.lang = lang === "en" ? "en" : "zh-CN";
-}
-
 function goTo(path) {
   location.href = path;
 }
@@ -77,13 +73,11 @@ function bindLanguageSwitch(els) {
   if (!els.languageSelect) return;
 
   const currentLang = getLang();
-  els.languageSelect.value = currentLang === "en" ? "en" : "zh";
-  applyDocumentLang(els.languageSelect.value);
+  els.languageSelect.value = ["zh", "en", "ja"].includes(currentLang) ? currentLang : "zh";
 
   on(els.languageSelect, "change", () => {
     const nextLang = setLang(els.languageSelect.value);
-    els.languageSelect.value = nextLang === "en" ? "en" : "zh";
-    applyDocumentLang(els.languageSelect.value);
+    els.languageSelect.value = ["zh", "en", "ja"].includes(nextLang) ? nextLang : "zh";
     translateStaticText();
   });
 }

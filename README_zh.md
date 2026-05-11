@@ -17,17 +17,20 @@ ZeroTrace Engine 遵循以下原则：
 ## 当前功能
 
 ### 系统扫描
+
 - 扫描本机可整理项目（临时文件、日志文件、缩略图缓存、Windows Update 缓存、空文件/空文件夹）
 - 展示路径、大小、来源、分类和风险等级
 - 应用残留扫描能力
 
 ### 重复文件检测
+
 - 基于 SHA-256 哈希识别重复文件
 - 支持图片、视频、文档、压缩包等常见文件类型
 - 按哈希分组展示，用户选择保留或清理
 - 扫描阶段只读；整理统一进入 `ZeroTraceRecycle/`
 
 ### 注册表扫描
+
 - 扫描 Windows 注册表中的无效、孤立或损坏条目
 - 覆盖六类问题：无效路径引用、孤立 COM 对象、无效卸载记录、失效服务、启动项问题、文件关联损坏
 - 四阶段算法：收集键值 → 解析目标路径 → 规则引擎匹配 → 风险评分
@@ -35,6 +38,7 @@ ZeroTrace Engine 遵循以下原则：
 - 整理前自动导出 `.reg` 备份文件到 `ZeroTraceRegistryRecycle/`，支持一键恢复（`reg.exe import`）
 
 ### 整理与回收
+
 - 从扫描结果生成整理计划
 - 执行整理计划时移动文件到 `ZeroTraceRecycle/`
 - 注册表整理备份写入 `ZeroTraceRegistryRecycle/`
@@ -43,10 +47,12 @@ ZeroTrace Engine 遵循以下原则：
 - 完整的审计日志记录
 
 ### 持久化
+
 - SQLite（WAL 模式）保存扫描结果、整理计划、审计记录、文件哈希和设置
 - 注册表相关：`registry_scan_results`、`registry_cleanup_plans`、`registry_cleanup_actions` 三张独立表
 
 ### 前端
+
 - 多页面：首页、扫描、整理计划、回收区、审计日志、重复文件、注册表扫描、手动工具
 - 浏览器 i18n（中/英）无后端依赖
 - 原生 JS ES6 模块，无前端框架
@@ -84,7 +90,7 @@ static/
   前端页面、页面脚本、样式和 i18n 文案
 ```
 
-> **兼容层** `core/scanner.py`、`core/cleaner.py`、`core/recycle.py`、`core/analyzer.py`、`core/paths.py` 目前保留为兼容层。新代码应优先使用 `core.services.*`、`core.storage.*` 和 `core.scanners/`。
+新功能应优先放在 `core.services.*`、`core.storage.*` 和 `core.scanners/` 对应边界内，保持路由层、业务层、存储层和扫描层职责清晰。
 
 ## 安全规则
 
@@ -147,35 +153,43 @@ http://127.0.0.1:8000
 ## 扫描能力
 
 ### 临时目录扫描
+
 - 扫描 `C:\Windows\Temp`、用户 `AppData\Local\Temp` 及 `TEMP`/`TMP` 环境变量指向的目录
 - 扫描结果去重，默认跳过最近 24 小时内修改的文件
 
 ### 日志文件扫描
+
 - 默认扫描仓库 `logs/` 和 Windows 临时目录中的日志
 - 识别 `.log`、`.old`、`.bak`、`.tmp` 及常见轮转日志名
 - 默认跳过最近 7 天内修改的文件
 
 ### 空文件 / 空文件夹扫描
+
 - 仅在低风险根目录中检测空文件和叶子空文件夹
 - 默认跳过最近 24 小时内修改的条目
 
 ### Windows Update 清理候选检测
+
 - 检测 `C:\Windows\SoftwareDistribution\Download` 下的旧下载缓存
 - 默认跳过最近 14 天内修改的文件
 
 ### 缩略图缓存扫描
+
 - 检测用户 Windows Explorer 缩略图缓存（`thumbcache_*.db`、`iconcache_*.db`）
 - 默认跳过最近 7 天内修改的文件
 
 ### 应用残留扫描
+
 - 检测常见 Windows 应用卸载后的遗留文件夹和配置
-- 目前为初始能力，覆盖范围将逐步扩展
+- 扫描阶段只读，残留项需要进入可回滚整理流程
 
 ### 重复文件检测
+
 - 两阶段哈希：快速头部哈希预过滤 + SHA-256 全文哈希确认
 - 支持图片、视频、文档、压缩包
 
 ### 注册表扫描
+
 - **InvalidPath**：Run/RunOnce 启动项引用路径不存在
 - **OrphanCOM**：HKCR\CLSID 注册的 COM 对象 DLL/EXE 已缺失
 - **InvalidUninstall**：Uninstall 注册表项中的卸载程序路径不存在
@@ -184,10 +198,6 @@ http://127.0.0.1:8000
 - **FileAssociation**：文件关联的打开方式程序已缺失
 
 > 所有扫描阶段只读；处理时统一进入对应回收区。之后可从 ZeroTraceEngine 恢复；执行移除时，Windows 会移入系统回收站，其他系统会直接删除。
-
-### 浏览器缓存扫描（暂不默认启用）
-- 扫描 Chromium 系浏览器（Chrome、Edge、Brave）Cache 目录
-- 因浏览器运行时可能锁定文件，暂保留为代码能力，不加入默认扫描流程
 
 ## 运行时目录
 

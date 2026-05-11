@@ -93,6 +93,7 @@ export default {
     languages: {
       zh: "中文",
       en: "English",
+      ja: "日本語",
     },
     intro: "Local File Organizer · Auditable · Reversible",
     description: "A local-first file organization workspace. Scan first, confirm next, move last.",

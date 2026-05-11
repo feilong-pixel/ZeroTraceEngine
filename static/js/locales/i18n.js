@@ -1,4 +1,5 @@
 import en from "./en.js";
+import ja from "./ja.js";
 import zh from "./zh.js";
 
 const DEFAULT_LANG = "zh";
@@ -6,6 +7,7 @@ const SUPPORTED_LANGS = ["zh", "en", "ja"];
 
 const I18N = {
   en,
+  ja,
   zh,
 };
 const FALLBACK_LANG = "zh";
@@ -27,6 +29,10 @@ function getByPath(obj, path) {
   return path.split(".").reduce((acc, key) => acc?.[key], obj);
 }
 
+function applyDocumentLang(lang) {
+  document.documentElement.lang = lang === "ja" ? "ja" : lang === "en" ? "en" : "zh-CN";
+}
+
 export function getSupportedLangs() {
   return [...SUPPORTED_LANGS];
 }
@@ -42,6 +48,7 @@ export function getLang() {
 export function setLang(lang) {
   const normalized = normalizeLang(lang);
   localStorage.setItem("lang", normalized);
+  applyDocumentLang(normalized);
   return normalized;
 }
 

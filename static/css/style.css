@@ -21,6 +21,10 @@
   --font-mono: "Consolas", "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
 }
 
+:root:lang(ja) {
+  --font-sans: "Yu Gothic UI", "Yu Gothic", "Meiryo", "Segoe UI", sans-serif;
+}
+
 * {
   box-sizing: border-box;
 }

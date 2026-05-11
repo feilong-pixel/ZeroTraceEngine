@@ -93,6 +93,7 @@ export default {
     languages: {
       zh: "中文",
       en: "English",
+      ja: "日本語",
     },
     intro: "本地文件整理工具 · 可审计 · 可回滚",
     description: "本地优先的文件整理工作台。先扫描、再确认、后移动。",
