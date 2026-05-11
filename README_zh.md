@@ -54,7 +54,7 @@ ZeroTrace Engine 遵循以下原则：
 ### 前端
 
 - 多页面：首页、扫描、清理计划、回收区、审计日志、重复文件、注册表扫描、手动工具
-- 浏览器 i18n（中/英）无后端依赖
+- 浏览器 i18n（英/中/日）无后端依赖
 - 原生 JS ES6 模块，无前端框架
 
 ## 架构分层
@@ -118,7 +118,13 @@ static/
 ~\.virtualenvs\venv\Scripts\python.exe -m pip install -r requirements-dev.txt
 ```
 
-启动服务（热重载）：
+启动应用：
+
+```powershell
+.\start.ps1
+```
+
+开发时如需热重载：
 
 ```powershell
 .\start-dev.ps1
@@ -236,10 +242,22 @@ ZeroTraceRegistryRecycle/  # 注册表备份 .reg 文件区
 
 | 路径 | 页面 | 作用 | 安全边界 |
 |------|------|------|----------|
-| `/logs` | 审计日志 | 查看整理、恢复、移除、注册表计划等操作记录 | 只读查询 |
+| `/logs` | 审计日志 | 查看清理、恢复、移除、注册表计划等操作记录 | 只读查询 |
 | `/tools` | 手动工具 | 提供 Windows 设置、磁盘清理命令和浏览器历史入口 | 外部工具入口；ZeroTraceEngine 不自动执行 |
 
 `/` 为首页，只负责状态概览与功能入口，不执行清理计划操作。
+
+## 文档
+
+- 英文 README：[README.md](./README.md)
+- 中文 README：[README_zh.md](./README_zh.md)
+- 日文 README：[README_ja.md](./README_ja.md)
+- 英文环境说明：[ENVIRONMENT.md](./ENVIRONMENT.md)
+- 英文免责声明：[DISCLAIMER.md](./DISCLAIMER.md)
+- 中文环境说明：[环境配置说明.md](./环境配置说明.md)
+- 中文免责声明：[免责声明.md](./免责声明.md)
+- 日文环境说明：[環境設定ガイド.md](./環境設定ガイド.md)
+- 日文免责声明：[免責事項.md](./免責事項.md)
 
 ## 路线图
 

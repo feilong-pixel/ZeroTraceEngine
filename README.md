@@ -1,8 +1,8 @@
 # ZeroTrace Engine
 
-> A local, reversible operation engine for organizing files and registry traces.
+> A local, reversible operation engine for reviewing cleanup candidates and registry traces.
 
-ZeroTrace Engine is not an automatic Windows cleanup tool. It is a local-first organization workspace. Its goal is to move cleanup candidates into the project recycle area only after explicit user confirmation, export registry cleanup targets to `.reg` backups, and keep queryable, restorable operation records.
+ZeroTrace Engine is not an automatic Windows cleanup tool. It is a local-first cleanup review workspace. Its goal is to move cleanup candidates into the project recycle area only after explicit user confirmation, export registry cleanup targets to `.reg` backups, and keep queryable, restorable operation records.
 
 ## Project Positioning
 
@@ -20,14 +20,14 @@ ZeroTrace Engine follows these principles:
 
 - Scans local cleanup candidates such as temporary files, logs, thumbnail caches, Windows Update caches, empty files, and empty folders
 - Shows path, size, source, category, and risk level
-- Includes application residual scan capability
+- Includes application leftover scan capability
 
 ### Duplicate Scan Capability
 
 - Detects duplicate files by SHA-256 hash
 - Supports common file types such as images, videos, documents, and archives
-- Groups results by hash so users can choose what to keep or organize
-- Scan phase is read-only; organization moves selected files into `ZeroTraceRecycle/`
+- Groups results by hash so users can choose what to keep or move
+- Scan phase is read-only; approved files move into `ZeroTraceRecycle/`
 
 ### Registry Review Capability
 
@@ -37,9 +37,9 @@ ZeroTrace Engine follows these principles:
 - Risk levels: Safe / Medium / High, with critical system entries explicitly marked
 - Exports `.reg` backups into `ZeroTraceRegistryRecycle/` before cleanup, with one-click restore through `reg.exe import`
 
-### Organization And Recycle
+### Cleanup Plan And Recycle
 
-- Generates organization plans from scan results
+- Generates cleanup plans from scan results
 - Moves files to `ZeroTraceRecycle/` when executing a plan
 - Writes registry backups to `ZeroTraceRegistryRecycle/`
 - Restores files from the recycle area to their original paths
@@ -48,18 +48,18 @@ ZeroTrace Engine follows these principles:
 
 ### Persistence
 
-- Uses SQLite in WAL mode for scan results, organization plans, audit records, file hashes, and settings
+- Uses SQLite in WAL mode for scan results, cleanup plans, audit records, file hashes, and settings
 - Registry data is stored in separate tables: `registry_scan_results`, `registry_cleanup_plans`, and `registry_cleanup_actions`
 
 ### Frontend
 
-- Multi-page UI: dashboard, scan, organization plan, recycle bin, audit logs, duplicates, registry scan, and manual tools
-- Browser-side i18n for Chinese and English, without backend dependency
+- Multi-page UI: dashboard, scan, cleanup plan, recycle bin, audit logs, duplicates, registry scan, and manual tools
+- Browser-side i18n for English, Chinese, and Japanese, without backend dependency
 - Native JavaScript ES6 modules, no frontend framework
 
 ## Architecture
 
-The current codebase is organized by these boundaries:
+The current codebase is structured around these boundaries:
 
 ```text
 app.py
@@ -69,7 +69,7 @@ core/routers/
   FastAPI routes, request models, and response forwarding only
 
 core/services/
-  Business orchestration such as scan execution, organization plan execution, recycle restore, registry scan, and registry cleanup
+  Business orchestration such as scan execution, cleanup plan execution, recycle restore, registry scan, and registry cleanup
 
 core/storage/
   SQLite connection, schema creation, and repository reads/writes
@@ -118,7 +118,13 @@ Use the existing virtual environment. A new venv is not required:
 ~\.virtualenvs\venv\Scripts\python.exe -m pip install -r requirements-dev.txt
 ```
 
-Start the development server with reload:
+Start the app:
+
+```powershell
+.\start.ps1
+```
+
+For development with reload:
 
 ```powershell
 .\start-dev.ps1
@@ -179,10 +185,10 @@ Tests use the repo-local `.test-tmp/` directory and isolated SQLite databases to
 - Detects Windows Explorer thumbnail caches such as `thumbcache_*.db` and `iconcache_*.db`
 - Skips files modified within the last 7 days by default
 
-### Application Residual Scan
+### Application Leftover Scan
 
 - Detects common folders and configuration left behind after Windows application uninstall
-- Scan phase is read-only, and residual items must enter a reversible organization flow
+- Scan phase is read-only, and leftover items must enter a reversible cleanup flow
 
 ### Duplicate File Detection
 
@@ -216,42 +222,54 @@ ZeroTraceRegistryRecycle/  # Registry backup .reg area
 
 The dashboard groups feature entries by purpose.
 
-### File Organization
+### File Cleanup
 
 | Path | Page | Purpose | Safety Boundary |
 |------|------|---------|-----------------|
-| `/scan` | File Scan | Scan temporary files, logs, thumbnail caches, Windows Update caches, empty files, empty folders, and other organization candidates | Read-only scan; does not move files |
-| `/duplicates` | Duplicate Scan | Scan selected folders for duplicate files, group by hash, and choose items for organization | Read-only scan; selected items enter the organization plan |
-| `/user-directory` | User Directory Scan | Analyze caches, environments, build outputs, logs, and large files under `%USERPROFILE%` | Read-only scan for space review and manual confirmation |
-| `/cleanup` | Organization Plan | Summarize scan or duplicate results and execute after confirmation | Moves files into `ZeroTraceRecycle/` first and keeps audit records |
+| `/scan` | File Scan | Scan temporary files, logs, thumbnail caches, Windows Update caches, empty files, empty folders, and other cleanup candidates | Read-only scan; does not move files |
+| `/duplicates` | Duplicate Scan | Scan selected folders for duplicate files, group by hash, and choose items to move | Read-only scan; selected items enter the cleanup plan |
+| `/user-directory` | User Folder Scan | Analyze caches, environments, build outputs, logs, and large files under `%USERPROFILE%` | Read-only scan for space review and manual confirmation |
+| `/cleanup` | Cleanup Plan | Summarize scan or duplicate results and run after confirmation | Moves files into `ZeroTraceRecycle/` first and keeps audit records |
 | `/recycle` | Recycle Bin | Review, restore, or remove files in `ZeroTraceRecycle/` | Restore returns to original paths; Remove sends files to the system Recycle Bin on Windows and deletes directly on other systems |
 
 ### System Inspection
 
 | Path | Page | Purpose | Safety Boundary |
 |------|------|---------|-----------------|
-| `/app-scan` | Application Scan | Enumerate installed applications, install directory usage, and residual application traces | Scan phase is read-only; residual items must enter a reversible flow |
+| `/app-scan` | Application Scan | Enumerate installed applications, install folder usage, and leftover application traces | Scan phase is read-only; leftover items must enter a reversible flow |
 | `/registry` | Registry Scan | Detect invalid paths, orphan COM entries, invalid uninstall records, services, startup entries, and file association issues | Exports `.reg` backups before cleanup; high-risk and diagnostic items are not executed automatically |
 
 ### Support
 
 | Path | Page | Purpose | Safety Boundary |
 |------|------|---------|-----------------|
-| `/logs` | Audit Logs | Review organization, restore, remove, and registry plan records | Read-only query |
+| `/logs` | Audit Logs | Review move, restore, remove, and registry plan records | Read-only query |
 | `/tools` | Manual Tools | Provide Windows settings, disk cleanup commands, and browser history entries | External tool entry points only; ZeroTraceEngine does not execute them automatically |
 
-`/` is the dashboard. It only provides status overview and feature entry points; it does not execute organization operations.
+`/` is the dashboard. It only provides status overview and feature entry points; it does not run cleanup operations.
+
+## Documents
+
+- English README: [README.md](./README.md)
+- Chinese README: [README_zh.md](./README_zh.md)
+- Japanese README: [README_ja.md](./README_ja.md)
+- Environment: [ENVIRONMENT.md](./ENVIRONMENT.md)
+- Disclaimer: [DISCLAIMER.md](./DISCLAIMER.md)
+- Chinese environment guide: [环境配置说明.md](./环境配置说明.md)
+- Chinese disclaimer: [免责声明.md](./免责声明.md)
+- Japanese environment guide: [環境設定ガイド.md](./環境設定ガイド.md)
+- Japanese disclaimer: [免責事項.md](./免責事項.md)
 
 ## Roadmap
 
 - More registry scan rules, such as MUI cache and font registration checks
 - More complete audit query and filtering
-- More application residual detection rules
+- More application leftover detection rules
 - Better batch operations in the recycle bin
 
 ## Philosophy
 
-System organization should not be a black-box action. Users should always know what will be handled, where it has been moved, and how to restore it.
+System cleanup should not be a black-box action. Users should always know what will be handled, where it has been moved, and how to restore it.
 
 ## License
 
