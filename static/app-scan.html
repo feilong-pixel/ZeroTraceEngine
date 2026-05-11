@@ -150,46 +150,6 @@
       </div>
     </section>
 
-    <!-- ── Filter bar ─────────────────────────────────────────────── -->
-    <div class="toolbar-panel appscan-filter-bar" id="appscanFilterBar">
-      <label class="filter-label-group">
-        <span data-i18n="common.labels.source">来源</span>
-        <select id="appscanFilterSource" class="select-input select-input-sm">
-          <option value="" data-i18n="common.labels.all">全部</option>
-          <option value="registry" data-i18n="appscan.sources.registry">注册表</option>
-          <option value="directory" data-i18n="appscan.sources.directory">目录扫描</option>
-          <option value="uwp">UWP</option>
-        </select>
-      </label>
-      <label class="filter-label-group">
-        <span data-i18n="common.labels.status">状态</span>
-        <select id="appscanFilterStatus" class="select-input select-input-sm">
-          <option value="" data-i18n="common.labels.all">全部</option>
-          <option value="valid" data-i18n="appscan.status.valid">有效</option>
-          <option value="invalid" data-i18n="appscan.status.invalid">残留</option>
-          <option value="portable" data-i18n="appscan.status.portable">便携版</option>
-        </select>
-      </label>
-      <label class="filter-label-group">
-        <span data-i18n="appscan.labels.minSize">占用</span>
-        <select id="appscanFilterSize" class="select-input select-input-sm">
-          <option value="" data-i18n="common.labels.all">全部</option>
-          <option value="104857600">&gt; 100 MB</option>
-          <option value="1073741824">&gt; 1 GB</option>
-          <option value="5368709120">&gt; 5 GB</option>
-        </select>
-      </label>
-      <label class="filter-label-group filter-search-group">
-        <span data-i18n="appscan.labels.search">搜索</span>
-        <input id="appscanSearchInput" class="search-input" type="text"
-               placeholder="按名称 / 路径搜索"
-               data-i18n-placeholder="appscan.labels.searchPlaceholder" />
-      </label>
-      <div class="appscan-filter-actions">
-        <span id="appscanFilterCount" class="appscan-filter-count"></span>
-      </div>
-    </div>
-
     <!-- ── App list ───────────────────────────────────────────────── -->
     <div class="appscan-list-panel" id="appscanListPanel">
       <!-- scanning card (shown during scan) -->
@@ -243,6 +203,44 @@
               <p class="appscan-list-title" data-i18n="appscan.listTitle">应用列表</p>
               <button id="appscanRescanTimeoutButton" class="ghost-button appscan-timeout-rescan is-hidden" data-i18n="appscan.buttons.rescanTimeoutItems">重新计算超时项</button>
             </div>
+          </div>
+        </div>
+        <div class="appscan-filter-bar" id="appscanFilterBar">
+          <label class="filter-label-group">
+            <span data-i18n="common.labels.source">来源</span>
+            <select id="appscanFilterSource" class="select-input select-input-sm">
+              <option value="" data-i18n="common.labels.all">全部</option>
+              <option value="registry" data-i18n="appscan.sources.registry">注册表</option>
+              <option value="directory" data-i18n="appscan.sources.directory">目录扫描</option>
+              <option value="uwp">UWP</option>
+            </select>
+          </label>
+          <label class="filter-label-group">
+            <span data-i18n="common.labels.status">状态</span>
+            <select id="appscanFilterStatus" class="select-input select-input-sm">
+              <option value="" data-i18n="common.labels.all">全部</option>
+              <option value="valid" data-i18n="appscan.status.valid">有效</option>
+              <option value="invalid" data-i18n="appscan.status.invalid">残留</option>
+              <option value="portable" data-i18n="appscan.status.portable">便携版</option>
+            </select>
+          </label>
+          <label class="filter-label-group">
+            <span data-i18n="appscan.labels.minSize">占用</span>
+            <select id="appscanFilterSize" class="select-input select-input-sm">
+              <option value="" data-i18n="common.labels.all">全部</option>
+              <option value="104857600">&gt; 100 MB</option>
+              <option value="1073741824">&gt; 1 GB</option>
+              <option value="5368709120">&gt; 5 GB</option>
+            </select>
+          </label>
+          <label class="filter-label-group filter-search-group">
+            <span data-i18n="appscan.labels.search">搜索</span>
+            <input id="appscanSearchInput" class="search-input" type="text"
+                   placeholder="按名称 / 路径搜索"
+                   data-i18n-placeholder="appscan.labels.searchPlaceholder" />
+          </label>
+          <div class="appscan-filter-actions">
+            <span id="appscanFilterCount" class="appscan-filter-count"></span>
           </div>
         </div>
         <div class="appscan-list-header">

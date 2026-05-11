@@ -234,6 +234,7 @@ p {
 .dashboard-page,
 .scan-page,
 .duplicates-page,
+.userdir-page,
 .recycle-page,
 .cleanup-page,
 .tools-page,
@@ -2073,12 +2074,6 @@ p {
   --cat-large:  #dc2626;
 }
 
-.userdir-page {
-  width: min(1440px, 100%);
-  margin: 0 auto;
-  padding: 28px;
-}
-
 /* ── Header right (pills + buttons) ─────────────────────────── */
 .userdir-header-right {
   display: flex;
@@ -2113,7 +2108,8 @@ p {
   min-height: 360px;
   background: var(--panel-bg);
   border: 1px solid var(--border-color);
-  border-radius: 12px;
+  border-radius: 8px;
+  box-shadow: var(--shadow);
 }
 
 .userdir-idle-content {
@@ -2244,17 +2240,21 @@ p {
   gap: 16px;
 }
 
+.userdir-results-section > .toolbar-panel {
+  margin-bottom: 0;
+}
+
 /* Config strip */
 .userdir-config-strip {
   display: grid;
   grid-template-columns: minmax(220px, 1.25fr) minmax(120px, 0.65fr) minmax(260px, 1.45fr) minmax(170px, 0.9fr) minmax(90px, 0.5fr);
   align-items: center;
-  min-height: 78px;
+  min-height: 72px;
   background: var(--panel-bg);
   border: 1px solid var(--border-color);
   border-radius: 8px;
-  padding: 14px 24px;
-  gap: 18px;
+  padding: 16px;
+  gap: 16px;
   box-shadow: var(--shadow);
 }
 
@@ -2272,9 +2272,10 @@ p {
 }
 
 .userdir-config-label {
-  font-size: 13px;
-  font-weight: 600;
-  letter-spacing: 0;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
   color: var(--muted);
   line-height: 1.25;
   white-space: nowrap;
@@ -2284,7 +2285,7 @@ p {
   overflow: hidden;
   color: var(--ink);
   font-size: 13px;
-  font-weight: 700;
+  font-weight: 800;
   line-height: 1.25;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -2298,37 +2299,46 @@ p {
 .userdir-stat-row {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  background: var(--panel-bg);
-  border: 1px solid var(--border-color);
-  border-radius: 8px;
-  overflow: hidden;
-  box-shadow: var(--shadow);
+  gap: 16px;
 }
 
 .userdir-stat-item {
-  min-height: 108px;
-  padding: 20px 24px;
-  border-right: 1px solid var(--border-color);
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  gap: 6px;
+  min-height: 92px;
+  display: grid;
+  align-content: center;
+  gap: 8px;
+  padding: 18px 16px;
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  background: var(--panel-bg);
+  box-shadow: 0 1px 5px rgba(31, 41, 55, 0.06);
 }
-
-.userdir-stat-item:last-child { border-right: none; }
 
 .userdir-stat-label {
   font-size: 11px;
-  font-weight: 700;
-  letter-spacing: 0.08em;
+  font-weight: 800;
+  letter-spacing: 0.04em;
   text-transform: uppercase;
   color: var(--muted);
 }
 
 .userdir-stat-value {
-  font-size: 28px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 8px;
+  font-size: 20px;
   font-weight: 800;
-  line-height: 1.1;
+  line-height: 1.2;
+}
+
+.userdir-stat-value::before {
+  content: "";
+  width: 9px;
+  height: 9px;
+  flex: 0 0 auto;
+  border-radius: 50%;
+  background: var(--accent);
 }
 
 .userdir-stat-value-accent { color: var(--accent); }
@@ -2347,8 +2357,8 @@ p {
   display: flex;
   flex-direction: column;
   align-items: stretch;
-  gap: 14px;
-  padding: 20px 24px;
+  gap: 12px;
+  padding: 16px;
 }
 
 .userdir-cat-head,
@@ -2383,7 +2393,7 @@ p {
 .userdir-section-title {
   color: #050816;
   font-size: 20px;
-  font-weight: 800;
+  font-weight: 700;
   line-height: 1.2;
   margin: 4px 0 0;
 }
@@ -2392,7 +2402,7 @@ p {
   width: 100%;
   min-width: 0;
   display: flex;
-  height: 14px;
+  height: 10px;
   border-radius: 4px;
   overflow: hidden;
   gap: 0;
@@ -2474,8 +2484,8 @@ p {
   display: flex;
   flex-direction: column;
   align-items: stretch;
-  gap: 14px;
-  padding: 20px 24px;
+  gap: 12px;
+  padding: 16px;
 }
 
 .userdir-treemap-title-block {
@@ -2571,17 +2581,22 @@ p {
   grid-template-columns: minmax(132px, 160px) minmax(112px, 132px) minmax(132px, 160px) minmax(260px, 1fr);
   align-items: end;
   gap: 16px;
-  padding: 14px 18px 16px;
+  padding: 16px;
   border-bottom: 1px solid var(--border-color);
   background: #fbfcfe;
 }
 
 .userdir-filter-bar .filter-label-group {
+  display: grid;
+  grid-template-columns: max-content minmax(0, 1fr);
+  align-items: center;
+  gap: 14px;
   color: var(--muted);
   font-size: 13px;
-  font-weight: 700;
+  font-weight: 800;
   line-height: 1.2;
   min-width: 0;
+  white-space: nowrap;
 }
 
 .userdir-filter-bar .select-input,
@@ -2608,17 +2623,17 @@ p {
 .userdir-list-toprow {
   display: flex;
   justify-content: space-between;
-  align-items: flex-start;
-  gap: 14px;
-  padding: 16px 18px 12px;
+  align-items: center;
+  gap: 16px;
+  padding: 16px;
   border-bottom: 1px solid var(--border-color);
 }
 
 .userdir-list-title {
   margin: 0 0 4px;
   color: var(--ink);
-  font-size: 16px;
-  font-weight: 800;
+  font-size: 20px;
+  font-weight: 700;
   line-height: 1.25;
 }
 
@@ -2701,9 +2716,9 @@ p {
 .userdir-item-mtime { font-size: 12px; white-space: nowrap; }
 
 .userdir-list-panel .ghost-button-sm {
-  min-height: 34px;
+  min-height: var(--control-height);
   padding: 6px 12px;
-  font-size: 14px;
+  font-size: 13px;
   font-weight: 700;
   line-height: 1.2;
 }
@@ -2931,6 +2946,10 @@ p {
   grid-template-columns: 1fr 1fr;
   gap: 16px;
   margin-bottom: 16px;
+}
+
+.appscan-row2 > .toolbar-panel {
+  margin-bottom: 0;
 }
 
 .appscan-source-panel,
@@ -3181,32 +3200,34 @@ p {
 
 /* Filter bar */
 .appscan-filter-bar {
-  display: flex;
-  gap: 14px;
-  align-items: flex-end;
+  display: grid;
+  grid-template-columns: minmax(132px, 160px) minmax(112px, 132px) minmax(132px, 160px) minmax(260px, 1fr) auto;
+  align-items: end;
+  gap: 16px;
   padding: 16px;
-  margin-bottom: 16px;
-  flex-wrap: wrap;
+  border-bottom: 1px solid var(--border-color);
+  background: #fbfcfe;
 }
 
 .appscan-filter-bar .filter-label-group {
   display: grid;
-  grid-template-columns: 1fr;
-  gap: 6px;
+  grid-template-columns: max-content minmax(0, 1fr);
+  align-items: center;
+  gap: 14px;
   font-size: 13px;
   color: var(--muted);
-  font-weight: 700;
+  font-weight: 800;
   line-height: 1.2;
   white-space: nowrap;
 }
 
 .appscan-filter-bar .filter-label-group.filter-search-group {
-  flex: 1;
-  min-width: 200px;
+  min-width: 0;
 }
 
 .appscan-filter-bar select,
 .appscan-filter-bar input {
+  width: 100%;
   min-height: var(--control-height);
   font-size: 13px;
 }
@@ -3223,7 +3244,6 @@ p {
   font-size: 12px;
   color: var(--muted);
   white-space: nowrap;
-  margin-right: 4px;
 }
 
 /* ── List panel ─────────────────────────────────────────────── */
