@@ -13,7 +13,15 @@ from core.storage.file_hash_repository import (
     mark_missing_hashes,
     upsert_file_hash,
 )
-from core.storage.scan_results_repository import clear_scan_results, save_scan_results
+from core.storage.duplicate_results_repository import (
+    clear_duplicate_results,
+    list_duplicate_results,
+    save_duplicate_results,
+)
+from core.storage.scan_results_repository import (
+    clear_scan_results,
+    save_scan_results,
+)
 
 QUICK_HASH_BYTES = 4096
 CHUNK_SIZE = 1024 * 1024
@@ -62,45 +70,77 @@ def scan_duplicates(raw_roots: list[str]) -> dict[str, Any]:
         for candidate, record in group:
             records_by_full[(candidate.size, record.full_hash)].append((candidate, record))
 
-    groups = []
-    duplicate_file_count = 0
-    reclaimable_size = 0
-    for index, ((size, full_hash), group) in enumerate(records_by_full.items(), start=1):
+    files_by_hash: dict[tuple[int, str], list[dict[str, Any]]] = defaultdict(list)
+    for (size, full_hash), group in records_by_full.items():
         if len(group) <= 1:
             continue
 
         files = [build_file_payload(candidate, record) for candidate, record in group]
-        files.sort(key=lambda item: (item["mtime"] or 0, item["path"]))
-        group_reclaimable = size * (len(files) - 1)
-        recommended_file = recommend_keep_file(files)
-        duplicate_file_count += len(files)
-        reclaimable_size += group_reclaimable
-        groups.append({
-            "id": f"group-{index}",
-            "hash": full_hash,
-            "size": size,
-            "file_count": len(files),
-            "reclaimable_size": group_reclaimable,
-            "display_name": Path(files[0]["path"]).name,
-            "recommended_keep_path": recommended_file["path"],
-            "recommended_keep_reason": recommended_file["keep_reason"],
-            "risk_counts": count_risks(files),
-            "files": files,
-        })
+        files_by_hash[(size, full_hash)].extend(files)
 
-    groups.sort(key=lambda group: group["reclaimable_size"], reverse=True)
+    groups = build_duplicate_groups(files_by_hash)
     missing_hashes = mark_missing_hashes(scanned_paths, [str(root) for root in roots])
 
-    return {
+    result = {
         "ok": True,
         "roots": [str(root) for root in roots],
         "scanned_files": len(candidates),
         "candidate_files": len(size_candidates),
         "group_count": len(groups),
-        "duplicate_file_count": duplicate_file_count,
-        "reclaimable_size": reclaimable_size,
+        "duplicate_file_count": sum(group["file_count"] for group in groups),
+        "reclaimable_size": sum(group["reclaimable_size"] for group in groups),
         "missing_hashes": missing_hashes,
         "groups": groups,
+    }
+    save_duplicate_results(groups)
+    return result
+
+
+def load_saved_duplicate_scan_results() -> dict[str, Any]:
+    rows = list_duplicate_results()
+    files_by_hash: dict[tuple[int, str], list[dict[str, Any]]] = defaultdict(list)
+
+    for row in rows:
+        path = Path(str(row.get("path") or ""))
+        if not path.is_file():
+            continue
+        try:
+            stat = path.stat()
+        except OSError:
+            continue
+
+        file_payload = {
+            "path": str(path.resolve()),
+            "size": int(row.get("size") or stat.st_size),
+            "mtime": row.get("mtime") or datetime.fromtimestamp(stat.st_mtime).isoformat(),
+            "source": row.get("source") or path.parent.name or "Duplicate Scan",
+            "root": row.get("root") or str(path.parent),
+            "category": row.get("category") or classify_category(path),
+            "risk_level": row.get("risk_level") or "low",
+            "risk_reasons": row.get("risk_reasons") or [],
+            "quick_hash": row.get("quick_hash") or "",
+            "full_hash": row.get("full_hash") or row.get("group_hash") or "",
+        }
+        files_by_hash[(int(file_payload["size"]), file_payload["full_hash"])].append(file_payload)
+
+    groups = build_duplicate_groups(files_by_hash, id_prefix="saved-group")
+    return {
+        "ok": True,
+        "restored": True,
+        "scanned_files": sum(group["file_count"] for group in groups),
+        "candidate_files": sum(group["file_count"] for group in groups),
+        "group_count": len(groups),
+        "duplicate_file_count": sum(group["file_count"] for group in groups),
+        "reclaimable_size": sum(group["reclaimable_size"] for group in groups),
+        "groups": groups,
+    }
+
+
+def clear_duplicate_scan_results() -> dict[str, Any]:
+    clear_duplicate_results()
+    return {
+        "ok": True,
+        "cleared": "duplicate_scan_results",
     }
 
 
@@ -261,6 +301,35 @@ def build_file_payload(candidate: FileCandidate, record: FileHashRecord) -> dict
         "quick_hash": record.quick_hash,
         "full_hash": record.full_hash,
     }
+
+
+def build_duplicate_groups(
+    files_by_hash: dict[tuple[int, str], list[dict[str, Any]]],
+    *,
+    id_prefix: str = "group",
+) -> list[dict[str, Any]]:
+    groups = []
+    for index, ((size, full_hash), files) in enumerate(files_by_hash.items(), start=1):
+        if len(files) <= 1:
+            continue
+
+        files.sort(key=lambda item: (item["mtime"] or "", item["path"]))
+        recommended_file = recommend_keep_file(files)
+        groups.append({
+            "id": f"{id_prefix}-{index}",
+            "hash": full_hash,
+            "size": size,
+            "file_count": len(files),
+            "reclaimable_size": size * (len(files) - 1),
+            "display_name": Path(files[0]["path"]).name,
+            "recommended_keep_path": recommended_file["path"],
+            "recommended_keep_reason": recommended_file["keep_reason"],
+            "risk_counts": count_risks(files),
+            "files": files,
+        })
+
+    groups.sort(key=lambda group: group["reclaimable_size"], reverse=True)
+    return groups
 
 
 def classify_category(path: Path) -> str:

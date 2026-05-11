@@ -1311,22 +1311,19 @@ p {
   color: var(--muted);
 }
 
-.registry-page {
-  padding: 24px;
-}
-
 .registry-control-bar,
 .registry-filter-bar {
-  grid-template-columns: repeat(6, minmax(132px, 1fr)) minmax(180px, 1.4fr);
   align-items: end;
 }
 
 .registry-control-bar {
-  grid-template-columns: repeat(2, minmax(160px, 220px)) minmax(180px, 1fr);
+  grid-template-columns: repeat(2, minmax(160px, 220px)) minmax(0, 1fr);
 }
 
 .registry-filter-bar {
-  grid-template-columns: repeat(6, minmax(132px, 1fr)) minmax(180px, 1.4fr) auto;
+  display: grid;
+  grid-template-columns: repeat(6, minmax(132px, 1fr)) minmax(180px, 1.4fr);
+  gap: 16px 28px;
 }
 
 .control-label-group,
@@ -1344,10 +1341,50 @@ p {
   font-weight: 700;
 }
 
+.registry-guide-panel {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0;
+  margin-bottom: 16px;
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  background: var(--panel-bg);
+  box-shadow: var(--shadow);
+  overflow: hidden;
+}
+
+.registry-guide-panel article {
+  display: grid;
+  gap: 6px;
+  min-height: 92px;
+  padding: 14px 16px;
+}
+
+.registry-guide-panel article + article {
+  border-left: 1px solid var(--line);
+}
+
+.registry-guide-panel span {
+  color: var(--accent);
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.registry-guide-panel strong {
+  font-size: 15px;
+}
+
+.registry-guide-panel p {
+  margin: 0;
+  color: var(--muted);
+  font-size: 13px;
+  line-height: 1.45;
+}
+
 .registry-phase-bar {
   display: grid;
   gap: 12px;
-  margin-top: 16px;
+  margin-bottom: 16px;
 }
 
 .progress-indeterminate {
@@ -1356,16 +1393,17 @@ p {
 }
 
 .empty-state-section {
-  margin-top: 16px;
+  margin-bottom: 16px;
 }
 
 .empty-state {
   display: grid;
   gap: 6px;
   padding: 28px;
-  border: 1px solid var(--line);
+  border: 1px solid var(--border-color);
   border-radius: 8px;
-  background: #ffffff;
+  background: var(--panel-bg);
+  box-shadow: var(--shadow);
   text-align: center;
 }
 
@@ -1386,14 +1424,33 @@ p {
 
 .registry-results-section,
 .registry-action-bar {
-  margin-top: 16px;
+  margin-bottom: 16px;
+}
+
+.registry-section-heading {
+  margin-bottom: 12px;
+}
+
+.registry-section-heading p:last-child {
+  margin: 6px 0 0;
+  max-width: 760px;
+  line-height: 1.5;
 }
 
 .registry-stats-grid {
   display: grid;
   grid-template-columns: repeat(5, minmax(0, 1fr));
-  gap: 12px;
+  gap: 16px;
   margin-bottom: 16px;
+}
+
+.registry-stats-grid .summary-card {
+  min-height: 92px;
+  padding: 18px 16px;
+}
+
+.registry-stats-grid .summary-card strong {
+  font-size: 20px;
 }
 
 .registry-group-list {
@@ -1401,10 +1458,80 @@ p {
   gap: 12px;
 }
 
-.registry-group-card {
+.registry-review-panel {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(260px, 360px);
+  gap: 12px 28px;
+  align-items: start;
+  margin-bottom: 16px;
+  padding: 16px;
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  background: var(--panel-bg);
+  box-shadow: var(--shadow);
+}
+
+.registry-review-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: flex-start;
+  min-width: 0;
+}
+
+.registry-search-compact {
+  grid-column: 2;
+  grid-row: 1;
+  display: grid;
+  grid-template-columns: max-content minmax(0, 1fr);
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+}
+
+.registry-advanced-filters {
+  display: contents;
+  min-width: 0;
+}
+
+.registry-advanced-filters summary {
+  width: max-content;
+  max-width: 100%;
+  min-height: 32px;
+  display: inline-flex;
+  align-items: center;
+  padding: 5px 10px;
   border: 1px solid var(--line);
   border-radius: 8px;
   background: #ffffff;
+  color: var(--muted);
+  font-size: 13px;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.registry-advanced-filters summary:hover,
+.registry-advanced-filters summary:focus-visible {
+  outline: none;
+  border-color: var(--accent);
+  color: var(--accent-hover);
+}
+
+.registry-advanced-filters[open] summary {
+  border-color: var(--accent);
+  color: var(--accent-hover);
+}
+
+.registry-advanced-filters .registry-filter-bar {
+  flex-basis: 100%;
+  margin-top: 4px;
+}
+
+.registry-group-card {
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  background: var(--panel-bg);
+  box-shadow: 0 1px 5px rgba(31, 41, 55, 0.06);
   overflow: hidden;
 }
 
@@ -1646,7 +1773,7 @@ p {
   display: flex;
   flex-wrap: wrap;
   gap: 8px;
-  margin: 12px 0;
+  margin: 0;
 }
 
 .registry-layer-tab {
@@ -2006,6 +2133,8 @@ p {
   .summary-grid,
   .duplicate-lifecycle-panel,
   .registry-stats-grid,
+  .registry-guide-panel,
+  .registry-review-panel,
   .registry-control-bar,
   .registry-filter-bar,
   .dashboard-grid,
@@ -2024,6 +2153,15 @@ p {
 
   .browser-history-row {
     grid-template-columns: 1fr;
+  }
+
+  .registry-guide-panel article + article {
+    border-top: 1px solid var(--line);
+    border-left: 0;
+  }
+
+  .registry-advanced-filters {
+    grid-column: auto;
   }
 }
 

@@ -4,7 +4,12 @@ from fastapi import APIRouter, HTTPException
 from fastapi.responses import FileResponse
 from pydantic import BaseModel
 
-from core.services.duplicate_service import create_duplicate_cleanup_plan, scan_duplicates
+from core.services.duplicate_service import (
+    clear_duplicate_scan_results,
+    create_duplicate_cleanup_plan,
+    load_saved_duplicate_scan_results,
+    scan_duplicates,
+)
 from core.storage.settings_repository import get_setting, set_setting
 
 from .index_router import STATIC_DIR
@@ -53,6 +58,16 @@ def duplicate_scan(payload: DuplicateScanPayload) -> dict[str, Any]:
         return scan_duplicates(payload.roots)
     except ValueError as error:
         raise HTTPException(status_code=400, detail=str(error)) from error
+
+
+@router.get("/duplicates/results")
+def duplicate_results() -> dict[str, Any]:
+    return load_saved_duplicate_scan_results()
+
+
+@router.post("/duplicates/results/clear")
+def duplicate_clear_results() -> dict[str, Any]:
+    return clear_duplicate_scan_results()
 
 
 @router.post("/duplicates/createPlan")

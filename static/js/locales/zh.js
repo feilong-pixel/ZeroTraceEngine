@@ -224,7 +224,7 @@ export default {
 
   duplicates: {
     title: "重复文件检测",
-    description: "扫描指定目录中的重复文件。所有结果仅展示，生成整理计划后才会进入可回滚流程。",
+    description: "扫描指定目录中的重复文件。结果会保存在此页，直到手动清空或生成整理计划。",
     startScan: "开始重复检测",
     pathInput: "文件夹路径",
     pathPlaceholder: "输入要检测的文件夹路径",
@@ -280,7 +280,7 @@ export default {
     clearResults: "清空结果",
     createPlan: "生成整理计划",
     resultTitle: "重复组",
-    resultHint: "每组至少保留 1 个文件。选中项可在整理计划中移动到 ZeroTraceRecycle。",
+    resultHint: "每组至少保留 1 个文件。只有选中项会进入整理计划。",
     noResults: "暂无重复结果",
     groupLabel: (index, count, size) => `Group #${index}（${count} 个文件）- ${size}`,
     groupFallback: (index) => `重复组 #${index}`,
@@ -510,6 +510,24 @@ export default {
       noIssues:           "未发现问题项",
       error:              "扫描失败",
     },
+    guide: {
+      scanStep: "1. 扫描",
+      scanTitle: "发现注册表问题",
+      scanDesc: "建议先使用标准范围 + 安全模式。",
+      reviewStep: "2. 复核",
+      reviewTitle: "按安全层级查看",
+      reviewDesc: "先看可执行候选，再检查需复核项目。",
+      planStep: "3. 计划",
+      planTitle: "先备份再清理",
+      planDesc: "清理计划会在修改前导出 .reg 备份。",
+    },
+    results: {
+      heading: "结果：注册表发现项",
+      description: "优先使用安全层级查看结果。高级筛选只在结果很多、需要缩小范围时使用。",
+    },
+    filters: {
+      advanced: "高级筛选",
+    },
     stats: {
       total:    "问题总数",
       safe:     "低风险",
@@ -576,8 +594,7 @@ export default {
       manualReview: "请确认条目来源、目标路径和风险后再执行。",
     },
     diagnostics: {
-      kicker:  "诊断",
-      title:   "扫描诊断",
+      heading: "诊断：扫描诊断",
       checked: "已检查",
       issues:  "问题项",
       skipped: "已跳过",
@@ -588,7 +605,7 @@ export default {
     },
     layers: {
       all: "全部",
-      executable: "可执行候选",
+      executable: "可执行筛选",
       review: "需复核",
       diagnostic: "仅诊断",
     },
@@ -640,8 +657,7 @@ export default {
       failedSuffix:  "个失败",
     },
     history: {
-      kicker: "历史",
-      title: "注册表计划",
+      heading: "历史：注册表计划",
       statusPending: "已保存",
       statusExecuted: "已执行",
       statusRestored: "已恢复",

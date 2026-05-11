@@ -224,7 +224,7 @@ export default {
 
   duplicates: {
     title: "Duplicate Scan",
-    description: "Scan folders for duplicate files. Results are displayed only until you generate a reversible organizing plan.",
+    description: "Scan folders for duplicate files. Results are saved here until you clear them or create a cleanup plan.",
     startScan: "Start Duplicate Scan",
     pathInput: "Folder Path",
     pathPlaceholder: "Enter a folder path to scan",
@@ -280,7 +280,7 @@ export default {
     clearResults: "Clear Results",
     createPlan: "Create Organizing Plan",
     resultTitle: "Duplicate Groups",
-    resultHint: "Each group keeps at least one file. Selected files can be moved to ZeroTraceRecycle from the organizing plan.",
+    resultHint: "Each group keeps at least one file. Only selected files are sent to the organizing plan.",
     noResults: "No duplicate results",
     groupLabel: (index, count, size) => `Group #${index} (${count} files) - ${size}`,
     groupFallback: (index) => `Group #${index}`,
@@ -510,6 +510,24 @@ export default {
       noIssues:           "No issues found",
       error:              "Scan failed",
     },
+    guide: {
+      scanStep: "1. Scan",
+      scanTitle: "Find registry issues",
+      scanDesc: "Start with Standard scope and Safe mode.",
+      reviewStep: "2. Review",
+      reviewTitle: "Check by safety layer",
+      reviewDesc: "Begin with executable candidates, then inspect review-only findings.",
+      planStep: "3. Plan",
+      planTitle: "Back up before cleanup",
+      planDesc: "Cleanup plans export .reg backups before any registry change.",
+    },
+    results: {
+      heading: "Results: Registry Findings",
+      description: "Use safety layers first. Advanced filters are optional when you need to narrow a large result set.",
+    },
+    filters: {
+      advanced: "Advanced filters",
+    },
     stats: {
       total:    "Total Issues",
       safe:     "Low risk",
@@ -576,8 +594,7 @@ export default {
       manualReview: "Review the source, target path, and risk before executing.",
     },
     diagnostics: {
-      kicker:  "Diagnostics",
-      title:   "Scan Diagnostics",
+      heading: "Diagnostics: Scan Diagnostics",
       checked: "Checked",
       issues:  "Issues",
       skipped: "Skipped",
@@ -640,8 +657,7 @@ export default {
       failedSuffix:  "failed",
     },
     history: {
-      kicker: "History",
-      title: "Registry Plans",
+      heading: "History: Registry Plans",
       statusPending: "Saved",
       statusExecuted: "Executed",
       statusRestored: "Restored",

@@ -64,6 +64,24 @@ def init_db():
     """)
 
     cur.execute("""
+    CREATE TABLE IF NOT EXISTS duplicate_scan_results (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        group_hash TEXT NOT NULL,
+        path TEXT NOT NULL UNIQUE,
+        size INTEGER NOT NULL,
+        mtime TEXT,
+        root TEXT NOT NULL,
+        category TEXT NOT NULL,
+        source TEXT NOT NULL,
+        risk_level TEXT DEFAULT 'low',
+        risk_reasons TEXT DEFAULT '[]',
+        quick_hash TEXT NOT NULL,
+        full_hash TEXT NOT NULL,
+        scanned_at TEXT DEFAULT CURRENT_TIMESTAMP
+    )
+    """)
+
+    cur.execute("""
     CREATE TABLE IF NOT EXISTS app_settings (
         key TEXT PRIMARY KEY,
         value TEXT NOT NULL,
@@ -75,6 +93,8 @@ def init_db():
     cur.execute("CREATE INDEX IF NOT EXISTS index_file_hash_size ON file_hashes(size)")
     cur.execute("CREATE INDEX IF NOT EXISTS index_file_hash_quick ON file_hashes(quick_hash)")
     cur.execute("CREATE INDEX IF NOT EXISTS index_file_hash_full ON file_hashes(full_hash)")
+    cur.execute("CREATE INDEX IF NOT EXISTS idx_dup_scan_hash ON duplicate_scan_results(group_hash)")
+    cur.execute("CREATE INDEX IF NOT EXISTS idx_dup_scan_path ON duplicate_scan_results(path)")
 
     cur.execute("""
     CREATE TABLE IF NOT EXISTS registry_scan_results (

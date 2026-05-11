@@ -9,17 +9,14 @@ from core.services.registry_cleanup_service import (
     generate_registry_plan,
     get_registry_plan_detail,
     get_registry_restore_preview,
-    get_registry_capabilities,
     list_registry_plans,
     restore_registry_plan,
 )
-from core.services.registry_scan_service import scan_registry
-from core.storage.registry_scan_repository import (
-    clear_registry_scan_results,
-    count_registry_scan_results,
-    load_registry_scan_reports,
-    load_registry_scan_results,
-    save_registry_scan_results,
+from core.services.registry_service import (
+    clear_saved_registry_results,
+    execute_registry_scan,
+    get_registry_runtime_capabilities,
+    get_saved_registry_results,
 )
 
 from .index_router import STATIC_DIR
@@ -61,41 +58,24 @@ async def registry_page() -> FileResponse:
 @router.post("/registry/scan")
 def registry_scan(payload: RegistryScanPayload) -> dict[str, Any]:
     try:
-        result = scan_registry(scope=payload.scope, mode=payload.mode)
-        save_registry_scan_results(result["issues"], result["reports"])
-        return {
-            "ok":     True,
-            "issues": [i.model_dump() for i in result["issues"]],
-            "stats":  result["stats"],
-            "reports": [r.model_dump() for r in result["reports"]],
-        }
+        return execute_registry_scan(scope=payload.scope, mode=payload.mode)
     except ValueError as exc:
         raise HTTPException(status_code=400, detail=str(exc)) from exc
 
 
 @router.get("/registry/results")
 def registry_results() -> dict[str, Any]:
-    issues = load_registry_scan_results()
-    reports = load_registry_scan_reports()
-    from core.services.registry_scan_service import _build_stats
-    return {
-        "ok":     True,
-        "issues": [i.model_dump() for i in issues],
-        "stats":  _build_stats(issues),
-        "reports": [r.model_dump() for r in reports],
-        "count":  len(issues),
-    }
+    return get_saved_registry_results()
 
 
 @router.delete("/registry/results")
 def registry_clear_results() -> dict[str, Any]:
-    clear_registry_scan_results()
-    return {"ok": True}
+    return clear_saved_registry_results()
 
 
 @router.get("/registry/capabilities")
 def registry_capabilities() -> dict[str, Any]:
-    return {"ok": True, **get_registry_capabilities()}
+    return get_registry_runtime_capabilities()
 
 
 # ---------------------------------------------------------------------------

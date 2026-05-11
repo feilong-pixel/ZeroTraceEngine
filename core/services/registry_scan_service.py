@@ -1003,3 +1003,7 @@ def _build_stats(issues: list[RegistryIssueItem]) -> dict:
         "by_confidence": by_confidence,
         "by_validation_status": by_validation_status,
     }
+
+
+def build_registry_stats(issues: list[RegistryIssueItem]) -> dict:
+    return _build_stats(issues)

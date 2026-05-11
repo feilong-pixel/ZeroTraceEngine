@@ -264,6 +264,7 @@ async function startScan(els, state) {
   state.selectedPaths.clear();
   setStatus(els, null, "running");
   setText(els.scanDuration, t("scan.timing"));
+  renderScannerReports(els, []);
   updateControls(els, state);
 
   try {
@@ -276,7 +277,11 @@ async function startScan(els, state) {
     if (!res.ok) throw new Error(`Scan API failed: ${res.status}`);
 
     const payload = await res.json();
-    state.items = Array.isArray(payload) ? payload : payload.items || [];
+    if (!payload.ok || !Array.isArray(payload.items)) {
+      throw new Error(payload.detail || "Unexpected scan response");
+    }
+
+    state.items = payload.items;
     renderScannerReports(els, payload.scanner_reports || []);
     renderSourceOptions(els, state);
 

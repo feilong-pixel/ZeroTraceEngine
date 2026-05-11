@@ -364,6 +364,34 @@ async function saveRoots(state) {
   }
 }
 
+async function loadSavedResults(els, state) {
+  try {
+    const res = await fetch("/duplicates/results", { headers: { Accept: "application/json" } });
+    const payload = await res.json();
+    if (!res.ok) throw new Error(payload.detail || `Load duplicate results failed: ${res.status}`);
+    state.groups = payload.groups || [];
+    state.scannedFiles = payload.scanned_files || 0;
+    state.candidateFiles = payload.candidate_files || 0;
+    state.rootScanStatus = state.groups.length > 0 ? "success" : "pending";
+    setStatus(els, state.groups.length > 0 ? "success" : "idle");
+  } catch (error) {
+    console.warn("Failed to load duplicate results", error);
+    state.rootScanStatus = "pending";
+    setStatus(els, "idle");
+  }
+}
+
+async function clearSavedResults() {
+  const res = await fetch("/duplicates/results/clear", {
+    method: "POST",
+    headers: { Accept: "application/json" },
+  });
+  if (!res.ok) {
+    const payload = await res.json();
+    throw new Error(payload.detail || `Clear duplicate results failed: ${res.status}`);
+  }
+}
+
 function addRoot(els, state) {
   const value = els.pathInput?.value.trim();
   if (!value) {
@@ -514,7 +542,12 @@ function bindEvents(els, state) {
     if (event.key === "Enter") addRoot(els, state);
   });
   on(els.startButton, "click", () => startScan(els, state));
-  on(els.clearButton, "click", () => {
+  on(els.clearButton, "click", async () => {
+    try {
+      await clearSavedResults();
+    } catch (error) {
+      console.warn("Failed to clear duplicate results", error);
+    }
     state.groups = [];
     state.rootScanStatus = "pending";
     state.scannedFiles = 0;
@@ -561,9 +594,9 @@ export async function initDuplicatesPage() {
   ensureDialog();
   translateStaticText();
   await loadSavedRoots(state);
+  await loadSavedResults(els, state);
   bindEvents(els, state);
   renderRoots(els, state);
-  setStatus(els, "idle");
   renderGroups(els, state);
   markI18nReady();
 }

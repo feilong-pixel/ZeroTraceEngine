@@ -18,10 +18,10 @@ async def scan_page() -> FileResponse:
 
 
 @router.post("/scan/start")
-def scan_execute() -> dict[str, Any]:
+def start_scan() -> dict[str, Any]:
     return execute_scan()
 
 
 @router.post("/scan/clearResults")
-def api_clear_scan_results() -> dict[str, Any]:
+def clear_scan_results() -> dict[str, Any]:
     return clear_saved_scan_results()

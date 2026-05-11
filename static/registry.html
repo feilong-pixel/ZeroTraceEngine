@@ -43,6 +43,24 @@
       </div>
     </section>
 
+    <section class="registry-guide-panel" aria-label="Registry scan workflow">
+      <article>
+        <span data-i18n="registry.guide.scanStep">1. Scan</span>
+        <strong data-i18n="registry.guide.scanTitle">Find registry issues</strong>
+        <p data-i18n="registry.guide.scanDesc">Standard + Safe mode is the recommended first pass.</p>
+      </article>
+      <article>
+        <span data-i18n="registry.guide.reviewStep">2. Review</span>
+        <strong data-i18n="registry.guide.reviewTitle">Check by safety layer</strong>
+        <p data-i18n="registry.guide.reviewDesc">Start with executable candidates, then inspect review-only findings.</p>
+      </article>
+      <article>
+        <span data-i18n="registry.guide.planStep">3. Plan</span>
+        <strong data-i18n="registry.guide.planTitle">Back up before cleanup</strong>
+        <p data-i18n="registry.guide.planDesc">Cleanup plans export .reg backups before any registry change.</p>
+      </article>
+    </section>
+
     <section id="registryScanProgress" class="toolbar-panel registry-phase-bar is-hidden">
       <div class="duplicate-stage-track">
         <span class="duplicate-stage is-active" id="phaseCollect" data-i18n="registry.phases.collect">Collecting keys</span>
@@ -79,8 +97,11 @@
     </section>
 
     <section id="registryResultsSection" class="registry-results-section is-hidden">
+      <div class="section-heading registry-section-heading">
+        <h2 data-i18n="registry.results.heading">Results: Registry Findings</h2>
+        <p class="muted" data-i18n="registry.results.description">Use safety layers first. Advanced filters are optional when you need to narrow a large result set.</p>
+      </div>
 
-      <!-- Stats cards -->
       <div class="registry-stats-grid">
         <article class="summary-card summary-card-primary">
           <span class="summary-label" data-i18n="registry.stats.total">Total Issues</span>
@@ -104,85 +125,90 @@
         </article>
       </div>
 
-      <!-- Filter bar -->
-      <div class="toolbar-panel registry-filter-bar">
-        <label class="filter-label-group">
-          <span data-i18n="common.labels.category">Category</span>
-          <select id="registryCategoryFilter" class="select-input select-input-sm">
-            <option value="" data-i18n="common.labels.all">All</option>
-            <option value="InvalidPath"      data-i18n="registry.categories.invalidPath">Invalid Path</option>
-            <option value="OrphanCOM"        data-i18n="registry.categories.orphanCom">Orphan COM</option>
-            <option value="InvalidUninstall" data-i18n="registry.categories.invalidUninstall">Invalid Uninstall</option>
-            <option value="InvalidService"   data-i18n="registry.categories.invalidService">Invalid Service</option>
-            <option value="StartupIssue"     data-i18n="registry.categories.startupIssue">Startup Issue</option>
-            <option value="FileAssociation"  data-i18n="registry.categories.fileAssociation">File Association</option>
-          </select>
-        </label>
-        <label class="filter-label-group">
-          <span data-i18n="common.labels.riskLevel">Risk</span>
-          <select id="registryRiskFilter" class="select-input select-input-sm">
-            <option value="" data-i18n="common.labels.all">All</option>
-            <option value="Safe" data-i18n="registry.risks.safe">Safe</option>
-            <option value="Medium" data-i18n="registry.risks.medium">Medium</option>
-            <option value="High" data-i18n="registry.risks.high">High</option>
-          </select>
-        </label>
-        <label class="filter-label-group">
-          <span data-i18n="common.labels.source">Source</span>
-          <select id="registrySourceFilter" class="select-input select-input-sm">
-            <option value="" data-i18n="common.labels.all">All</option>
-            <option value="Startup"         data-i18n="registry.sources.startup">Startup</option>
-            <option value="StartupApproved" data-i18n="registry.sources.startupApproved">Startup Approved</option>
-            <option value="Uninstall"       data-i18n="registry.sources.uninstall">Uninstall</option>
-            <option value="AppPaths"        data-i18n="registry.sources.appPaths">App Paths</option>
-            <option value="COM"             data-i18n="registry.sources.com">COM</option>
-            <option value="Service"         data-i18n="registry.sources.service">Service</option>
-            <option value="FileAssociation" data-i18n="registry.sources.fileAssociation">File Assoc</option>
-            <option value="ScheduledTask"   data-i18n="registry.sources.scheduledTask">Scheduled Task</option>
-          </select>
-        </label>
-        <label class="filter-label-group">
-          <span data-i18n="registry.labels.hive">Hive</span>
-          <select id="registryHiveFilter" class="select-input select-input-sm">
-            <option value="" data-i18n="common.labels.all">All</option>
-            <option value="HKCU">HKCU</option>
-            <option value="HKLM">HKLM</option>
-            <option value="HKCR">HKCR</option>
-            <option value="HKU">HKU</option>
-            <option value="HKCC">HKCC</option>
-          </select>
-        </label>
-        <label class="filter-label-group">
-          <span data-i18n="registry.labels.confidence">Confidence</span>
-          <select id="registryConfidenceFilter" class="select-input select-input-sm">
-            <option value="" data-i18n="common.labels.all">All</option>
-            <option value="High" data-i18n="registry.confidence.high">High confidence</option>
-            <option value="Medium" data-i18n="registry.confidence.medium">Medium confidence</option>
-            <option value="Low" data-i18n="registry.confidence.low">Low confidence</option>
-          </select>
-        </label>
-        <label class="filter-label-group">
-          <span data-i18n="registry.labels.validation">Validation</span>
-          <select id="registryValidationFilter" class="select-input select-input-sm">
-            <option value="" data-i18n="common.labels.all">All</option>
-            <option value="path_missing" data-i18n="registry.validation.pathMissingShort">Path missing</option>
-            <option value="command_missing" data-i18n="registry.validation.commandMissingShort">Command missing</option>
-            <option value="unverifiable_path" data-i18n="registry.validation.unverifiablePathShort">Unverifiable</option>
-            <option value="no_target" data-i18n="registry.validation.noTargetShort">No target</option>
-          </select>
-        </label>
-        <label class="filter-label-group filter-search-group">
+      <section class="registry-review-panel" aria-label="Registry review controls">
+        <div class="registry-review-actions">
+          <div class="registry-layer-tabs" role="group" aria-label="Registry result layers">
+            <button class="registry-layer-tab is-active" data-layer="all" type="button" data-i18n="registry.layers.all">All</button>
+            <button class="registry-layer-tab" data-layer="executable" type="button" data-i18n="registry.layers.executable">Executable</button>
+            <button class="registry-layer-tab" data-layer="review" type="button" data-i18n="registry.layers.review">Review</button>
+            <button class="registry-layer-tab" data-layer="diagnostic" type="button" data-i18n="registry.layers.diagnostic">Diagnostic</button>
+          </div>
+          <details class="registry-advanced-filters">
+            <summary data-i18n="registry.filters.advanced">Advanced filters</summary>
+            <div class="registry-filter-bar">
+              <label class="filter-label-group">
+                <span data-i18n="common.labels.category">Category</span>
+                <select id="registryCategoryFilter" class="select-input select-input-sm">
+                  <option value="" data-i18n="common.labels.all">All</option>
+                  <option value="InvalidPath"      data-i18n="registry.categories.invalidPath">Invalid Path</option>
+                  <option value="OrphanCOM"        data-i18n="registry.categories.orphanCom">Orphan COM</option>
+                  <option value="InvalidUninstall" data-i18n="registry.categories.invalidUninstall">Invalid Uninstall</option>
+                  <option value="InvalidService"   data-i18n="registry.categories.invalidService">Invalid Service</option>
+                  <option value="StartupIssue"     data-i18n="registry.categories.startupIssue">Startup Issue</option>
+                  <option value="FileAssociation"  data-i18n="registry.categories.fileAssociation">File Association</option>
+                </select>
+              </label>
+              <label class="filter-label-group">
+                <span data-i18n="common.labels.riskLevel">Risk</span>
+                <select id="registryRiskFilter" class="select-input select-input-sm">
+                  <option value="" data-i18n="common.labels.all">All</option>
+                  <option value="Safe" data-i18n="registry.risks.safe">Safe</option>
+                  <option value="Medium" data-i18n="registry.risks.medium">Medium</option>
+                  <option value="High" data-i18n="registry.risks.high">High</option>
+                </select>
+              </label>
+              <label class="filter-label-group">
+                <span data-i18n="common.labels.source">Source</span>
+                <select id="registrySourceFilter" class="select-input select-input-sm">
+                  <option value="" data-i18n="common.labels.all">All</option>
+                  <option value="Startup"         data-i18n="registry.sources.startup">Startup</option>
+                  <option value="StartupApproved" data-i18n="registry.sources.startupApproved">Startup Approved</option>
+                  <option value="Uninstall"       data-i18n="registry.sources.uninstall">Uninstall</option>
+                  <option value="AppPaths"        data-i18n="registry.sources.appPaths">App Paths</option>
+                  <option value="COM"             data-i18n="registry.sources.com">COM</option>
+                  <option value="Service"         data-i18n="registry.sources.service">Service</option>
+                  <option value="FileAssociation" data-i18n="registry.sources.fileAssociation">File Assoc</option>
+                  <option value="ScheduledTask"   data-i18n="registry.sources.scheduledTask">Scheduled Task</option>
+                </select>
+              </label>
+              <label class="filter-label-group">
+                <span data-i18n="registry.labels.hive">Hive</span>
+                <select id="registryHiveFilter" class="select-input select-input-sm">
+                  <option value="" data-i18n="common.labels.all">All</option>
+                  <option value="HKCU">HKCU</option>
+                  <option value="HKLM">HKLM</option>
+                  <option value="HKCR">HKCR</option>
+                  <option value="HKU">HKU</option>
+                  <option value="HKCC">HKCC</option>
+                </select>
+              </label>
+              <label class="filter-label-group">
+                <span data-i18n="registry.labels.confidence">Confidence</span>
+                <select id="registryConfidenceFilter" class="select-input select-input-sm">
+                  <option value="" data-i18n="common.labels.all">All</option>
+                  <option value="High" data-i18n="registry.confidence.high">High confidence</option>
+                  <option value="Medium" data-i18n="registry.confidence.medium">Medium confidence</option>
+                  <option value="Low" data-i18n="registry.confidence.low">Low confidence</option>
+                </select>
+              </label>
+              <label class="filter-label-group">
+                <span data-i18n="registry.labels.validation">Validation</span>
+                <select id="registryValidationFilter" class="select-input select-input-sm">
+                  <option value="" data-i18n="common.labels.all">All</option>
+                  <option value="path_missing" data-i18n="registry.validation.pathMissingShort">Path missing</option>
+                  <option value="command_missing" data-i18n="registry.validation.commandMissingShort">Command missing</option>
+                  <option value="unverifiable_path" data-i18n="registry.validation.unverifiablePathShort">Unverifiable</option>
+                  <option value="no_target" data-i18n="registry.validation.noTargetShort">No target</option>
+                </select>
+              </label>
+            </div>
+          </details>
+        </div>
+        <label class="filter-label-group registry-search-compact">
           <span data-i18n="registry.labels.search">Search</span>
           <input id="registrySearchInput" class="search-input" type="text" data-i18n-placeholder="registry.labels.searchPlaceholder" placeholder="Key path / value / target…" />
         </label>
-      </div>
-
-      <div class="registry-layer-tabs" role="group" aria-label="Registry result layers">
-        <button class="registry-layer-tab is-active" data-layer="all" type="button" data-i18n="registry.layers.all">All</button>
-        <button class="registry-layer-tab" data-layer="executable" type="button" data-i18n="registry.layers.executable">Executable</button>
-        <button class="registry-layer-tab" data-layer="review" type="button" data-i18n="registry.layers.review">Review</button>
-        <button class="registry-layer-tab" data-layer="diagnostic" type="button" data-i18n="registry.layers.diagnostic">Diagnostic</button>
-      </div>
+      </section>
 
       <div id="registryGroupList" class="registry-group-list"></div>
 
@@ -190,16 +216,14 @@
 
     <section id="registryDiagnosticsSection" class="registry-results-section is-hidden">
       <div class="section-heading">
-        <p class="eyebrow" data-i18n="registry.diagnostics.kicker">Diagnostics</p>
-        <h2 data-i18n="registry.diagnostics.title">Scan Diagnostics</h2>
+        <h2 data-i18n="registry.diagnostics.heading">Diagnostics: Scan Diagnostics</h2>
       </div>
       <div id="registryDiagnosticsList" class="registry-group-list"></div>
     </section>
 
     <section id="registryPlanHistorySection" class="registry-results-section registry-plan-history is-hidden">
       <div class="section-heading">
-        <p class="eyebrow" data-i18n="registry.history.kicker">History</p>
-        <h2 data-i18n="registry.history.title">Registry Plans</h2>
+        <h2 data-i18n="registry.history.heading">History: Registry Plans</h2>
       </div>
       <div id="registryPlanHistoryList" class="registry-group-list"></div>
     </section>
