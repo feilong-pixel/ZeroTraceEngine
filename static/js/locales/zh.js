@@ -89,6 +89,11 @@ export default {
   main: {
     title: "ZeroTrace Engine",
     brandEyebrow: "ZeroTrace Engine",
+    languageLabel: "语言",
+    languages: {
+      zh: "中文",
+      en: "English",
+    },
     intro: "本地文件整理工具 · 可审计 · 可回滚",
     description: "本地优先的文件整理工作台。先扫描、再确认、后移动。",
     safetyMode: "安全模式：启用",
@@ -104,6 +109,7 @@ export default {
     scanStatus: "扫描状态",
     recycleItems: "回收区项目",
     auditLogs: "审计日志",
+    workflowEyebrow: "流程",
     workflow: "整理流程",
     workflowScanTitle: "扫描",
     workflowScanDesc: "识别候选",

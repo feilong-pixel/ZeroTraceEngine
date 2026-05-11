@@ -1,6 +1,6 @@
 import { $, on, setText } from "../core/dom.js";
 import { ensureDialog } from "../core/dialog.js";
-import { markI18nReady, translateStaticText } from "../locales/i18n.js";
+import { getLang, markI18nReady, setLang, translateStaticText } from "../locales/i18n.js";
 
 function getIndexElements() {
   return {
@@ -15,9 +15,14 @@ function getIndexElements() {
     openDuplicatesButton: $("#openDuplicatesButton"),
     openUserdirButton: $("#openUserdirButton"),
     openAppscanButton: $("#openAppscanButton"),
+    languageSelect: $("#languageSelect"),
     recycleCount: $("#recycleCount"),
     logCount: $("#logCount"),
   };
+}
+
+function applyDocumentLang(lang) {
+  document.documentElement.lang = lang === "en" ? "en" : "zh-CN";
 }
 
 function goTo(path) {
@@ -68,11 +73,27 @@ function bindIndexEvents(els) {
   if (els.openAppscanButton) on(els.openAppscanButton, "click", () => goTo("/app-scan"));
 }
 
+function bindLanguageSwitch(els) {
+  if (!els.languageSelect) return;
+
+  const currentLang = getLang();
+  els.languageSelect.value = currentLang === "en" ? "en" : "zh";
+  applyDocumentLang(els.languageSelect.value);
+
+  on(els.languageSelect, "change", () => {
+    const nextLang = setLang(els.languageSelect.value);
+    els.languageSelect.value = nextLang === "en" ? "en" : "zh";
+    applyDocumentLang(els.languageSelect.value);
+    translateStaticText();
+  });
+}
+
 export function initIndexPage() {
   const els = getIndexElements();
 
   ensureDialog();
   translateStaticText();
+  bindLanguageSwitch(els);
   bindIndexEvents(els);
   loadDashboardStatus(els).finally(markI18nReady);
 

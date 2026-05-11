@@ -89,6 +89,11 @@ export default {
   main: {
     title: "ZeroTrace Engine",
     brandEyebrow: "ZeroTrace Engine",
+    languageLabel: "Language",
+    languages: {
+      zh: "中文",
+      en: "English",
+    },
     intro: "Local File Organizer · Auditable · Reversible",
     description: "A local-first file organization workspace. Scan first, confirm next, move last.",
     safetyMode: "Safety Mode: Enabled",
@@ -104,6 +109,7 @@ export default {
     scanStatus: "Scan Status",
     recycleItems: "Recycle Items",
     auditLogs: "Audit Logs",
+    workflowEyebrow: "Workflow",
     workflow: "Organizing Workflow",
     workflowScanTitle: "Scan",
     workflowScanDesc: "Detect",

@@ -58,6 +58,9 @@ button {
   cursor: pointer;
   font-size: var(--button-font-size);
   font-weight: 700;
+  line-height: 1.25;
+  white-space: normal;
+  overflow-wrap: normal;
   transition:
     background-color 120ms ease,
     border-color 120ms ease,
@@ -301,14 +304,14 @@ p {
 .header-actions,
 .toolbar-right {
   display: grid;
-  grid-template-columns: repeat(3, 144px);
+  grid-template-columns: repeat(3, minmax(168px, max-content));
   justify-content: end;
   align-items: center;
   gap: 10px;
 }
 
 .tools-page .header-actions {
-  grid-template-columns: 144px;
+  grid-template-columns: minmax(168px, max-content);
   margin-left: auto;
 }
 
@@ -318,11 +321,11 @@ p {
 }
 
 .cleanup-page .header-actions {
-  grid-template-columns: 132px 144px 132px 156px;
+  grid-template-columns: minmax(168px, max-content) minmax(168px, max-content) minmax(168px, max-content) minmax(190px, max-content);
 }
 
 .recycle-page .toolbar-right {
-  grid-template-columns: 88px 88px 120px 144px;
+  grid-template-columns: 112px 112px 168px 172px;
 }
 
 .header-actions button,
@@ -333,7 +336,7 @@ p {
   gap: 7px;
   width: 100%;
   min-width: 0;
-  line-height: 1;
+  line-height: 1.25;
   white-space: nowrap;
 }
 
@@ -621,7 +624,7 @@ p {
 }
 
 .duplicate-root-table .col-action {
-  width: 84px;
+  width: 108px;
   text-align: left;
 }
 
@@ -636,11 +639,11 @@ p {
 
 .duplicate-root-table .col-action button,
 .duplicate-input-panel #addDuplicateRootButton {
-  width: 68px;
-  min-width: 68px;
+  width: 88px;
+  min-width: 88px;
   min-height: var(--control-height);
   padding: 6px 10px;
-  line-height: 1;
+  line-height: 1.25;
 }
 
 .duplicate-file-table .col-check {
@@ -664,7 +667,7 @@ p {
 }
 
 .duplicate-file-table .col-risk {
-  width: 76px;
+  width: 116px;
 }
 
 .duplicate-file-table .col-size,
@@ -775,7 +778,7 @@ p {
   align-items: center;
   justify-content: center;
   gap: 6px;
-  min-width: 48px;
+  min-width: 76px;
   padding: 3px 8px;
   border: 1px solid var(--border-color);
   border-radius: 999px;
@@ -856,6 +859,33 @@ p {
   margin-bottom: 14px;
 }
 
+.hero-meta-actions {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+
+.language-switch {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 30px;
+  color: var(--text-muted);
+  font-size: 12px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.language-switch select {
+  width: auto;
+  min-width: 92px;
+  min-height: 30px;
+  padding: 4px 28px 4px 10px;
+  font-size: 12px;
+}
+
 .safety-pill {
   display: inline-flex;
   align-items: center;
@@ -906,7 +936,8 @@ p {
   width: auto;
   min-width: 136px;
   padding-inline: 22px;
-  line-height: 1;
+  line-height: 1.25;
+  white-space: normal;
 }
 
 .hero-actions .primary-button {
@@ -1074,7 +1105,7 @@ p {
 .duplicate-strategy-row button {
   width: 100%;
   min-width: 0;
-  white-space: nowrap;
+  white-space: normal;
 }
 
 .duplicate-strategy-row {
@@ -2193,6 +2224,16 @@ p {
     display: grid;
   }
 
+  .hero-title-row,
+  .hero-meta-actions {
+    align-items: flex-start;
+    justify-content: flex-start;
+  }
+
+  .hero-title-row {
+    display: grid;
+  }
+
   .hero-actions button {
     width: 100%;
   }
@@ -2934,7 +2975,7 @@ p {
 }
 
 .appscan-header-actions {
-  grid-template-columns: 144px 144px 160px !important;
+  grid-template-columns: minmax(168px, max-content) minmax(168px, max-content) minmax(168px, max-content) !important;
   align-items: center;
 }
 
@@ -3793,7 +3834,7 @@ p {
 .appscan-residual-action {
   min-height: 38px;
   font-size: 13px;
-  white-space: nowrap;
+  white-space: normal;
 }
 
 .appscan-action-arrow {
