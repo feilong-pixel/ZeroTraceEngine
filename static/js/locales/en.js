@@ -88,6 +88,7 @@ export default {
 
   main: {
     title: "ZeroTrace Engine",
+    brandEyebrow: "ZeroTrace Engine",
     intro: "Local File Organizer · Auditable · Reversible",
     description: "A local-first file organization workspace. Scan first, confirm next, move last.",
     safetyMode: "Safety Mode: Enabled",
