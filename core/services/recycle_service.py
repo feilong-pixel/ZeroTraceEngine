@@ -9,7 +9,8 @@ from core.storage.clean_log_repository import (
     mark_record_purged,
     mark_record_restored,
 )
-from core.utils.file_transfer import transfer_file_safe
+from core.utils.platform import is_windows
+from core.utils.file_transfer import move_to_system_recycle, transfer_file_safe
 
 SAFE_RESTORE_ROOTS = [Path("C:/"), Path.home()]
 
@@ -124,10 +125,8 @@ def purge_record(record_id: str) -> dict:
             "status": "recycle_file_missing",
         }
 
-    if recycled.is_dir():
-        shutil.rmtree(recycled)
-    else:
-        recycled.unlink()
+    if not dispose_recycled_path(recycled):
+        return {"id": record_id, "status": "system_recycle_unavailable"}
 
     purged_at = datetime.now().isoformat(timespec="seconds")
     mark_record_purged(record_id, purged_at)
@@ -146,3 +145,14 @@ def is_safe_purge_path(path: Path) -> bool:
         return resolved.is_relative_to(recycle_root)
     except (OSError, ValueError):
         return False
+
+
+def dispose_recycled_path(path: Path) -> bool:
+    if is_windows():
+        return move_to_system_recycle(path)
+
+    if path.is_dir():
+        shutil.rmtree(path)
+    else:
+        path.unlink()
+    return True

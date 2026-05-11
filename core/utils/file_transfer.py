@@ -1,8 +1,11 @@
+import ctypes
+from ctypes import wintypes
 import os
 import shutil
 import platform
 from pathlib import Path
 from .platform import is_windows
+
 
 # Read the Windows FILETIME values for CreationTime, AccessTime, and ModifyTime.
 def read_windows_file_times(path: Path):
@@ -145,3 +148,33 @@ def transfer_file_safe(src: Path, dst: Path, mode: str):
         apply_windows_file_times(dst, file_times)
     except OSError:
         pass
+
+
+def move_to_system_recycle(path: Path) -> bool:
+    if not is_windows() or not path.exists():
+        return False
+
+    shell32 = ctypes.windll.shell32
+    from_path = str(path.resolve()) + "\0\0"
+
+    class SHFILEOPSTRUCTW(ctypes.Structure):
+        _fields_ = [
+            ("hwnd", wintypes.HWND),
+            ("wFunc", wintypes.UINT),
+            ("pFrom", wintypes.LPCWSTR),
+            ("pTo", wintypes.LPCWSTR),
+            ("fFlags", wintypes.WORD),
+            ("fAnyOperationsAborted", wintypes.BOOL),
+            ("hNameMappings", wintypes.LPVOID),
+            ("lpszProgressTitle", wintypes.LPCWSTR),
+        ]
+
+    file_operation = SHFILEOPSTRUCTW()
+    file_operation.hwnd = None
+    file_operation.wFunc = 0x0003  # FO_DELETE
+    file_operation.pFrom = from_path
+    file_operation.pTo = None
+    file_operation.fFlags = 0x0040 | 0x0010 | 0x0400  # FOF_ALLOWUNDO | FOF_NOCONFIRMATION | FOF_NOERRORUI
+
+    result = shell32.SHFileOperationW(ctypes.byref(file_operation))
+    return result == 0 and not file_operation.fAnyOperationsAborted
