@@ -57,6 +57,32 @@ ZeroTrace Engine follows these principles:
 - Browser-side i18n for English, Chinese, and Japanese, without backend dependency
 - Native JavaScript ES6 modules, no frontend framework
 
+## Screenshots
+
+### Dashboard
+
+![Dashboard](./docs/screenshots/en/index.png)
+
+### Scan
+
+![Scan](./docs/screenshots/en/scan.png)
+
+### Duplicates
+
+![Duplicates](./docs/screenshots/en/duplicates.png)
+
+### Cleanup Plan
+
+![Cleanup Plan](./docs/screenshots/en/cleanup.png)
+
+### Recycle Bin
+
+![Recycle Bin](./docs/screenshots/en/recycle.png)
+
+### Audit Logs
+
+![Audit Logs](./docs/screenshots/en/logs.png)
+
 ## Architecture
 
 The current codebase is structured around these boundaries:

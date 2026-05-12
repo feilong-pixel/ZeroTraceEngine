@@ -57,6 +57,32 @@ ZeroTrace Engine は次の原則に従います：
 - バックエンドに依存しない英語・中国語・日本語のブラウザー側 i18n
 - フロントエンドフレームワークを使わない、通常の JavaScript ES6 modules
 
+## 画面スクリーンショット
+
+### ダッシュボード
+
+![ダッシュボード](./docs/screenshots/ja/index.png)
+
+### スキャン
+
+![スキャン](./docs/screenshots/ja/scan.png)
+
+### 重複ファイル
+
+![重複ファイル](./docs/screenshots/ja/duplicates.png)
+
+### クリーンアップ計画
+
+![クリーンアップ計画](./docs/screenshots/ja/cleanup.png)
+
+### ごみ箱
+
+![ごみ箱](./docs/screenshots/ja/recycle.png)
+
+### 監査ログ
+
+![監査ログ](./docs/screenshots/ja/logs.png)
+
 ## アーキテクチャ
 
 現在のコードベースは次の境界で構成されています：

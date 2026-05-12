@@ -57,6 +57,32 @@ ZeroTrace Engine 遵循以下原则：
 - 浏览器 i18n（英/中/日）无后端依赖
 - 原生 JS ES6 模块，无前端框架
 
+## 页面截图
+
+### 首页
+
+![首页](./docs/screenshots/zh/index.png)
+
+### 扫描
+
+![扫描](./docs/screenshots/zh/scan.png)
+
+### 重复文件
+
+![重复文件](./docs/screenshots/zh/duplicates.png)
+
+### 清理计划
+
+![清理计划](./docs/screenshots/zh/cleanup.png)
+
+### 回收区
+
+![回收区](./docs/screenshots/zh/recycle.png)
+
+### 审计日志
+
+![审计日志](./docs/screenshots/zh/logs.png)
+
 ## 架构分层
 
 当前代码按以下边界组织：
